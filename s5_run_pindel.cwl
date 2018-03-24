@@ -26,10 +26,22 @@ inputs:
       position: 0
       prefix: '--centromere_bed'
 outputs:
-  - id: output
+  - id: pindel_D
     type: File
     outputBinding:
-      glob: pindel/pindel_out/*
+      glob: pindel/pindel_out/pindel_D
+  - id: pindel_INV
+    type: File
+    outputBinding:
+      glob: pindel/pindel_out/pindel_INV
+  - id: pindel_SI
+    type: File
+    outputBinding:
+      glob: pindel/pindel_out/pindel_SI
+  - id: pindel_TD
+    type: File
+    outputBinding:
+      glob: pindel/pindel_out/pindel_TD
 label: s5_run_pindel
 arguments:
   - position: 99
