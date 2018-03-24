@@ -26,11 +26,11 @@ inputs:
       position: 0
       prefix: '--varscan_config'
 outputs:
-  - id: output
+  - id: varscan_indel_raw
     type: File
     outputBinding:
       glob: varscan/varscan_out/varscan.out.som_indel.vcf
-  - id: output
+  - id: varscan_snv_raw
     type: File
     outputBinding:
       glob: varscan/varscan_out/varscan.out.som_snv.vcf
