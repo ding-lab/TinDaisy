@@ -35,9 +35,6 @@ arguments:
     shellQuote: false
     valueFrom: '4'
   - position: 0
-    prefix: '--results_dir'
-    valueFrom: .
-  - position: 0
     prefix: '--dbsnp_db'
     valueFrom: /usr/local/StrelkaDemo/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 requirements:

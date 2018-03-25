@@ -31,9 +31,9 @@ All output will go in ./results
 
 ```
 reference_dict = $HOME/Data/SomaticWrapper/image/A_Reference/demo20.dict
-use_vep_db = 1
-assembly = GRCh37
-output_vep = 1
+* use_vep_db = 1
+* assembly = GRCh37
+* output_vep = 1
 pindel_config = somaticwrapper/params/pindel.WES.ini
 sw_data = results
 varscan_config = somaticwrapper/params/varscan.WES.ini
@@ -45,6 +45,20 @@ annotate_intermediate = 1
 sample_name = StrelkaDemoCase.WXS.CWL
 strelka_config = somaticwrapper/params/strelka.WES.ini
 ```
+
+## CWL-specific modifications
+
+* All steps need to have input data passed as an argument
+  * in cases where a tool writes its output to the same directory as input data (`pindel_filter` and `varscan` do this)
+    in order to control where output goes, we create a link to the input data in the output directory
+* One of the steps in `parse_pindel`, the `grep ChrID` step, was moved to `pindel_run`
+* All references of `genomevip_label` were removed, simplifying internal data file structure
+
+### `run_vep`
+
+The script `run_vep` has been replaced by a more CWL-friendly version, `annotate_vep`.  The latter
+takes one VCF file as input and writes an annotated VCF (or VEP) file. As such, this "step" may be used
+to process any number of files by placing it in their workflow
 
 ## Run testing
 
