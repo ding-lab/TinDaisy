@@ -11,7 +11,7 @@ inputs:
       position: 0
       prefix: '--strelka_snv_raw'
 outputs:
-  - id: output
+  - id: strelka_snv_dbsnp
     type: File
     outputBinding:
       glob: strelka/filter_out/strelka.somatic.snv.all.gvip.dbsnp_pass.vcf
