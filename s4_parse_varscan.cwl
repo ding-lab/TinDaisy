@@ -15,6 +15,11 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--varscan_snv_raw'
+  - id: dbsnp_db
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--dbsnp_db'
 outputs:
   - id: varscan_snv_dbsnp
     doc: Final SNV output of parsing
@@ -34,9 +39,6 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '4'
-  - position: 0
-    prefix: '--dbsnp_db'
-    valueFrom: /usr/local/StrelkaDemo/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -61,6 +63,15 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    dbsnp_db:
+      path: /path/to/input.ext
+      class: File
+      size: 0
+      contents: file contents
+      secondaryFiles: []
+      basename: input.ext
+      nameroot: input
+      nameext: .ext
   runtime:
     cores: 1
     ram: 1000

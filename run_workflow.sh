@@ -19,4 +19,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --reference_fasta /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/demo20.fa \
 --strelka_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/strelka.WES.ini \
 --varscan_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/varscan.WES.ini \
---pindel_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/pindel.WES.ini"
+--pindel_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/pindel.WES.ini \
+--dbsnp_db /Users/mwyczalk/Data/SomaticWrapper/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz"

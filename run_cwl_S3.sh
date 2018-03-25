@@ -7,7 +7,9 @@ mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
 $RABIX $RABIX_ARGS $CWL -- " \
---strelka_snv_raw /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/s1_run_strelka-2018-03-25-141807.468/root/strelka/strelka_out/results/passed.somatic.snvs.vcf"
+--strelka_snv_raw /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/workflow-v1-1-2018-03-25-164136.121/root/s1_run_strelka/strelka/strelka_out/results/passed.somatic.snvs.vcf \
+--dbsnp_db /Users/mwyczalk/Data/SomaticWrapper/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz"
+
 
 #--assembly GRCh37  \
 #--use_vep_db 1 \

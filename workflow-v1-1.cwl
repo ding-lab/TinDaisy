@@ -27,6 +27,10 @@ inputs:
     type: File
     'sbg:x': -227.84698486328125
     'sbg:y': 642.4647216796875
+  - id: dbsnp_db
+    type: File
+    'sbg:x': -475.1688232421875
+    'sbg:y': 602.2885131835938
 outputs:
   - id: indels_passed
     outputSource:
@@ -88,6 +92,9 @@ steps:
       - id: strelka_snv_raw
         source:
           - s1_run_strelka/snvs_passed
+      - id: dbsnp_db
+        source:
+          - dbsnp_db
     out:
       - id: strelka_snv_dbsnp
     run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s3_parse_strelka.cwl
@@ -102,6 +109,9 @@ steps:
       - id: varscan_snv_raw
         source:
           - s2_run_varscan/varscan_snv_raw
+      - id: dbsnp_db
+        source:
+          - dbsnp_db
     out:
       - id: varscan_snv_dbsnp
       - id: varscan_indel_dbsnp
@@ -137,6 +147,9 @@ steps:
       - id: pindel_config
         source:
           - pindel_config
+      - id: dbsnp_db
+        source:
+          - dbsnp_db
     out:
       - id: pindel_dbsnp
     run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s7_parse_pindel.cwl

@@ -10,6 +10,11 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--strelka_snv_raw'
+  - id: dbsnp_db
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--dbsnp_db'
 outputs:
   - id: strelka_snv_dbsnp
     type: File
@@ -22,12 +27,6 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '3'
-  - position: 0
-    prefix: '--results_dir'
-    valueFrom: .
-  - position: 0
-    prefix: '--dbsnp_db'
-    valueFrom: /usr/local/StrelkaDemo/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -43,6 +42,15 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    dbsnp_db:
+      path: /path/to/input.ext
+      class: File
+      size: 0
+      contents: file contents
+      secondaryFiles: []
+      basename: input.ext
+      nameroot: input
+      nameext: .ext
   runtime:
     cores: 1
     ram: 1000

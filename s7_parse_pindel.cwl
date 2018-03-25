@@ -20,6 +20,11 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--pindel_config'
+  - id: dbsnp_db
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--dbsnp_db'
 outputs:
   - id: pindel_dbsnp
     type: File
@@ -65,6 +70,15 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    dbsnp_db:
+      path: /path/to/input.ext
+      class: File
+      size: 0
+      contents: file contents
+      secondaryFiles: []
+      basename: input.ext
+      nameroot: input
+      nameext: .ext
   runtime:
     cores: 1
     ram: 1000
