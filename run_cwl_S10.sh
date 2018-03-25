@@ -9,7 +9,8 @@ RABIX_ARGS="--basedir $OUTD"
 
 
 $RABIX $RABIX_ARGS $CWL -- " \
---input_vcf /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/workflow-v1-1-2018-03-25-142931.654/root/s2_run_varscan/varscan/varscan_out/varscan.out.som_snv.vcf"
+--input_vcf /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/workflow-v1-1-2018-03-25-170259.572/root/s8_merge_vcf/merged/merged.vcf \
+--reference_fasta /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/demo20.fa "
 
 
 #--assembly GRCh37  \

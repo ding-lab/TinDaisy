@@ -38,12 +38,12 @@ outputs:
     type: File
     'sbg:x': -124.20233917236328
     'sbg:y': -51.15717697143555
-  - id: merged_vcf
+  - id: output_dat
     outputSource:
-      - s8_merge_vcf/merged_vcf
+      - annotate_vep/output_dat
     type: File
-    'sbg:x': 485.1370544433594
-    'sbg:y': -42.04555892944336
+    'sbg:x': 507.6928405761719
+    'sbg:y': -252.231201171875
 steps:
   - id: s1_run_strelka
     in:
@@ -179,3 +179,17 @@ steps:
     label: s8_merge_vcf
     'sbg:x': 450.203125
     'sbg:y': 151
+  - id: annotate_vep
+    in:
+      - id: input_vcf
+        source:
+          - s8_merge_vcf/merged_vcf
+      - id: reference_fasta
+        source:
+          - reference_fasta
+    out:
+      - id: output_dat
+    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/annotate_vep.cwl
+    label: annotate_vep
+    'sbg:x': 286.7515762749068
+    'sbg:y': -244.10921975232046

@@ -19,7 +19,7 @@ outputs:
   - id: strelka_snv_dbsnp
     type: File
     outputBinding:
-      glob: strelka/filter_out/strelka.somatic.snv.all.gvip.dbsnp_pass.vcf
+      glob: strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf
 label: s3_parse_strelka
 arguments:
   - position: 99
@@ -43,14 +43,14 @@ requirements:
       secondaryFiles: []
       size: 0
     dbsnp_db:
-      path: /path/to/input.ext
-      class: File
-      size: 0
-      contents: file contents
-      secondaryFiles: []
       basename: input.ext
-      nameroot: input
+      class: File
+      contents: file contents
       nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
   runtime:
     cores: 1
     ram: 1000

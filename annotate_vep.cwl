@@ -10,6 +10,11 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--input_vcf'
+  - id: reference_fasta
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--reference_fasta'
 outputs:
   - id: output_dat
     type: File
@@ -23,15 +28,17 @@ arguments:
     shellQuote: false
     valueFrom: '10'
   - position: 0
-    prefix: '--use_vep_db'
-  - position: 0
     prefix: '--assembly'
     valueFrom: GRCh37
   - position: 0
     prefix: '--output_vep'
+    valueFrom: '1'
   - position: 0
     prefix: '--output_vcf'
     valueFrom: output.vcf
+  - position: 0
+    prefix: '--use_vep_db'
+    valueFrom: '1'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -39,6 +46,15 @@ requirements:
 'sbg:job':
   inputs:
     input_vcf:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    reference_fasta:
       basename: input.ext
       class: File
       contents: file contents
