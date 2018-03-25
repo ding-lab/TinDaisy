@@ -17,20 +17,17 @@ inputs:
       prefix: '--varscan_snv_raw'
 outputs:
   - id: varscan_snv_process
-    type: File
+    type: File?
     outputBinding:
-      glob: >-
-        varscan/filter_out/varscan.out.som_snv.Somatic.hc.vcf
+      glob: varscan/filter_out/varscan.out.som_snv.Somatic.hc.vcf
   - id: varscan_indel_process
-    type: File
+    type: File?
     outputBinding:
-      glob: >-
-        varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf
+      glob: varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf
   - id: varscan_snv_filtered
-    type: File
+    type: File?
     outputBinding:
-      glob: >-
-        varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf
+      glob: varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf
   - id: varscan_snv_dbsnp
     doc: Final SNV output of parsing
     type: File
@@ -41,8 +38,7 @@ outputs:
     doc: Final SNV output of parsing
     type: File
     outputBinding:
-      glob: >-
-        varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.vcf
+      glob: varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.vcf
 label: s4_parse_varscan
 arguments:
   - position: 99

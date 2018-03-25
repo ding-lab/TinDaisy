@@ -1,67 +1,50 @@
 class: CommandLineTool
 cwlVersion: v1.0
-id: s5_run_pindel
+id: s7_parse_pindel
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: tumor_bam
+  - id: pindel_raw
     type: File
     inputBinding:
       position: 0
-      prefix: '--tumor_bam'
-  - id: normal_bam
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--normal_bam'
+      prefix: '--pindel_raw'
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
-  - id: centromere_bed
-    type: File?
+  - id: pindel_config
+    type: File
     inputBinding:
       position: 0
-      prefix: '--centromere_bed'
+      prefix: '--pindel_config'
 outputs:
-  - id: pindel_raw
+  - id: pindel_dbsnp
     type: File
     outputBinding:
-      glob: pindel/pindel_out/pindel_raw.dat
-label: s5_run_pindel
+      glob: pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf
+label: s7_parse_pindel
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '5'
-  - position: 0
-    prefix: '--results_dir'
-    valueFrom: .
+    valueFrom: '7'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
-    tumor_bam:
-      basename: t.ext
+    pindel_raw:
+      basename: p.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: t
-      path: /path/to/t.ext
-      secondaryFiles: []
-      size: 0
-    normal_bam:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
+      nameroot: p
+      path: /path/to/p.ext
       secondaryFiles: []
       size: 0
     reference_fasta:
@@ -73,7 +56,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    centromere_bed:
+    pindel_config:
       basename: input.ext
       class: File
       contents: file contents
