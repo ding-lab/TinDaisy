@@ -16,18 +16,6 @@ inputs:
       position: 0
       prefix: '--varscan_snv_raw'
 outputs:
-  - id: varscan_snv_process
-    type: File?
-    outputBinding:
-      glob: varscan/filter_out/varscan.out.som_snv.Somatic.hc.vcf
-  - id: varscan_indel_process
-    type: File?
-    outputBinding:
-      glob: varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf
-  - id: varscan_snv_filtered
-    type: File?
-    outputBinding:
-      glob: varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf
   - id: varscan_snv_dbsnp
     doc: Final SNV output of parsing
     type: File

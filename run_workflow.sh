@@ -6,7 +6,7 @@
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 
 RABIX="/Users/mwyczalk/src/rabix-cli-1.0.4/rabix"
-CWL="somaticwrapper-workflow.cwl"
+CWL="workflow-v1-1.cwl"
 
 # try to have all output go to output_dir
 OUTD="results"
