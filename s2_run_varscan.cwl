@@ -41,9 +41,6 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '2'
-  - position: 0
-    prefix: '--results_dir'
-    valueFrom: .
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
