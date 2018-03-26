@@ -20,6 +20,8 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--dbsnp_db'
+    secondaryFiles:
+      - .tbi
 outputs:
   - id: varscan_snv_dbsnp
     doc: Final SNV output of parsing

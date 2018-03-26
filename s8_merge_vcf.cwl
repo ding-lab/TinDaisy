@@ -30,6 +30,9 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
+    secondaryFiles:
+      - .fai
+      - ^.dict
 outputs:
   - id: merged_vcf
     type: File

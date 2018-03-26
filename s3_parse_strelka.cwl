@@ -15,11 +15,15 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--dbsnp_db'
+    secondaryFiles:
+      - .tbi
 outputs:
   - id: strelka_snv_dbsnp
     type: File
     outputBinding:
       glob: strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf
+    secondaryFiles:
+      - .tbi
 label: s3_parse_strelka
 arguments:
   - position: 99
@@ -27,6 +31,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '3'
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: .
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

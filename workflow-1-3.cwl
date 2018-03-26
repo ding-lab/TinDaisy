@@ -19,6 +19,10 @@ inputs:
     type: File
     'sbg:x': -507.796875
     'sbg:y': -290
+  - id: dbsnp_db
+    type: File
+    'sbg:x': -616.7734375
+    'sbg:y': 203.5
 outputs:
   - id: indels_passed
     outputSource:
@@ -59,6 +63,9 @@ steps:
       - id: strelka_snv_raw
         source:
           - s1_run_strelka/snvs_passed
+      - id: dbsnp_db
+        source:
+          - dbsnp_db
     out:
       - id: strelka_snv_dbsnp
     run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s3_parse_strelka.cwl

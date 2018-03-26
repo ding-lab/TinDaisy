@@ -10,16 +10,23 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--tumor_bam'
+    secondaryFiles:
+      - .bai
   - id: normal_bam
     type: File
     inputBinding:
       position: 0
       prefix: '--normal_bam'
+    secondaryFiles:
+      - .bai
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
+    secondaryFiles:
+      - ^.dict
+      - .fai
   - id: strelka_config
     type: File
     inputBinding:

@@ -15,6 +15,9 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
+    secondaryFiles:
+      - .fai
+      - ^.dict
   - id: pindel_config
     type: File
     inputBinding:
@@ -25,6 +28,8 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--dbsnp_db'
+    secondaryFiles:
+      - .tbi
 outputs:
   - id: pindel_dbsnp
     type: File

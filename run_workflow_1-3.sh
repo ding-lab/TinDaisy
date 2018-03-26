@@ -17,4 +17,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/StrelkaDemoCase.T.bam \
 --normal_bam /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/StrelkaDemoCase.N.bam \
 --reference_fasta /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/demo20.fa \
---strelka_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/strelka.WES.ini "
+--strelka_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/strelka.WES.ini \
+--dbsnp_db /Users/mwyczalk/Data/SomaticWrapper/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz"
