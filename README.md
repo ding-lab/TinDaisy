@@ -1,4 +1,8 @@
-SomaticWrapper.CWL is development directory for CWL-wrapped SomaticWrapper version.  
+Tin-Daisy is development directory for CWL-wrapped SomaticWrapper version.  
+
+GitHub: https://github.com/ding-lab/tin-daisy
+
+Tin-Daisy was developed as an alternative to SomaticWrapper using http://www.codenamegenerator.com/
 
 ## Goals
 
@@ -11,16 +15,10 @@ SomaticWrapper.CWL is development directory for CWL-wrapped SomaticWrapper versi
 
 ## StrelkaDemo details
 
-See github project [TODO]
-
 Data from `/Users/mwyczalk/Data/SomaticWrapper/data/StrelkaDemo`
 
 Tumor: /Users/mwyczalk/Data/SomaticWrapper/import/StrelkaDemoCase.T.bam
 Normal: /Users/mwyczalk/Data/SomaticWrapper/import/StrelkaDemoCase.N.bam
-
-/data: $HOME/Data/SomaticWrapper/data
-/image: $HOME/Data/SomaticWrapper/image
-/import: $HOME/Data/SomaticWrapper/import
 
 # Configuration parameters
 Based on /Users/mwyczalk/Data/SomaticWrapper/data/StrelkaDemo/config/StrelkaDemoCase.WXS.config
