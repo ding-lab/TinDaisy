@@ -1,4 +1,4 @@
-RABIX="/Users/mwyczalk/src/rabix-cli-1.0.4/rabix"
+source demo_paths.sh
 CWL="s8_merge_vcf.cwl"
 
 # try to have all output go to output_dir

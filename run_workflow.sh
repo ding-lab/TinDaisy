@@ -7,7 +7,6 @@
 
 source demo_paths.sh
 
-RABIX="/Users/mwyczalk/src/rabix-cli-1.0.4/rabix"
 CWL="workflow-v1-1.cwl"
 
 # try to have all output go to output_dir

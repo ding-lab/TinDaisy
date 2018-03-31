@@ -5,7 +5,7 @@
 # Username: m_wyczalkowski
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 
-RABIX="/Users/mwyczalk/src/rabix-cli-1.0.4/rabix"
+source demo_paths.sh
 CWL="s2_run_varscan.cwl"
 
 # try to have all output go to output_dir
