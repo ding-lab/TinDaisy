@@ -1,8 +1,10 @@
-Tin-Daisy is development directory for CWL-wrapped SomaticWrapper version.  
+TinDaisy is development directory for CWL-wrapped SomaticWrapper version.  
 
 GitHub: https://github.com/ding-lab/tin-daisy
 
-Tin-Daisy was developed as an alternative to SomaticWrapper using http://www.codenamegenerator.com/
+The name TinDaisy was generated with a [random name generator][1]
+
+[1]: http://www.codenamegenerator.com/
 
 ## Goals
 
@@ -12,6 +14,7 @@ Tin-Daisy was developed as an alternative to SomaticWrapper using http://www.cod
     * First locally
     * Next on platform
     * Using Rabix Composer and Executor
+* Currently this project has been successfully executed on epazote (Mac OS laptop) and Seven Bridges CGC platform.
 
 ## StrelkaDemo details
 
