@@ -13,7 +13,7 @@ mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
 $RABIX $RABIX_ARGS $CWL -- " \
---tumor_bam /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/StrelkaDemoCase.T.bam \
---normal_bam /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/StrelkaDemoCase.N.bam \
---reference_fasta /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/demo20.fa \
---strelka_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/strelka.WES.ini"
+--tumor_bam $TUMOR_BAM \
+--normal_bam $NORMAL_BAM \
+--reference_fasta $REFERENCE_FASTA \
+--strelka_config $STRELKA_CONFIG "

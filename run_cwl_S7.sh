@@ -6,13 +6,15 @@ OUTD="results"
 mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
+# This is obtained from previous step5 run
+PINDEL_RAW="/Projects/Rabix/SomaticWrapper.CWL1/results/s5_run_pindel-2018-03-25-132220.700/root/pindel/pindel_out/pindel_raw.dat" 
 
 
 $RABIX $RABIX_ARGS $CWL -- " \
---pindel_raw /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/s5_run_pindel-2018-03-25-132220.700/root/pindel/pindel_out/pindel_raw.dat \
---reference_fasta /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/demo20.fa \
---pindel_config /Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/params/pindel.WES.ini"
-
+--pindel_raw $PINDEL_RAW \
+--reference_fasta $REFERENCE_FASTA \
+--pindel_config $PINDEL_CONFIG 
+"
 
 #--assembly GRCh37  \
 #--use_vep_db 1 \
