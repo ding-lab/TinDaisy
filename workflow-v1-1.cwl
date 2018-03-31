@@ -62,7 +62,7 @@ steps:
     out:
       - id: snvs_passed
       - id: indels_passed
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s1_run_strelka.cwl
+    run: s1_run_strelka.cwl
     label: S1_run_strelka
     'sbg:x': -245.796875
     'sbg:y': -96
@@ -83,7 +83,7 @@ steps:
     out:
       - id: varscan_indel_raw
       - id: varscan_snv_raw
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s2_run_varscan.cwl
+    run: s2_run_varscan.cwl
     label: s2_run_varscan
     'sbg:x': -244.796875
     'sbg:y': 122
@@ -97,7 +97,7 @@ steps:
           - dbsnp_db
     out:
       - id: strelka_snv_dbsnp
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s3_parse_strelka.cwl
+    run: s3_parse_strelka.cwl
     label: s3_parse_strelka
     'sbg:x': 112.203125
     'sbg:y': -97
@@ -115,7 +115,7 @@ steps:
     out:
       - id: varscan_snv_dbsnp
       - id: varscan_indel_dbsnp
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s4_parse_varscan.cwl
+    run: s4_parse_varscan.cwl
     label: s4_parse_varscan
     'sbg:x': 128.203125
     'sbg:y': 128
@@ -132,7 +132,7 @@ steps:
           - reference_fasta
     out:
       - id: pindel_raw
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s5_run_pindel.cwl
+    run: s5_run_pindel.cwl
     label: s5_run_pindel
     'sbg:x': -235.796875
     'sbg:y': 377
@@ -152,7 +152,7 @@ steps:
           - dbsnp_db
     out:
       - id: pindel_dbsnp
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s7_parse_pindel.cwl
+    run: s7_parse_pindel.cwl
     label: s7_parse_pindel
     'sbg:x': 121.203125
     'sbg:y': 393
@@ -175,7 +175,7 @@ steps:
           - reference_fasta
     out:
       - id: merged_vcf
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/s8_merge_vcf.cwl
+    run: s8_merge_vcf.cwl
     label: s8_merge_vcf
     'sbg:x': 450.203125
     'sbg:y': 151
@@ -189,7 +189,7 @@ steps:
           - reference_fasta
     out:
       - id: output_dat
-    run: /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/annotate_vep.cwl
+    run: annotate_vep.cwl
     label: annotate_vep
     'sbg:x': 286.7515762749068
     'sbg:y': -244.10921975232046

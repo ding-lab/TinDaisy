@@ -16,4 +16,4 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
 --reference_fasta $REFERENCE_FASTA \
---strelka_config $STRELKA_CONFIG "
+--strelka_config $STRELKA_CONFIG"
