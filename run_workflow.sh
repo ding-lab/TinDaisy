@@ -21,4 +21,7 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --strelka_config $STRELKA_CONFIG \
 --varscan_config $VARSCAN_CONFIG \
 --pindel_config $PINDEL_CONFIG \
---dbsnp_db $DBSNP_DB "
+--dbsnp_db $DBSNP_DB \
+--assembly GRCh37 \
+--output_vep 1 \
+--use_vep_db 1 "

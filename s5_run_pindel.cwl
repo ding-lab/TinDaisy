@@ -46,6 +46,8 @@ arguments:
     valueFrom: '5'
 requirements:
   - class: ShellCommandRequirement
+  - class: ResourceRequirement
+    ramMin: 8000
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
@@ -88,4 +90,4 @@ requirements:
       size: 0
   runtime:
     cores: 1
-    ram: 1000
+    ram: 8000

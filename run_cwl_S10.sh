@@ -7,10 +7,14 @@ mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
 
+INPUT_VCF="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/workflow-v1-1-2018-03-28-142620.317/root/s8_merge_vcf/merged/merged.vcf"
 
 $RABIX $RABIX_ARGS $CWL -- " \
---input_vcf /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/workflow-v1-1-2018-03-25-170259.572/root/s8_merge_vcf/merged/merged.vcf \
---reference_fasta /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/demo20.fa "
+--input_vcf $INPUT_VCF \
+--reference_fasta $REFERENCE_FASTA \
+--assembly GRCh37 \
+--output_vep 1 \
+--use_vep_db 1 "
 
 
 #--assembly GRCh37  \

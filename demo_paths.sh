@@ -7,4 +7,4 @@ export PINDEL_CONFIG=StrelkaDemo.dat/pindel.WES.ini
 export DBSNP_DB=StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 export CENTROMERE_BED=StrelkaDemo.dat/ucsc-centromere.GRCh37.bed 
 
-export RABIX=/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix
+export RABIX=/Users/mwyczalk/src/rabix-cli-1.0.4/rabix

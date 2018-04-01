@@ -31,6 +31,15 @@ inputs:
     type: File
     'sbg:x': -475.1688232421875
     'sbg:y': 602.2885131835938
+  - id: assembly
+    type: string
+    'sbg:exposed': true
+  - id: use_vep_db
+    type: int?
+    'sbg:exposed': true
+  - id: output_vep
+    type: string?
+    'sbg:exposed': true
 outputs:
   - id: indels_passed
     outputSource:
@@ -187,6 +196,15 @@ steps:
       - id: reference_fasta
         source:
           - reference_fasta
+      - id: assembly
+        source:
+          - assembly
+      - id: output_vep
+        source:
+          - output_vep
+      - id: use_vep_db
+        source:
+          - use_vep_db
     out:
       - id: output_dat
     run: annotate_vep.cwl

@@ -18,6 +18,33 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
+  - id: assembly
+    type: string
+    inputBinding:
+      position: 0
+      prefix: '--assembly'
+    label: assembly name for VEP annotation
+    doc: Either GRCh37 or GRCh38 currently accepted
+  - id: vep_cache_dir
+    type: Directory?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_dir'
+    label: vep cache
+  - id: output_vep
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--output_vep'
+  - id: use_vep_db
+    type: int?
+    inputBinding:
+      position: 0
+      prefix: '--use_vep_db'
+    label: online db lookups
+    doc: >-
+      Use online database for VEP lookups.  Does not require cache, but is much
+      slower
 outputs:
   - id: output_dat
     type: File
@@ -30,18 +57,6 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '10'
-  - position: 0
-    prefix: '--assembly'
-    valueFrom: GRCh37
-  - position: 0
-    prefix: '--output_vep'
-    valueFrom: '1'
-  - position: 0
-    prefix: '--output_vcf'
-    valueFrom: output.vcf
-  - position: 0
-    prefix: '--use_vep_db'
-    valueFrom: '1'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -66,6 +81,13 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    assembly: assembly-string-value
+    vep_cache_dir:
+      basename: vep_cache_dir
+      class: Directory
+      path: /path/to/vep_cache_dir
+    output_vep: output_vep-string-value
+    use_vep_db: 6
   runtime:
     cores: 1
     ram: 1000
