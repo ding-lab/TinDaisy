@@ -34,19 +34,18 @@ inputs:
   - id: assembly
     type: string
     'sbg:exposed': true
-  - id: use_vep_db
-    type: int?
-    'sbg:exposed': true
   - id: output_vep
     type: string?
     'sbg:exposed': true
+  - id: centromere_bed
+    type: File?
+    'sbg:x': -522.3388671875
+    'sbg:y': 475.5733642578125
+  - id: vep_cache_dir
+    type: Directory?
+    'sbg:x': -251.03671264648438
+    'sbg:y': -414.6875915527344
 outputs:
-  - id: indels_passed
-    outputSource:
-      - s1_run_strelka/indels_passed
-    type: File
-    'sbg:x': -124.20233917236328
-    'sbg:y': -51.15717697143555
   - id: output_dat
     outputSource:
       - annotate_vep/output_dat
@@ -70,7 +69,6 @@ steps:
           - strelka_config
     out:
       - id: snvs_passed
-      - id: indels_passed
     run: s1_run_strelka.cwl
     label: S1_run_strelka
     'sbg:x': -245.796875
@@ -139,6 +137,9 @@ steps:
       - id: reference_fasta
         source:
           - reference_fasta
+      - id: centromere_bed
+        source:
+          - centromere_bed
     out:
       - id: pindel_raw
     run: s5_run_pindel.cwl
@@ -199,12 +200,12 @@ steps:
       - id: assembly
         source:
           - assembly
+      - id: vep_cache_dir
+        source:
+          - vep_cache_dir
       - id: output_vep
         source:
           - output_vep
-      - id: use_vep_db
-        source:
-          - use_vep_db
     out:
       - id: output_dat
     run: s10_annotate_vep.cwl

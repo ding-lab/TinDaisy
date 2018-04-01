@@ -36,21 +36,12 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--output_vep'
-  - id: use_vep_db
-    type: int?
-    inputBinding:
-      position: 0
-      prefix: '--use_vep_db'
-    label: online db lookups
-    doc: >-
-      Use online database for VEP lookups.  Does not require cache, but is much
-      slower
 outputs:
   - id: output_dat
     type: File
     outputBinding:
       glob: output.*
-label: annotate_vep
+label: s10_annotate_vep
 arguments:
   - position: 99
     prefix: ''
@@ -61,6 +52,10 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+successCodes:
+  - 0
+permanentFailCodes:
+  - 1
 'sbg:job':
   inputs:
     input_vcf:
@@ -87,7 +82,6 @@ requirements:
       class: Directory
       path: /path/to/vep_cache_dir
     output_vep: output_vep-string-value
-    use_vep_db: 6
   runtime:
     cores: 1
     ram: 1000

@@ -28,10 +28,10 @@ RABIX_ARGS="--basedir $OUTD"
 # --centromere_bed 
 # --vep_cache_dir  
 # --output_vep 
-# --use_vep_db 
 
-# no centromere bed
-# then test with centromere bed
+# TODO: exercise cache directory logic
+
+# CAche file: not defined, so using vep_db
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
@@ -40,6 +40,6 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --varscan_config $VARSCAN_CONFIG \
 --pindel_config $PINDEL_CONFIG \
 --dbsnp_db $DBSNP_DB \
---assembly GRCh37 \
 --output_vep 1 \
---use_vep_db 1 "
+--assembly GRCh37 \
+--centromere_bed $CENTROMERE_BED"
