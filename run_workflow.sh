@@ -37,6 +37,7 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --varscan_config $VARSCAN_CONFIG \
 --pindel_config $PINDEL_CONFIG \
 --dbsnp_db $DBSNP_DB \
---output_vep 1 \
+--output_vep 0 \
 --assembly GRCh37 \
---centromere_bed $CENTROMERE_BED"
+--centromere_bed $CENTROMERE_BED \
+--vep_cache_dir $VEP_CACHE_DIR"
