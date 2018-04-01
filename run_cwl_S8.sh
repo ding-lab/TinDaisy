@@ -2,9 +2,8 @@ source demo_paths.sh
 CWL="s8_merge_vcf.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 # Note that the paths below will be different for every single run and will need to be hand modified
 STRELKA_SNV_VCF="/Projects/Rabix/SomaticWrapper.CWL1/results/somaticwrapper-workflow-2018-03-25-134014.776/root/s3_parse_strelka/strelka/filter_out/strelka.somatic.snv.all.gvip.dbsnp_pass.vcf"

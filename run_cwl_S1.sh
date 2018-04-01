@@ -8,9 +8,8 @@ source demo_paths.sh
 CWL="s1_run_strelka.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \

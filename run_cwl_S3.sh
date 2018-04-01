@@ -2,9 +2,8 @@ source demo_paths.sh
 CWL="s3_parse_strelka.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 $RABIX $RABIX_ARGS $CWL -- " \
 --strelka_snv_raw /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/workflow-v1-1-2018-03-25-164136.121/root/s1_run_strelka/strelka/strelka_out/results/passed.somatic.snvs.vcf \

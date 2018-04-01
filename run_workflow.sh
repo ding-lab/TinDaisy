@@ -10,9 +10,8 @@ source demo_paths.sh
 CWL="workflow-v1-1.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 # Mandatory args
 # --tumor_bam
@@ -29,9 +28,7 @@ RABIX_ARGS="--basedir $OUTD"
 # --vep_cache_dir  
 # --output_vep 
 
-# TODO: exercise cache directory logic
-
-# CAche file: not defined, so using vep_db
+# Cache file: not defined, so using vep_db
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
