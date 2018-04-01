@@ -2,9 +2,8 @@ source demo_paths.sh
 CWL="s4_parse_varscan.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 
 
