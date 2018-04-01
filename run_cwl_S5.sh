@@ -18,4 +18,4 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
 --reference_fasta $REFERENCE_FASTA \
---centromere_bed $CENTROMERE_BED "
+--centromere_bed $CENTROMERE_BED "  # optional 

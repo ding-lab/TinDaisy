@@ -1,5 +1,5 @@
 source demo_paths.sh
-CWL="annotate_vep.cwl"
+CWL="s10_annotate_vep.cwl"
 
 # try to have all output go to output_dir
 OUTD="results"

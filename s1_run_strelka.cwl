@@ -37,10 +37,6 @@ outputs:
     type: File
     outputBinding:
       glob: strelka/strelka_out/results/passed.somatic.snvs.vcf
-  - id: indels_passed
-    type: File
-    outputBinding:
-      glob: strelka/strelka_out/results/passed.somatic.indels.vcf
 label: S1_run_strelka
 arguments:
   - position: 99

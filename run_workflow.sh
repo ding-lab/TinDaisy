@@ -14,6 +14,24 @@ OUTD="results"
 mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
+# Mandatory args
+# --tumor_bam
+# --normal_bam
+# --reference_fasta
+# --strelka_config
+# --varscan_config
+# --pindel_config
+# --dbsnp_db
+# --assembly
+
+# optional args:
+# --centromere_bed 
+# --vep_cache_dir  
+# --output_vep 
+# --use_vep_db 
+
+# no centromere bed
+# then test with centromere bed
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \

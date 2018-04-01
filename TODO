@@ -1,10 +1,10 @@
 Next development steps on platforms:
 * Confirm passing of arguments to vep_annotate in workflow context
     * seems to be working
+* How does workflow deal with pindel centromere file?
+    * make this something we can pass to workflow
 * set up run on denali
 * Turn off vep db - use cached image
     * confirm can do this on Denali
-* How does workflow deal with pindel centromere file?
-    * make this something we can pass to workflow
 * allow changes in the reference - run GRCh38 real dataset
     * this should be done.  Confirm

@@ -207,7 +207,7 @@ steps:
           - use_vep_db
     out:
       - id: output_dat
-    run: annotate_vep.cwl
+    run: s10_annotate_vep.cwl
     label: annotate_vep
     'sbg:x': 286.7515762749068
     'sbg:y': -244.10921975232046
