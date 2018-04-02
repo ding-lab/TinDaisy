@@ -45,6 +45,9 @@ inputs:
     type: Directory?
     'sbg:x': -251.03671264648438
     'sbg:y': -414.6875915527344
+  - id: no_delete_temp
+    type: int?
+    'sbg:exposed': true
 outputs:
   - id: output_dat
     outputSource:
@@ -140,6 +143,9 @@ steps:
       - id: centromere_bed
         source:
           - centromere_bed
+      - id: no_delete_temp
+        source:
+          - no_delete_temp
     out:
       - id: pindel_raw
     run: s5_run_pindel.cwl
