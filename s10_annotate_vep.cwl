@@ -52,10 +52,6 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
-successCodes:
-  - 0
-permanentFailCodes:
-  - 1
 'sbg:job':
   inputs:
     input_vcf:
