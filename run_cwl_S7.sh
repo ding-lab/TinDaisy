@@ -2,9 +2,8 @@ source demo_paths.sh
 CWL="s7_parse_pindel.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 # This is obtained from previous step5 run
 PINDEL_RAW="/Projects/Rabix/SomaticWrapper.CWL1/results/s5_run_pindel-2018-03-25-132220.700/root/pindel/pindel_out/pindel_raw.dat" 

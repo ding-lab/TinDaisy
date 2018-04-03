@@ -10,9 +10,8 @@ source demo_paths.sh
 CWL="workflow-v1-1.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 # Mandatory args
 # --tumor_bam
@@ -28,10 +27,9 @@ RABIX_ARGS="--basedir $OUTD"
 # --centromere_bed 
 # --vep_cache_dir  
 # --output_vep 
+# --no_delete_temp
 
-# TODO: exercise cache directory logic
-
-# CAche file: not defined, so using vep_db
+# Cache file: not defined, so using vep_db
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
@@ -42,4 +40,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --dbsnp_db $DBSNP_DB \
 --output_vep 1 \
 --assembly GRCh37 \
---centromere_bed $CENTROMERE_BED"
+--centromere_bed $CENTROMERE_BED \
+--vep_cache_dir $VEP_CACHE_DIR "

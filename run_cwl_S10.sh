@@ -2,9 +2,8 @@ source demo_paths.sh
 CWL="s10_annotate_vep.cwl"
 
 # try to have all output go to output_dir
-OUTD="results"
-mkdir -p $OUTD
-RABIX_ARGS="--basedir $OUTD"
+mkdir -p $OUTPUT_DIR
+RABIX_ARGS="--basedir $OUTPUT_DIR"
 
 
 INPUT_VCF="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/workflow-v1-1-2018-03-28-142620.317/root/s8_merge_vcf/merged/merged.vcf"
