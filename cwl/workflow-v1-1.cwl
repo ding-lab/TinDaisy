@@ -41,10 +41,16 @@ inputs:
     type: File?
     'sbg:x': -522.3388671875
     'sbg:y': 475.5733642578125
-  - id: vep_cache_dir
-    type: Directory?
-    'sbg:x': -251.03671264648438
-    'sbg:y': -414.6875915527344
+  - id: no_delete_temp
+    type: int?
+    'sbg:exposed': true
+  - id: vep_cache_gz
+    type: File?
+    'sbg:x': 98.81038665771484
+    'sbg:y': -419.2463073730469
+  - id: vep_cache_version
+    type: string?
+    'sbg:exposed': true
 outputs:
   - id: output_dat
     outputSource:
@@ -140,6 +146,9 @@ steps:
       - id: centromere_bed
         source:
           - centromere_bed
+      - id: no_delete_temp
+        source:
+          - no_delete_temp
     out:
       - id: pindel_raw
     run: s5_run_pindel.cwl
@@ -200,12 +209,15 @@ steps:
       - id: assembly
         source:
           - assembly
-      - id: vep_cache_dir
-        source:
-          - vep_cache_dir
       - id: output_vep
         source:
           - output_vep
+      - id: vep_cache_gz
+        source:
+          - vep_cache_gz
+      - id: vep_cache_version
+        source:
+          - vep_cache_version
     out:
       - id: output_dat
     run: s10_annotate_vep.cwl

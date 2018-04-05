@@ -214,3 +214,14 @@ Table is obtained manually from [UCSC Table Browser](http://genome.ucsc.edu/cgi-
 * *Output format:* BED
 * *Output File:* ucsc-centromere.GRCh38.bed
 * Defaults for *Output gap as BED*
+
+# VEP Cache stuff
+
+On denali here: `/home/mwyczalk_test/data/docker/data/D_VEP/homo_sapiens`
+
+vep-cache:
+```
+/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
+/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh38.tar.gz
+```
+TODO: where was this generated?  Somaticwrapper has scripts in image.init, get path

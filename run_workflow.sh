@@ -7,7 +7,7 @@
 
 source demo_paths.sh
 
-CWL="workflow-v1-1.cwl"
+CWL="cwl/workflow-v1-1.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR
@@ -26,7 +26,9 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # optional args:
 # --centromere_bed 
 # --vep_cache_dir  
+# --vep_cache_gz
 # --output_vep 
+# --no_delete_temp
 
 # Cache file: not defined, so using vep_db
 $RABIX $RABIX_ARGS $CWL -- " \
@@ -41,3 +43,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --assembly GRCh37 \
 --centromere_bed $CENTROMERE_BED \
 --vep_cache_dir $VEP_CACHE_DIR"
+#--no_delete_temp 1"
+#--vep_cache_dir $VEP_CACHE_DIR "

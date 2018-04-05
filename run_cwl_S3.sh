@@ -1,5 +1,5 @@
 source demo_paths.sh
-CWL="s3_parse_strelka.cwl"
+CWL="cwl/s3_parse_strelka.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR

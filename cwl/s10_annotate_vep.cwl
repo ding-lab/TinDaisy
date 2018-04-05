@@ -25,17 +25,24 @@ inputs:
       prefix: '--assembly'
     label: assembly name for VEP annotation
     doc: Either GRCh37 or GRCh38 currently accepted
-  - id: vep_cache_dir
-    type: Directory?
-    inputBinding:
-      position: 0
-      prefix: '--vep_cache_dir'
-    label: vep cache
   - id: output_vep
     type: string?
     inputBinding:
       position: 0
       prefix: '--output_vep'
+  - id: vep_cache_gz
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_gz'
+    label: VEP cache .tar.gz
+    doc: .tar.gz compressed VEP Cache file will be written to"./vep-cache"
+  - id: vep_cache_version
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_version'
+    label: 'VEP Cache Version (e.g., 90)'
 outputs:
   - id: output_dat
     type: File
@@ -52,10 +59,6 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
-successCodes:
-  - 0
-permanentFailCodes:
-  - 1
 'sbg:job':
   inputs:
     input_vcf:
@@ -77,11 +80,17 @@ permanentFailCodes:
       secondaryFiles: []
       size: 0
     assembly: assembly-string-value
-    vep_cache_dir:
-      basename: vep_cache_dir
-      class: Directory
-      path: /path/to/vep_cache_dir
     output_vep: output_vep-string-value
+    vep_cache_gz:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    vep_cache_version: vep_cache_version-string-value
   runtime:
     cores: 1
     ram: 1000

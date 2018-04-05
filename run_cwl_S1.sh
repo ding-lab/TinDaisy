@@ -5,7 +5,7 @@
 # Username: m_wyczalkowski
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 source demo_paths.sh
-CWL="s1_run_strelka.cwl"
+CWL="cwl/s1_run_strelka.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR
