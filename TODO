@@ -4,6 +4,7 @@ Next development steps on platforms:
     * confirm can do this on Denali
     * get VEP working by passing .tar.gz file
 * test deletion of intermediates in run_pindel
+* Confirm Pindel is actually using centromere file
 
 * allow changes in the reference - run GRCh38 real dataset
     * this should be done.  Confirm

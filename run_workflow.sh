@@ -26,6 +26,7 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # optional args:
 # --centromere_bed 
 # --vep_cache_dir  
+# --vep_cache_gz
 # --output_vep 
 # --no_delete_temp
 
@@ -41,4 +42,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --output_vep 1 \
 --assembly GRCh37 \
 --centromere_bed $CENTROMERE_BED "
+#--no_delete_temp 1"
 #--vep_cache_dir $VEP_CACHE_DIR "
