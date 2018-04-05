@@ -37,6 +37,12 @@ inputs:
       prefix: '--vep_cache_gz'
     label: VEP cache .tar.gz
     doc: .tar.gz compressed VEP Cache file will be written to"./vep-cache"
+  - id: vep_cache_version
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_version'
+    label: 'VEP Cache Version (e.g., 90)'
 outputs:
   - id: output_dat
     type: File
@@ -84,6 +90,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    vep_cache_version: vep_cache_version-string-value
   runtime:
     cores: 1
     ram: 1000

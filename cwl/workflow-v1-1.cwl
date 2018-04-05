@@ -48,6 +48,9 @@ inputs:
     type: File?
     'sbg:x': 98.81038665771484
     'sbg:y': -419.2463073730469
+  - id: vep_cache_version
+    type: string?
+    'sbg:exposed': true
 outputs:
   - id: output_dat
     outputSource:
@@ -212,6 +215,9 @@ steps:
       - id: vep_cache_gz
         source:
           - vep_cache_gz
+      - id: vep_cache_version
+        source:
+          - vep_cache_version
     out:
       - id: output_dat
     run: s10_annotate_vep.cwl
