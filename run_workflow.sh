@@ -7,7 +7,7 @@
 
 source demo_paths.sh
 
-CWL="workflow-v1-1.cwl"
+CWL="cwl/workflow-v1-1.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR
@@ -40,5 +40,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --dbsnp_db $DBSNP_DB \
 --output_vep 1 \
 --assembly GRCh37 \
---centromere_bed $CENTROMERE_BED \
---vep_cache_dir $VEP_CACHE_DIR "
+--centromere_bed $CENTROMERE_BED "
+#--vep_cache_dir $VEP_CACHE_DIR "
