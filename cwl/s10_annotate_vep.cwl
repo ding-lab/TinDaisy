@@ -25,17 +25,18 @@ inputs:
       prefix: '--assembly'
     label: assembly name for VEP annotation
     doc: Either GRCh37 or GRCh38 currently accepted
-  - id: vep_cache_dir
-    type: Directory?
-    inputBinding:
-      position: 0
-      prefix: '--vep_cache_dir'
-    label: vep cache
   - id: output_vep
     type: string?
     inputBinding:
       position: 0
       prefix: '--output_vep'
+  - id: vep_cache_gz
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_gz'
+    label: VEP cache .tar.gz
+    doc: .tar.gz compressed VEP Cache file will be written to"./vep-cache"
 outputs:
   - id: output_dat
     type: File
@@ -73,11 +74,16 @@ requirements:
       secondaryFiles: []
       size: 0
     assembly: assembly-string-value
-    vep_cache_dir:
-      basename: vep_cache_dir
-      class: Directory
-      path: /path/to/vep_cache_dir
     output_vep: output_vep-string-value
+    vep_cache_gz:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
   runtime:
     cores: 1
     ram: 1000

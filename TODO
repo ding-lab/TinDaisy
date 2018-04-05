@@ -1,10 +1,9 @@
 Next development steps on platforms:
-* separate out CWL to another directory
-* 
 * set up run on denali
 * Turn off vep db - use cached image
     * confirm can do this on Denali
-*     get VEP working by passing .tar.gz file
+    * get VEP working by passing .tar.gz file
+* test deletion of intermediates in run_pindel
 
 * allow changes in the reference - run GRCh38 real dataset
     * this should be done.  Confirm

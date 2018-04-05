@@ -41,13 +41,13 @@ inputs:
     type: File?
     'sbg:x': -522.3388671875
     'sbg:y': 475.5733642578125
-  - id: vep_cache_dir
-    type: Directory?
-    'sbg:x': -251.03671264648438
-    'sbg:y': -414.6875915527344
   - id: no_delete_temp
     type: int?
     'sbg:exposed': true
+  - id: vep_cache_gz
+    type: File?
+    'sbg:x': 98.81038665771484
+    'sbg:y': -419.2463073730469
 outputs:
   - id: output_dat
     outputSource:
@@ -206,12 +206,12 @@ steps:
       - id: assembly
         source:
           - assembly
-      - id: vep_cache_dir
-        source:
-          - vep_cache_dir
       - id: output_vep
         source:
           - output_vep
+      - id: vep_cache_gz
+        source:
+          - vep_cache_gz
     out:
       - id: output_dat
     run: s10_annotate_vep.cwl
