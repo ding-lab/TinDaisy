@@ -10,6 +10,6 @@ export VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
 
 export OUTPUT_DIR=./results  #/diskmnt/Projects/TinDaisy/results
 
-export RABIX=/Users/mwyczalk/src/rabix-cli-1.0.4/rabix
+export RABIX=rabix-cli-1.0.5/rabix
 #export RABIX=/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix
 
