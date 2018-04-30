@@ -20,6 +20,4 @@ export VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
 export VEP_CACHE_GZ="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz"
 
 export OUTPUT_DIR=/diskmnt/Projects/TinDaisy/results
-
-#export RABIX=/Users/mwyczalk/src/rabix-cli-1.0.4/rabix
 export RABIX=/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix
