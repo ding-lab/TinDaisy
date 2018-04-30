@@ -16,6 +16,8 @@ export VARSCAN_CONFIG=StrelkaDemo.dat/varscan.WES.ini
 export PINDEL_CONFIG=StrelkaDemo.dat/pindel.WES.ini 
 export DBSNP_DB=/home/mwyczalk_test/data/docker/data/B_Filter/dbsnp.noCOSMIC.GRCh37.vcf.gz
 export CENTROMERE_BED=StrelkaDemo.dat/pindel-centromere-exclude.bed
+export VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
+export VEP_CACHE_GZ="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz"
 
 export OUTPUT_DIR=/diskmnt/Projects/TinDaisy/results
 

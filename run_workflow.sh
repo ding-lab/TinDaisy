@@ -42,6 +42,8 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --output_vep 0 \
 --assembly GRCh37 \
 --centromere_bed $CENTROMERE_BED \
---vep_cache_dir $VEP_CACHE_DIR"
+--vep_cache_gz $VEP_CACHE_GZ \
+--vep_cache_version 90"
+
 #--no_delete_temp 1"
 #--vep_cache_dir $VEP_CACHE_DIR "
