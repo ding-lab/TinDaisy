@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s2_run_varscan
 baseCommand:
   - /usr/bin/perl
@@ -11,21 +13,21 @@ inputs:
       position: 0
       prefix: '--tumor_bam'
     secondaryFiles:
-      - .bai
+      - ^.bai
   - id: normal_bam
     type: File
     inputBinding:
       position: 0
       prefix: '--normal_bam'
     secondaryFiles:
-      - .bai
+      - ^.bai
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
     secondaryFiles:
-      - .fai
+      - ^.fai
       - ^.dict
   - id: varscan_config
     type: File
@@ -54,15 +56,6 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
-    tumor_bam:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
     normal_bam:
       basename: input.ext
       class: File
@@ -73,6 +66,15 @@ requirements:
       secondaryFiles: []
       size: 0
     reference_fasta:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    tumor_bam:
       basename: input.ext
       class: File
       contents: file contents

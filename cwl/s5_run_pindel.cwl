@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s5_run_pindel
 baseCommand:
   - /usr/bin/perl
@@ -11,21 +13,21 @@ inputs:
       position: 0
       prefix: '--tumor_bam'
     secondaryFiles:
-      - .bai
+      - ^.bai
   - id: normal_bam
     type: File
     inputBinding:
       position: 0
       prefix: '--normal_bam'
     secondaryFiles:
-      - .bai
+      - ^.bai
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
     secondaryFiles:
-      - .fai
+      - ^.fai
       - ^.dict
   - id: centromere_bed
     type: File?
@@ -59,15 +61,16 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
-    tumor_bam:
-      basename: t.ext
+    centromere_bed:
+      basename: input.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: t
-      path: /path/to/t.ext
+      nameroot: input
+      path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    no_delete_temp: 9
     normal_bam:
       basename: input.ext
       class: File
@@ -86,16 +89,15 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    centromere_bed:
-      basename: input.ext
+    tumor_bam:
+      basename: t.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
+      nameroot: t
+      path: /path/to/t.ext
       secondaryFiles: []
       size: 0
-    no_delete_temp: 9
   runtime:
     cores: 1
     ram: 8000

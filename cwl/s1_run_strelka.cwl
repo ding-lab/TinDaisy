@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s1_run_strelka
 baseCommand:
   - /usr/bin/perl
@@ -11,14 +13,14 @@ inputs:
       position: 0
       prefix: '--tumor_bam'
     secondaryFiles:
-      - .bai
+      - ^.bai
   - id: normal_bam
     type: File
     inputBinding:
       position: 0
       prefix: '--normal_bam'
     secondaryFiles:
-      - .bai
+      - ^.bai
   - id: reference_fasta
     type: File
     inputBinding:
@@ -26,7 +28,7 @@ inputs:
       prefix: '--reference_fasta'
     secondaryFiles:
       - ^.dict
-      - .fai
+      - ^.fai
   - id: strelka_config
     type: File
     inputBinding:
@@ -50,15 +52,6 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
-    tumor_bam:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
     normal_bam:
       basename: n.ext
       class: File
@@ -78,6 +71,15 @@ requirements:
       secondaryFiles: []
       size: 0
     strelka_config:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    tumor_bam:
       basename: input.ext
       class: File
       contents: file contents
