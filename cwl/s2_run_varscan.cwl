@@ -27,7 +27,7 @@ inputs:
       position: 0
       prefix: '--reference_fasta'
     secondaryFiles:
-      - ^.fai
+      - .fai
       - ^.dict
   - id: varscan_config
     type: File

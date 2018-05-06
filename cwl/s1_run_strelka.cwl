@@ -28,7 +28,7 @@ inputs:
       prefix: '--reference_fasta'
     secondaryFiles:
       - ^.dict
-      - ^.fai
+      - .fai
   - id: strelka_config
     type: File
     inputBinding:
