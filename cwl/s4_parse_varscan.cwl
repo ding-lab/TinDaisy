@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s4_parse_varscan
 baseCommand:
   - /usr/bin/perl
@@ -22,6 +24,11 @@ inputs:
       prefix: '--dbsnp_db'
     secondaryFiles:
       - .tbi
+  - id: varscan_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--varscan_config'
 outputs:
   - id: varscan_snv_dbsnp
     doc: Final SNV output of parsing
@@ -47,6 +54,15 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
+    dbsnp_db:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
     varscan_indel_raw:
       basename: input.ext
       class: File
@@ -57,15 +73,6 @@ requirements:
       secondaryFiles: []
       size: 0
     varscan_snv_raw:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    dbsnp_db:
       basename: input.ext
       class: File
       contents: file contents

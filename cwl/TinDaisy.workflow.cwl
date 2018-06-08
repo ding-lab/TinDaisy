@@ -1,7 +1,9 @@
 class: Workflow
 cwlVersion: v1.0
 id: workflow_v1_1
-label: workflow-v1.1
+label: TinDaisy Workflow
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 inputs:
   - id: tumor_bam
     type: File
@@ -21,8 +23,8 @@ inputs:
     'sbg:y': 215
   - id: varscan_config
     type: File
-    'sbg:x': -621.9358271640092
-    'sbg:y': -14.89066059225513
+    'sbg:x': -681.7217407226562
+    'sbg:y': -46.14678955078125
   - id: pindel_config
     type: File
     'sbg:x': -227.84698486328125
@@ -62,17 +64,13 @@ steps:
   - id: s1_run_strelka
     in:
       - id: tumor_bam
-        source:
-          - tumor_bam
+        source: tumor_bam
       - id: normal_bam
-        source:
-          - normal_bam
+        source: normal_bam
       - id: reference_fasta
-        source:
-          - reference_fasta
+        source: reference_fasta
       - id: strelka_config
-        source:
-          - strelka_config
+        source: strelka_config
     out:
       - id: snvs_passed
     run: s1_run_strelka.cwl
@@ -82,17 +80,13 @@ steps:
   - id: s2_run_varscan
     in:
       - id: tumor_bam
-        source:
-          - tumor_bam
+        source: tumor_bam
       - id: normal_bam
-        source:
-          - normal_bam
+        source: normal_bam
       - id: reference_fasta
-        source:
-          - reference_fasta
+        source: reference_fasta
       - id: varscan_config
-        source:
-          - varscan_config
+        source: varscan_config
     out:
       - id: varscan_indel_raw
       - id: varscan_snv_raw
@@ -103,11 +97,9 @@ steps:
   - id: s3_parse_strelka
     in:
       - id: strelka_snv_raw
-        source:
-          - s1_run_strelka/snvs_passed
+        source: s1_run_strelka/snvs_passed
       - id: dbsnp_db
-        source:
-          - dbsnp_db
+        source: dbsnp_db
     out:
       - id: strelka_snv_dbsnp
     run: s3_parse_strelka.cwl
@@ -117,14 +109,13 @@ steps:
   - id: s4_parse_varscan
     in:
       - id: varscan_indel_raw
-        source:
-          - s2_run_varscan/varscan_indel_raw
+        source: s2_run_varscan/varscan_indel_raw
       - id: varscan_snv_raw
-        source:
-          - s2_run_varscan/varscan_snv_raw
+        source: s2_run_varscan/varscan_snv_raw
       - id: dbsnp_db
-        source:
-          - dbsnp_db
+        source: dbsnp_db
+      - id: varscan_config
+        source: varscan_config
     out:
       - id: varscan_snv_dbsnp
       - id: varscan_indel_dbsnp
@@ -135,20 +126,15 @@ steps:
   - id: s5_run_pindel
     in:
       - id: tumor_bam
-        source:
-          - tumor_bam
+        source: tumor_bam
       - id: normal_bam
-        source:
-          - normal_bam
+        source: normal_bam
       - id: reference_fasta
-        source:
-          - reference_fasta
+        source: reference_fasta
       - id: centromere_bed
-        source:
-          - centromere_bed
+        source: centromere_bed
       - id: no_delete_temp
-        source:
-          - no_delete_temp
+        source: no_delete_temp
     out:
       - id: pindel_raw
     run: s5_run_pindel.cwl
@@ -158,17 +144,13 @@ steps:
   - id: s7_parse_pindel
     in:
       - id: pindel_raw
-        source:
-          - s5_run_pindel/pindel_raw
+        source: s5_run_pindel/pindel_raw
       - id: reference_fasta
-        source:
-          - reference_fasta
+        source: reference_fasta
       - id: pindel_config
-        source:
-          - pindel_config
+        source: pindel_config
       - id: dbsnp_db
-        source:
-          - dbsnp_db
+        source: dbsnp_db
     out:
       - id: pindel_dbsnp
     run: s7_parse_pindel.cwl
@@ -178,20 +160,15 @@ steps:
   - id: s8_merge_vcf
     in:
       - id: strelka_snv_vcf
-        source:
-          - s3_parse_strelka/strelka_snv_dbsnp
+        source: s3_parse_strelka/strelka_snv_dbsnp
       - id: varscan_indel_vcf
-        source:
-          - s4_parse_varscan/varscan_indel_dbsnp
+        source: s4_parse_varscan/varscan_indel_dbsnp
       - id: varscan_snv_vcf
-        source:
-          - s4_parse_varscan/varscan_snv_dbsnp
+        source: s4_parse_varscan/varscan_snv_dbsnp
       - id: pindel_vcf
-        source:
-          - s7_parse_pindel/pindel_dbsnp
+        source: s7_parse_pindel/pindel_dbsnp
       - id: reference_fasta
-        source:
-          - reference_fasta
+        source: reference_fasta
     out:
       - id: merged_vcf
     run: s8_merge_vcf.cwl
@@ -201,26 +178,21 @@ steps:
   - id: annotate_vep
     in:
       - id: input_vcf
-        source:
-          - s8_merge_vcf/merged_vcf
+        source: s8_merge_vcf/merged_vcf
       - id: reference_fasta
-        source:
-          - reference_fasta
+        source: reference_fasta
       - id: assembly
-        source:
-          - assembly
+        source: assembly
       - id: output_vep
-        source:
-          - output_vep
+        source: output_vep
       - id: vep_cache_gz
-        source:
-          - vep_cache_gz
+        source: vep_cache_gz
       - id: vep_cache_version
-        source:
-          - vep_cache_version
+        source: vep_cache_version
     out:
       - id: output_dat
     run: s10_annotate_vep.cwl
     label: annotate_vep
     'sbg:x': 286.7515762749068
     'sbg:y': -244.10921975232046
+requirements: []
