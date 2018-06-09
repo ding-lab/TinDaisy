@@ -38,13 +38,16 @@ outputs:
   - id: snvs_passed
     type: File
     outputBinding:
-      glob: strelka/strelka_out/results/passed.somatic.snvs.vcf
+      glob: strelka/strelka_out/results/variants/somatic.snvs.vcf.gz
 label: S1_run_strelka
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
+    valueFrom: '1'
+  - position: 0
+    prefix: '--is_strelka2'
     valueFrom: '1'
 requirements:
   - class: ShellCommandRequirement

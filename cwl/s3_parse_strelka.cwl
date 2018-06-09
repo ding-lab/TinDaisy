@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s3_parse_strelka
 baseCommand:
   - /usr/bin/perl
@@ -17,6 +19,11 @@ inputs:
       prefix: '--dbsnp_db'
     secondaryFiles:
       - .tbi
+  - id: strelka_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--strelka_config'
 outputs:
   - id: strelka_snv_dbsnp
     type: File
@@ -40,7 +47,7 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
-    strelka_snv_raw:
+    dbsnp_db:
       basename: input.ext
       class: File
       contents: file contents
@@ -49,7 +56,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    dbsnp_db:
+    strelka_snv_raw:
       basename: input.ext
       class: File
       contents: file contents

@@ -100,6 +100,8 @@ steps:
         source: s1_run_strelka/snvs_passed
       - id: dbsnp_db
         source: dbsnp_db
+      - id: strelka_config
+        source: strelka_config
     out:
       - id: strelka_snv_dbsnp
     run: s3_parse_strelka.cwl
