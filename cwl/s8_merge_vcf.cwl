@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s8_merge_vcf
 baseCommand:
   - /usr/bin/perl
@@ -33,6 +35,11 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
 outputs:
   - id: merged_vcf
     type: File
@@ -51,6 +58,24 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
+    pindel_vcf:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    reference_fasta:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
     strelka_snv_vcf:
       basename: input.ext
       class: File
@@ -70,24 +95,6 @@ requirements:
       secondaryFiles: []
       size: 0
     varscan_snv_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    pindel_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    reference_fasta:
       basename: input.ext
       class: File
       contents: file contents

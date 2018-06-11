@@ -34,6 +34,11 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--strelka_config'
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
 outputs:
   - id: snvs_passed
     type: File

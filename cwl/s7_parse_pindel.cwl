@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: s7_parse_pindel
 baseCommand:
   - /usr/bin/perl
@@ -30,6 +32,11 @@ inputs:
       prefix: '--dbsnp_db'
     secondaryFiles:
       - .tbi
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
 outputs:
   - id: pindel_dbsnp
     type: File
@@ -48,16 +55,7 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
-    pindel_raw:
-      basename: p.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: p
-      path: /path/to/p.ext
-      secondaryFiles: []
-      size: 0
-    reference_fasta:
+    dbsnp_db:
       basename: input.ext
       class: File
       contents: file contents
@@ -75,7 +73,16 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    dbsnp_db:
+    pindel_raw:
+      basename: p.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: p
+      path: /path/to/p.ext
+      secondaryFiles: []
+      size: 0
+    reference_fasta:
       basename: input.ext
       class: File
       contents: file contents

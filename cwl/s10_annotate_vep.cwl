@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com'
 id: annotate_vep
 baseCommand:
   - /usr/bin/perl
@@ -43,6 +45,11 @@ inputs:
       position: 0
       prefix: '--vep_cache_version'
     label: 'VEP Cache Version (e.g., 90)'
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
 outputs:
   - id: output_dat
     type: File
@@ -61,6 +68,7 @@ requirements:
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
 'sbg:job':
   inputs:
+    assembly: assembly-string-value
     input_vcf:
       basename: input.ext
       class: File
@@ -70,6 +78,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    output_vep: output_vep-string-value
     reference_fasta:
       basename: input.ext
       class: File
@@ -79,8 +88,6 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    assembly: assembly-string-value
-    output_vep: output_vep-string-value
     vep_cache_gz:
       basename: input.ext
       class: File

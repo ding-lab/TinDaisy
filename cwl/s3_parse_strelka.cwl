@@ -24,6 +24,11 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--strelka_config'
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
 outputs:
   - id: strelka_snv_dbsnp
     type: File
@@ -38,9 +43,6 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '3'
-  - position: 0
-    prefix: '--results_dir'
-    valueFrom: .
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

@@ -41,6 +41,11 @@ inputs:
       prefix: '--no_delete_temp'
     label: Don't delete temp files
     doc: 'If set to 1, will not delete large temporary Pindel output'
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
 outputs:
   - id: pindel_raw
     type: File
