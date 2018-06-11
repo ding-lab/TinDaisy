@@ -54,7 +54,7 @@ outputs:
   - id: output_dat
     type: File
     outputBinding:
-      glob: output.*
+      glob: $(inputs.results_dir)/vep/output.vcf*
 label: s10_annotate_vep
 arguments:
   - position: 99
@@ -66,6 +66,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     assembly: assembly-string-value
