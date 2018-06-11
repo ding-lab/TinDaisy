@@ -50,7 +50,7 @@ outputs:
   - id: pindel_raw
     type: File
     outputBinding:
-      glob: pindel/pindel_out/pindel-raw.dat
+      glob: $(inputs.results_dir)/pindel/pindel_out/pindel-raw.dat
 label: s5_run_pindel
 arguments:
   - position: 99
@@ -64,6 +64,7 @@ requirements:
     ramMin: 8000
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     centromere_bed:

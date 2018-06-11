@@ -41,7 +41,8 @@ outputs:
   - id: pindel_dbsnp
     type: File
     outputBinding:
-      glob: pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf
+      glob: >-
+        $(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf
 label: s7_parse_pindel
 arguments:
   - position: 99
@@ -53,6 +54,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     dbsnp_db:

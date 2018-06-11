@@ -43,7 +43,8 @@ outputs:
   - id: snvs_passed
     type: File
     outputBinding:
-      glob: strelka/strelka_out/results/variants/somatic.snvs.vcf.gz
+      glob: >-
+        $(inputs.results_dir)/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz
 label: S1_run_strelka
 arguments:
   - position: 99
@@ -58,6 +59,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     normal_bam:

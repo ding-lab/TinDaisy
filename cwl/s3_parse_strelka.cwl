@@ -33,7 +33,8 @@ outputs:
   - id: strelka_snv_dbsnp
     type: File
     outputBinding:
-      glob: strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf
+      glob: >-
+        $(inputs.results_dir)/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf
     secondaryFiles:
       - .tbi
 label: s3_parse_strelka
@@ -47,6 +48,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     dbsnp_db:

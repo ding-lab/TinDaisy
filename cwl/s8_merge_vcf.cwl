@@ -44,7 +44,7 @@ outputs:
   - id: merged_vcf
     type: File
     outputBinding:
-      glob: merged/merged.vcf
+      glob: $(inputs.results_dir)/merged/merged.vcf
 label: s8_merge_vcf
 arguments:
   - position: 99
@@ -56,6 +56,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     pindel_vcf:

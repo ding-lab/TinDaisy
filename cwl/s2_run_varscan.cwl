@@ -43,11 +43,11 @@ outputs:
   - id: varscan_indel_raw
     type: File
     outputBinding:
-      glob: varscan/varscan_out/varscan.out.som_indel.vcf
+      glob: $(inputs.results_dir)/varscan/varscan_out/varscan.out.som_indel.vcf
   - id: varscan_snv_raw
     type: File
     outputBinding:
-      glob: varscan/varscan_out/varscan.out.som_snv.vcf
+      glob: $(inputs.results_dir)/varscan/varscan_out/varscan.out.som_snv.vcf
 label: s2_run_varscan
 arguments:
   - position: 99
@@ -59,6 +59,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl'
+  - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
     normal_bam:
