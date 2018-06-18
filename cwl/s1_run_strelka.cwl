@@ -39,6 +39,12 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: is_strelka2
+    type: int?
+    inputBinding:
+      position: 0
+      prefix: '--is_strelka2'
+    doc: 'If 1, run strelka2 instead of strelka version 1'
 outputs:
   - id: snvs_passed
     type: File
@@ -51,9 +57,6 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '1'
-  - position: 0
-    prefix: '--is_strelka2'
     valueFrom: '1'
 requirements:
   - class: ShellCommandRequirement
