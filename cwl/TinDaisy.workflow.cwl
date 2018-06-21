@@ -54,6 +54,9 @@ inputs:
     type: string?
     'sbg:x': -658.08203125
     'sbg:y': -279.7426452636719
+  - id: is_strelka2
+    type: int?
+    'sbg:exposed': true
 outputs:
   - id: output_dat
     outputSource:
@@ -75,6 +78,9 @@ steps:
         source: strelka_config
       - id: results_dir
         source: results_dir
+      - id: is_strelka2
+        default: false
+        source: is_strelka2
     out:
       - id: snvs_passed
     run: s1_run_strelka.cwl

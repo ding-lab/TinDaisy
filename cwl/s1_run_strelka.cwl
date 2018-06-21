@@ -40,7 +40,7 @@ inputs:
       position: 0
       prefix: '--results_dir'
   - id: is_strelka2
-    type: int?
+    type: boolean?
     inputBinding:
       position: 0
       prefix: '--is_strelka2'
@@ -49,8 +49,13 @@ outputs:
   - id: snvs_passed
     type: File
     outputBinding:
-      glob: >-
-        $(inputs.results_dir)/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz
+      glob: |-
+        ${
+            if(inputs.is_strelka2 == true)
+                return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+            else
+                return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'
+        }
 label: S1_run_strelka
 arguments:
   - position: 99
