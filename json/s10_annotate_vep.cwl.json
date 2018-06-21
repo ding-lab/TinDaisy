@@ -4,33 +4,19 @@
     "$namespaces": {
         "sbg": "https://www.sevenbridges.com"
     },
-    "id": "s1_run_strelka",
+    "id": "annotate_vep",
     "baseCommand": [
         "/usr/bin/perl",
         "/usr/local/somaticwrapper/SomaticWrapper.pl"
     ],
     "inputs": [
         {
-            "id": "tumor_bam",
+            "id": "input_vcf",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--tumor_bam"
-            },
-            "secondaryFiles": [
-                "^.bai"
-            ]
-        },
-        {
-            "id": "normal_bam",
-            "type": "File",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--normal_bam"
-            },
-            "secondaryFiles": [
-                "^.bai"
-            ]
+                "prefix": "--input_vcf"
+            }
         },
         {
             "id": "reference_fasta",
@@ -40,17 +26,46 @@
                 "prefix": "--reference_fasta"
             },
             "secondaryFiles": [
-                "^.dict",
-                ".fai"
+                ".fai",
+                "^.dict"
             ]
         },
         {
-            "id": "strelka_config",
-            "type": "File",
+            "id": "assembly",
+            "type": "string",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--strelka_config"
+                "prefix": "--assembly"
+            },
+            "label": "assembly name for VEP annotation",
+            "doc": "Either GRCh37 or GRCh38 currently accepted"
+        },
+        {
+            "id": "output_vep",
+            "type": "string?",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--output_vep"
             }
+        },
+        {
+            "id": "vep_cache_gz",
+            "type": "File?",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--vep_cache_gz"
+            },
+            "label": "VEP cache .tar.gz",
+            "doc": ".tar.gz compressed VEP Cache file will be written to\"./vep-cache\""
+        },
+        {
+            "id": "vep_cache_version",
+            "type": "string?",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--vep_cache_version"
+            },
+            "label": "VEP Cache Version (e.g., 90)"
         },
         {
             "id": "results_dir",
@@ -59,34 +74,25 @@
                 "position": 0,
                 "prefix": "--results_dir"
             }
-        },
-        {
-            "id": "is_strelka2",
-            "type": "boolean?",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--is_strelka2"
-            },
-            "doc": "If 1, run strelka2 instead of strelka version 1"
         }
     ],
     "outputs": [
         {
-            "id": "snvs_passed",
+            "id": "output_dat",
             "type": "File",
             "outputBinding": {
-                "glob": "${\n    if(inputs.is_strelka2 == true)\n        return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'\n    else\n        return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'\n}"
+                "glob": "$(inputs.results_dir)/vep/output.vcf*"
             }
         }
     ],
-    "label": "s1_run_strelka",
+    "label": "s10_annotate_vep",
     "arguments": [
         {
             "position": 99,
             "prefix": "",
             "separate": false,
             "shellQuote": false,
-            "valueFrom": "1"
+            "valueFrom": "10"
         }
     ],
     "requirements": [
@@ -103,16 +109,18 @@
     ],
     "sbg:job": {
         "inputs": {
-            "normal_bam": {
-                "basename": "n.ext",
+            "assembly": "assembly-string-value",
+            "input_vcf": {
+                "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
                 "nameext": ".ext",
-                "nameroot": "n",
-                "path": "/path/to/n.ext",
+                "nameroot": "input",
+                "path": "/path/to/input.ext",
                 "secondaryFiles": [],
                 "size": 0
             },
+            "output_vep": "output_vep-string-value",
             "reference_fasta": {
                 "basename": "input.ext",
                 "class": "File",
@@ -123,7 +131,7 @@
                 "secondaryFiles": [],
                 "size": 0
             },
-            "strelka_config": {
+            "vep_cache_gz": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
@@ -133,16 +141,7 @@
                 "secondaryFiles": [],
                 "size": 0
             },
-            "tumor_bam": {
-                "basename": "input.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "input",
-                "path": "/path/to/input.ext",
-                "secondaryFiles": [],
-                "size": 0
-            }
+            "vep_cache_version": "vep_cache_version-string-value"
         },
         "runtime": {
             "cores": 1,

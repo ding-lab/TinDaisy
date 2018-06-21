@@ -4,33 +4,19 @@
     "$namespaces": {
         "sbg": "https://www.sevenbridges.com"
     },
-    "id": "s1_run_strelka",
+    "id": "s7_parse_pindel",
     "baseCommand": [
         "/usr/bin/perl",
         "/usr/local/somaticwrapper/SomaticWrapper.pl"
     ],
     "inputs": [
         {
-            "id": "tumor_bam",
+            "id": "pindel_raw",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--tumor_bam"
-            },
-            "secondaryFiles": [
-                "^.bai"
-            ]
-        },
-        {
-            "id": "normal_bam",
-            "type": "File",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--normal_bam"
-            },
-            "secondaryFiles": [
-                "^.bai"
-            ]
+                "prefix": "--pindel_raw"
+            }
         },
         {
             "id": "reference_fasta",
@@ -40,17 +26,28 @@
                 "prefix": "--reference_fasta"
             },
             "secondaryFiles": [
-                "^.dict",
-                ".fai"
+                ".fai",
+                "^.dict"
             ]
         },
         {
-            "id": "strelka_config",
+            "id": "pindel_config",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--strelka_config"
+                "prefix": "--pindel_config"
             }
+        },
+        {
+            "id": "dbsnp_db",
+            "type": "File",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--dbsnp_db"
+            },
+            "secondaryFiles": [
+                ".tbi"
+            ]
         },
         {
             "id": "results_dir",
@@ -59,34 +56,25 @@
                 "position": 0,
                 "prefix": "--results_dir"
             }
-        },
-        {
-            "id": "is_strelka2",
-            "type": "boolean?",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--is_strelka2"
-            },
-            "doc": "If 1, run strelka2 instead of strelka version 1"
         }
     ],
     "outputs": [
         {
-            "id": "snvs_passed",
+            "id": "pindel_dbsnp",
             "type": "File",
             "outputBinding": {
-                "glob": "${\n    if(inputs.is_strelka2 == true)\n        return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'\n    else\n        return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'\n}"
+                "glob": "$(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf"
             }
         }
     ],
-    "label": "s1_run_strelka",
+    "label": "s7_parse_pindel",
     "arguments": [
         {
             "position": 99,
             "prefix": "",
             "separate": false,
             "shellQuote": false,
-            "valueFrom": "1"
+            "valueFrom": "7"
         }
     ],
     "requirements": [
@@ -103,37 +91,37 @@
     ],
     "sbg:job": {
         "inputs": {
-            "normal_bam": {
-                "basename": "n.ext",
+            "dbsnp_db": {
+                "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
                 "nameext": ".ext",
-                "nameroot": "n",
-                "path": "/path/to/n.ext",
+                "nameroot": "input",
+                "path": "/path/to/input.ext",
+                "secondaryFiles": [],
+                "size": 0
+            },
+            "pindel_config": {
+                "basename": "input.ext",
+                "class": "File",
+                "contents": "file contents",
+                "nameext": ".ext",
+                "nameroot": "input",
+                "path": "/path/to/input.ext",
+                "secondaryFiles": [],
+                "size": 0
+            },
+            "pindel_raw": {
+                "basename": "p.ext",
+                "class": "File",
+                "contents": "file contents",
+                "nameext": ".ext",
+                "nameroot": "p",
+                "path": "/path/to/p.ext",
                 "secondaryFiles": [],
                 "size": 0
             },
             "reference_fasta": {
-                "basename": "input.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "input",
-                "path": "/path/to/input.ext",
-                "secondaryFiles": [],
-                "size": 0
-            },
-            "strelka_config": {
-                "basename": "input.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "input",
-                "path": "/path/to/input.ext",
-                "secondaryFiles": [],
-                "size": 0
-            },
-            "tumor_bam": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",

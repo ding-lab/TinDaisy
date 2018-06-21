@@ -4,7 +4,7 @@
     "$namespaces": {
         "sbg": "https://www.sevenbridges.com"
     },
-    "id": "s1_run_strelka",
+    "id": "s5_run_pindel",
     "baseCommand": [
         "/usr/bin/perl",
         "/usr/local/somaticwrapper/SomaticWrapper.pl"
@@ -40,17 +40,27 @@
                 "prefix": "--reference_fasta"
             },
             "secondaryFiles": [
-                "^.dict",
-                ".fai"
+                ".fai",
+                "^.dict"
             ]
         },
         {
-            "id": "strelka_config",
-            "type": "File",
+            "id": "centromere_bed",
+            "type": "File?",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--strelka_config"
+                "prefix": "--centromere_bed"
             }
+        },
+        {
+            "id": "no_delete_temp",
+            "type": "int?",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--no_delete_temp"
+            },
+            "label": "Don't delete temp files",
+            "doc": "If set to 1, will not delete large temporary Pindel output"
         },
         {
             "id": "results_dir",
@@ -59,39 +69,34 @@
                 "position": 0,
                 "prefix": "--results_dir"
             }
-        },
-        {
-            "id": "is_strelka2",
-            "type": "boolean?",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--is_strelka2"
-            },
-            "doc": "If 1, run strelka2 instead of strelka version 1"
         }
     ],
     "outputs": [
         {
-            "id": "snvs_passed",
+            "id": "pindel_raw",
             "type": "File",
             "outputBinding": {
-                "glob": "${\n    if(inputs.is_strelka2 == true)\n        return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'\n    else\n        return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'\n}"
+                "glob": "$(inputs.results_dir)/pindel/pindel_out/pindel-raw.dat"
             }
         }
     ],
-    "label": "s1_run_strelka",
+    "label": "s5_run_pindel",
     "arguments": [
         {
             "position": 99,
             "prefix": "",
             "separate": false,
             "shellQuote": false,
-            "valueFrom": "1"
+            "valueFrom": "5"
         }
     ],
     "requirements": [
         {
             "class": "ShellCommandRequirement"
+        },
+        {
+            "class": "ResourceRequirement",
+            "ramMin": 8000
         },
         {
             "class": "DockerRequirement",
@@ -103,13 +108,24 @@
     ],
     "sbg:job": {
         "inputs": {
-            "normal_bam": {
-                "basename": "n.ext",
+            "centromere_bed": {
+                "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
                 "nameext": ".ext",
-                "nameroot": "n",
-                "path": "/path/to/n.ext",
+                "nameroot": "input",
+                "path": "/path/to/input.ext",
+                "secondaryFiles": [],
+                "size": 0
+            },
+            "no_delete_temp": 9,
+            "normal_bam": {
+                "basename": "input.ext",
+                "class": "File",
+                "contents": "file contents",
+                "nameext": ".ext",
+                "nameroot": "input",
+                "path": "/path/to/input.ext",
                 "secondaryFiles": [],
                 "size": 0
             },
@@ -123,30 +139,20 @@
                 "secondaryFiles": [],
                 "size": 0
             },
-            "strelka_config": {
-                "basename": "input.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "input",
-                "path": "/path/to/input.ext",
-                "secondaryFiles": [],
-                "size": 0
-            },
             "tumor_bam": {
-                "basename": "input.ext",
+                "basename": "t.ext",
                 "class": "File",
                 "contents": "file contents",
                 "nameext": ".ext",
-                "nameroot": "input",
-                "path": "/path/to/input.ext",
+                "nameroot": "t",
+                "path": "/path/to/t.ext",
                 "secondaryFiles": [],
                 "size": 0
             }
         },
         "runtime": {
             "cores": 1,
-            "ram": 1000
+            "ram": 8000
         }
     }
 }

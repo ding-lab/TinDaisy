@@ -4,52 +4,45 @@
     "$namespaces": {
         "sbg": "https://www.sevenbridges.com"
     },
-    "id": "s1_run_strelka",
+    "id": "s4_parse_varscan",
     "baseCommand": [
         "/usr/bin/perl",
         "/usr/local/somaticwrapper/SomaticWrapper.pl"
     ],
     "inputs": [
         {
-            "id": "tumor_bam",
+            "id": "varscan_indel_raw",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--tumor_bam"
+                "prefix": "--varscan_indel_raw"
+            }
+        },
+        {
+            "id": "varscan_snv_raw",
+            "type": "File",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--varscan_snv_raw"
+            }
+        },
+        {
+            "id": "dbsnp_db",
+            "type": "File",
+            "inputBinding": {
+                "position": 0,
+                "prefix": "--dbsnp_db"
             },
             "secondaryFiles": [
-                "^.bai"
+                ".tbi"
             ]
         },
         {
-            "id": "normal_bam",
+            "id": "varscan_config",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--normal_bam"
-            },
-            "secondaryFiles": [
-                "^.bai"
-            ]
-        },
-        {
-            "id": "reference_fasta",
-            "type": "File",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--reference_fasta"
-            },
-            "secondaryFiles": [
-                "^.dict",
-                ".fai"
-            ]
-        },
-        {
-            "id": "strelka_config",
-            "type": "File",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--strelka_config"
+                "prefix": "--varscan_config"
             }
         },
         {
@@ -59,34 +52,34 @@
                 "position": 0,
                 "prefix": "--results_dir"
             }
-        },
-        {
-            "id": "is_strelka2",
-            "type": "boolean?",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--is_strelka2"
-            },
-            "doc": "If 1, run strelka2 instead of strelka version 1"
         }
     ],
     "outputs": [
         {
-            "id": "snvs_passed",
+            "id": "varscan_snv_dbsnp",
+            "doc": "Final SNV output of parsing",
             "type": "File",
             "outputBinding": {
-                "glob": "${\n    if(inputs.is_strelka2 == true)\n        return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'\n    else\n        return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'\n}"
+                "glob": "$(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.dbsnp_pass.vcf"
+            }
+        },
+        {
+            "id": "varscan_indel_dbsnp",
+            "doc": "Final SNV output of parsing",
+            "type": "File",
+            "outputBinding": {
+                "glob": "$(inputs.results_dir)/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.vcf"
             }
         }
     ],
-    "label": "s1_run_strelka",
+    "label": "s4_parse_varscan",
     "arguments": [
         {
             "position": 99,
             "prefix": "",
             "separate": false,
             "shellQuote": false,
-            "valueFrom": "1"
+            "valueFrom": "4"
         }
     ],
     "requirements": [
@@ -103,17 +96,7 @@
     ],
     "sbg:job": {
         "inputs": {
-            "normal_bam": {
-                "basename": "n.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "n",
-                "path": "/path/to/n.ext",
-                "secondaryFiles": [],
-                "size": 0
-            },
-            "reference_fasta": {
+            "dbsnp_db": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
@@ -123,7 +106,7 @@
                 "secondaryFiles": [],
                 "size": 0
             },
-            "strelka_config": {
+            "varscan_indel_raw": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
@@ -133,7 +116,7 @@
                 "secondaryFiles": [],
                 "size": 0
             },
-            "tumor_bam": {
+            "varscan_snv_raw": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",

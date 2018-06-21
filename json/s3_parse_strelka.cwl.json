@@ -4,44 +4,29 @@
     "$namespaces": {
         "sbg": "https://www.sevenbridges.com"
     },
-    "id": "s1_run_strelka",
+    "id": "s3_parse_strelka",
     "baseCommand": [
         "/usr/bin/perl",
         "/usr/local/somaticwrapper/SomaticWrapper.pl"
     ],
     "inputs": [
         {
-            "id": "tumor_bam",
+            "id": "strelka_snv_raw",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--tumor_bam"
-            },
-            "secondaryFiles": [
-                "^.bai"
-            ]
+                "prefix": "--strelka_snv_raw"
+            }
         },
         {
-            "id": "normal_bam",
+            "id": "dbsnp_db",
             "type": "File",
             "inputBinding": {
                 "position": 0,
-                "prefix": "--normal_bam"
+                "prefix": "--dbsnp_db"
             },
             "secondaryFiles": [
-                "^.bai"
-            ]
-        },
-        {
-            "id": "reference_fasta",
-            "type": "File",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--reference_fasta"
-            },
-            "secondaryFiles": [
-                "^.dict",
-                ".fai"
+                ".tbi"
             ]
         },
         {
@@ -59,34 +44,28 @@
                 "position": 0,
                 "prefix": "--results_dir"
             }
-        },
-        {
-            "id": "is_strelka2",
-            "type": "boolean?",
-            "inputBinding": {
-                "position": 0,
-                "prefix": "--is_strelka2"
-            },
-            "doc": "If 1, run strelka2 instead of strelka version 1"
         }
     ],
     "outputs": [
         {
-            "id": "snvs_passed",
+            "id": "strelka_snv_dbsnp",
             "type": "File",
             "outputBinding": {
-                "glob": "${\n    if(inputs.is_strelka2 == true)\n        return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'\n    else\n        return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'\n}"
-            }
+                "glob": "$(inputs.results_dir)/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf"
+            },
+            "secondaryFiles": [
+                ".tbi"
+            ]
         }
     ],
-    "label": "s1_run_strelka",
+    "label": "s3_parse_strelka",
     "arguments": [
         {
             "position": 99,
             "prefix": "",
             "separate": false,
             "shellQuote": false,
-            "valueFrom": "1"
+            "valueFrom": "3"
         }
     ],
     "requirements": [
@@ -103,17 +82,7 @@
     ],
     "sbg:job": {
         "inputs": {
-            "normal_bam": {
-                "basename": "n.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "n",
-                "path": "/path/to/n.ext",
-                "secondaryFiles": [],
-                "size": 0
-            },
-            "reference_fasta": {
+            "dbsnp_db": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
@@ -123,17 +92,7 @@
                 "secondaryFiles": [],
                 "size": 0
             },
-            "strelka_config": {
-                "basename": "input.ext",
-                "class": "File",
-                "contents": "file contents",
-                "nameext": ".ext",
-                "nameroot": "input",
-                "path": "/path/to/input.ext",
-                "secondaryFiles": [],
-                "size": 0
-            },
-            "tumor_bam": {
+            "strelka_snv_raw": {
                 "basename": "input.ext",
                 "class": "File",
                 "contents": "file contents",
