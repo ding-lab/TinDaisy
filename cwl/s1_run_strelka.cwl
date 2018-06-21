@@ -44,7 +44,7 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--is_strelka2'
-    doc: 'If 1, run strelka2 instead of strelka version 1'
+    doc: 'If set, run strelka2 instead of strelka version 1'
 outputs:
   - id: snvs_passed
     type: File
@@ -56,7 +56,7 @@ outputs:
             else
                 return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'
         }
-label: S1_run_strelka
+label: s1_run_strelka
 arguments:
   - position: 99
     prefix: ''
