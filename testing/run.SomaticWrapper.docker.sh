@@ -29,8 +29,8 @@ ARGS="\
 --dbsnp_db $DBSNP_DB \
 --output_vep 0 \
 --assembly GRCh37 \
+--is_strelka2  \
 --centromere_bed $CENTROMERE_BED \
---is_strelka2 1 \
 --results_dir $OUTDIR"
 
 BIN="/usr/local/somaticwrapper/SomaticWrapper.pl"
