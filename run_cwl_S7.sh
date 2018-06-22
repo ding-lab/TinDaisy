@@ -1,5 +1,5 @@
 source demo_paths.sh
-CWL="cwl/s7_parse_pindel.cwl"
+CWL="json/s7_parse_pindel.cwl.json"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR

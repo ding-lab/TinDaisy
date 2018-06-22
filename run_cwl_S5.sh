@@ -6,7 +6,7 @@ source demo_paths.sh
 # Username: m_wyczalkowski
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 
-CWL="cwl/s5_run_pindel.cwl"
+CWL="json/s5_run_pindel.cwl.json"
 source demo_paths.sh
 
 # try to have all output go to output_dir

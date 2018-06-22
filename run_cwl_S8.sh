@@ -1,5 +1,5 @@
 source demo_paths.sh
-CWL="cwl/s8_merge_vcf.cwl"
+CWL="json/s8_merge_vcf.cwl.json"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR

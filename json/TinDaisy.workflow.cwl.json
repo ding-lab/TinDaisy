@@ -1,7 +1,7 @@
 {
     "class": "Workflow",
     "cwlVersion": "v1.0",
-    "id": "tin_daisy_JSON",
+    "id": "tin_daisy",
     "label": "TinDaisy Workflow",
     "$namespaces": {
         "sbg": "https://www.sevenbridges.com"
