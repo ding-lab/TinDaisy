@@ -1,31 +1,38 @@
-# Run MouseTrap2 from within docker environment
-# Docker environment will typically be started using docker/launch_docker.sh
+# Run given step of SomaticWrapper in docker environment
+# Typically the run will start with ./start_docker.sh
 
-# Arguments
-# -b BAM: Pass BAM to be processed
-# -1 FQ1 -2 FQ2: Pass two FASTQ files with reads1, reads2, respectively.
-# -h FASTA: human reference.  Required
-# -m FASTA: mouse reference.  Required
-# -s sample: sample name.  Default is "hgmm"
-# -o outdir: output directory.  Default is '.'
-# -d: dry run.  Print commands but do not execute them
-
-FQ1="/data2/NIX5.10K.R1.fastq.gz"
-FQ2="/data2/NIX5.10K.R2.fastq.gz"
-BAM="/data2/human.sort.bam"
-
-HGFA="/data1/GRCh37-lite.fa"
-MMFA="/data1/Mus_musculus.GRCm38.dna_sm.primary_assembly.fa"
+DATAD="/data"
+TUMOR_BAM=$DATAD/StrelkaDemoCase.T.bam
+NORMAL_BAM=$DATAD/StrelkaDemoCase.N.bam
+REFERENCE_FASTA=$DATAD/demo20.fa
+STRELKA_CONFIG=$DATAD/strelka.WES.ini
+VARSCAN_CONFIG=$DATAD/varscan.WES.ini
+PINDEL_CONFIG=$DATAD/pindel.WES.ini
+DBSNP_DB=$DATAD/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
+CENTROMERE_BED=$DATAD/ucsc-centromere.GRCh37.bed
+#VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
 
 OUTDIR="./results"
 mkdir -p $OUTDIR
 
 SAMPLE="fastq2bam_test"
 
-# testing of FASTQ2BAM.  Use -G for no optimization
-bash ../MouseTrap2.sh -G -1 $FQ1 -2 $FQ2 -r $HGFA -o $OUTDIR -s $SAMPLE
+STEP="1"
 
-# regular testing
-#bash ../MouseTrap2.sh -c -1 $FQ1 -2 $FQ2 -h $HGFA -m $MMFA -o $OUTDIR
-#bash ../MouseTrap2.sh -1 $FQ1 -2 $FQ2 -r $HGFA -o $OUTDIR
-#bash ../MouseTrap2.sh -b $BAM -h $HGFA -m $MMFA -o $OUTDIR
+ARGS="\
+--tumor_bam $TUMOR_BAM \
+--normal_bam $NORMAL_BAM \
+--reference_fasta $REFERENCE_FASTA \
+--strelka_config $STRELKA_CONFIG \
+--varscan_config $VARSCAN_CONFIG \
+--pindel_config $PINDEL_CONFIG \
+--dbsnp_db $DBSNP_DB \
+--output_vep 0 \
+--assembly GRCh37 \
+--is_strelka2  \
+--centromere_bed $CENTROMERE_BED \
+--results_dir $OUTDIR"
+
+BIN="/usr/local/somaticwrapper/SomaticWrapper.pl"
+perl $BIN $ARGS $STEP
+
