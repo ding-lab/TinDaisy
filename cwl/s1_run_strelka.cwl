@@ -35,10 +35,12 @@ inputs:
       position: 0
       prefix: '--strelka_config'
   - id: results_dir
-    type: string?
+    type: string
     inputBinding:
       position: 0
       prefix: '--results_dir'
+    label: Results directory name
+    doc: Apparently should not have '.' in it
   - id: is_strelka2
     type: boolean?
     inputBinding:

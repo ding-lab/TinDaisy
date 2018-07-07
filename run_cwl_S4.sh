@@ -1,5 +1,5 @@
 source demo_paths.sh
-CWL="json/s4_parse_varscan.cwl.json"
+CWL="cwl/s4_parse_varscan.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR

@@ -7,7 +7,7 @@
 
 source demo_paths.sh
 
-CWL="json/TinDaisy.workflow.cwl.json"
+CWL="cwl/TinDaisy.workflow.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $OUTPUT_DIR
