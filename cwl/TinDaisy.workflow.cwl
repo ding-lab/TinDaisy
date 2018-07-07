@@ -51,11 +51,11 @@ inputs:
     type: string
     'sbg:exposed': true
   - id: results_dir
-    type: string?
-    'sbg:x': -658.08203125
-    'sbg:y': -279.7426452636719
+    type: string
+    'sbg:x': -699.0764770507812
+    'sbg:y': -275.4281311035156
   - id: is_strelka2
-    type: int?
+    type: boolean?
     'sbg:exposed': true
 outputs:
   - id: output_dat

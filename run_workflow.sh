@@ -41,6 +41,8 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --dbsnp_db $DBSNP_DB \
 --output_vep 1 \
 --assembly GRCh37 \
---centromere_bed $CENTROMERE_BED "
+--centromere_bed $CENTROMERE_BED \
+--results_dir TinDaisyDemo \
+--is_strelka2"
 #--no_delete_temp 1"
 #--vep_cache_dir $VEP_CACHE_DIR "
