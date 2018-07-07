@@ -5,8 +5,6 @@ test data to demonstrate execution via Rabix Executor.
 
 GitHub: https://github.com/ding-lab/tin-daisy
 
-
-
 ## Overview
 
 The goal of TinDaisy is to
@@ -66,6 +64,12 @@ Optionally install [SomaticWrapper (CWL branch)](https://github.com/ding-lab/som
 ``` 
 git clone -b cwl https://github.com/ding-lab/somaticwrapper 
 ```
+
+## Log into CGC
+
+In some cases (all?) it is necessary to log into CGC to pull latest somatic-wrapper image.  To do this,
+`docker login cgc-images.sbgenomics.com`
+Username is normal, password is token string obtained from CGC: https://cgc.sbgenomics.com
 
 ## Running TinDaisy
 
