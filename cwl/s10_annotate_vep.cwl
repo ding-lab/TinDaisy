@@ -45,6 +45,7 @@ inputs:
       position: 0
       prefix: '--vep_cache_version'
     label: 'VEP Cache Version (e.g., 90)'
+    doc: 'This is required if VEP_CACHE_GZ is defined, and must match'
   - id: results_dir
     type: string?
     inputBinding:

@@ -43,6 +43,9 @@ inputs:
     type: File?
     'sbg:x': 98.81038665771484
     'sbg:y': -419.2463073730469
+  - id: vep_cache_version
+    type: string?
+    'sbg:exposed': true
   - id: tumor_bam
     type: File
     'sbg:x': -660.805908203125
@@ -211,6 +214,8 @@ steps:
         source: output_vep
       - id: vep_cache_gz
         source: vep_cache_gz
+      - id: vep_cache_version
+        source: vep_cache_version
       - id: results_dir
         source: results_dir
     out:

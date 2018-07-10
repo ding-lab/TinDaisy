@@ -7,6 +7,8 @@ export PINDEL_CONFIG=StrelkaDemo.dat/pindel.WES.ini
 export DBSNP_DB=StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 export CENTROMERE_BED=StrelkaDemo.dat/ucsc-centromere.GRCh37.bed 
 export VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
+export VEP_CACHE_GZ="/Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/image.setup/D_VEP/vep-cache.90_GRCh37.tar.gz"
+export VEP_CACHE_VERSION="90"
 
 export OUTPUT_DIR=./results  #/diskmnt/Projects/TinDaisy/results
 

@@ -43,6 +43,8 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --assembly GRCh37 \
 --centromere_bed $CENTROMERE_BED \
 --results_dir TinDaisyDemo \
---is_strelka2"
+--is_strelka2 \
+--vep_cache_gz $VEP_CACHE_GZ \
+--vep_cache_version 90"
 #--no_delete_temp 1"
 #--vep_cache_dir $VEP_CACHE_DIR "
