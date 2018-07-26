@@ -100,8 +100,6 @@ Details of the StrelkaDemo dataset are found below.
 
 # Development and testing
 
-See [CWL Wrapping Slides](docs/CWL.LessonsLearned.v1.1.pdf) for background
-
 There are four levels of code development.
 
 1. Direct command line invocation of SomaticWrapper
@@ -113,48 +111,10 @@ For development and debugging, make sure all prior steps work.
 
 ## Running SomaticWrapper directly
 
-This requires installation of SomaticWrapper cwl branch here with,
-```
-git clone -b cwl https://github.com/ding-lab/somaticwrapper 
-```
-Individual steps can then be run as,
-```
-perl somaticwrapper/SomaticWrapper.pl [arguments]
-```
-Note that all software libraries must be installed and input data need to be specfied using command line arguments.
+For development and testing, the StrelkaDemo.testing directory has scripts
+which will run individual steps of SomaticWrapper directly (i.e., `perl SomaticWrapper.pl ...`)
+from within docker container.  See [documentation](StrelkaDemo.testing/README.md) for details.
 
-An alternative is to execute it within docker container.
-
-## Docker testing and development
-
-The Docker image `cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl` incorporates the CWL branch
-of SomaticWrapper, and is the image used for all work here.
-
-To start a docker container,
-```
-docker run -it cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl bash
-```
-To open another terminal in a running container (with container ID `03e59caeeb98`):
-```
-docker exec -it 03e59caeeb98 bash
-```
-Use `docker ps -a` and `docker start` to discover and restart stopped containers
-
-Editing SomaticWrapper within the docker image is very helpful for development and debugging.  It requires at least
-one terminal running in the container.  Once edits are made in the container,
-```
-docker commit 03e59caeeb98 cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl
-```
-will incorporate them into the image.  Such edits will then be available the next time the image runs.
-These can be pushed to cgc-images with,  
-```
-docker push cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl
-```
-
-A preferred alternative (to maintain reproducibility) is to `git push` to the
-repository from within the container, then re-generate the image using
-`1_docker_build.sh` and `2_push_docker.sh` in `somaticwrapper/docker`, which 
-clones the github repository.
 
 ## Rabix invocation
 
