@@ -1,6 +1,0 @@
-Testing scripts
-
-1. Run SomaticWrapper in Docker:
-
-Start docker and mount data directories with `start_docker.sh`.  From within
-container, `run.SomaticWrapper.docker.sh`
