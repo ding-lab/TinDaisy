@@ -1,0 +1,13 @@
+#taskLabel	taskNamespace	runState	errorCode	runStateUpdateTime
+CallGenome		complete	0	2018-07-26T03:35:00.078362Z
+makeTmpDir	CallGenome	complete	0	2018-07-26T03:34:59.088224Z
+callGenomeSegment_chromId_000_20_0000	CallGenome	complete	0	2018-07-26T03:34:59.317837Z
+fixVcfHeader_chromId_000_20_0000	CallGenome	complete	0	2018-07-26T03:34:59.390630Z
+compressSegmentOutput_chromId_000_20_0000	CallGenome	complete	0	2018-07-26T03:34:59.478281Z
+completedAllGenomeSegments	CallGenome	complete	0	2018-07-26T03:34:59.481485Z
+SNV_concat_vcf	CallGenome	complete	0	2018-07-26T03:34:59.559757Z
+SNV_index_vcf	CallGenome	complete	0	2018-07-26T03:34:59.639613Z
+Indel_concat_vcf	CallGenome	complete	0	2018-07-26T03:34:59.644367Z
+Indel_index_vcf	CallGenome	complete	0	2018-07-26T03:34:59.716307Z
+mergeRunStats	CallGenome	complete	0	2018-07-26T03:34:59.562358Z
+removeTmpDir	CallGenome	complete	0	2018-07-26T03:34:59.797059Z

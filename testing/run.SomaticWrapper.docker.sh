@@ -1,5 +1,17 @@
 # Run given step of SomaticWrapper in docker environment
-# Typically the run will start with ./start_docker.sh
+# Usage:
+#   bash run.SomaticWrapper.docker.sh STEP
+# where STEP is:
+# 1 :  Run streka
+# 2 :  Run Varscan
+# 3 :  Parse streka result
+# 4 :  Parse VarScan result
+# 5 :  Run Pindel
+# 7 :  Parse Pindel
+# 8 :  Merge vcf files 
+# 10 : Run VEP annotation 
+
+# This is run from within a container typically started with ./start_docker.sh
 
 DATAD="/data"
 TUMOR_BAM=$DATAD/StrelkaDemoCase.T.bam
@@ -11,13 +23,20 @@ PINDEL_CONFIG=$DATAD/pindel.WES.ini
 DBSNP_DB=$DATAD/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 CENTROMERE_BED=$DATAD/ucsc-centromere.GRCh37.bed
 #VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
+ASSEMBLY="GRCh37"
 
 OUTDIR="./results"
 mkdir -p $OUTDIR
 
 SAMPLE="fastq2bam_test"
 
-STEP="1"
+STEP=$1
+
+if [ -z $STEP ]; then
+echo Must provide step number.  Usage:
+echo    bash run.SomaticWrapper.docker.sh STEP
+exit 1
+fi
 
 ARGS="\
 --tumor_bam $TUMOR_BAM \
@@ -27,11 +46,25 @@ ARGS="\
 --varscan_config $VARSCAN_CONFIG \
 --pindel_config $PINDEL_CONFIG \
 --dbsnp_db $DBSNP_DB \
---output_vep 0 \
---assembly GRCh37 \
+--nooutput_vep \
+--assembly $ASSEMBLY \
 --is_strelka2  \
+--nono_delete_temp \
 --centromere_bed $CENTROMERE_BED \
---results_dir $OUTDIR"
+--results_dir $OUTDIR \
+--pindel_raw ./results/pindel/pindel_out/pindel-raw.dat \
+--strelka_snv_raw ./results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz \
+--strelka_snv_vcf ./results/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf \
+--varscan_indel_raw ./results/varscan/varscan_out/varscan.out.som_indel.vcf \
+--varscan_snv_raw ./results/varscan/varscan_out/varscan.out.som_snv.vcf \
+--varscan_indel_vcf ./results/varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf \
+--varscan_snv_vcf ./results/varscan/filter_out/varscan.out.som_snv.Somatic.hc.vcf \
+--pindel_raw ./results/pindel/pindel_out/pindel-raw.dat \
+--pindel_vcf ./results/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf \
+--input_vcf ./results/merged/merged.vcf \
+"
+
+# final output of step 10 is ./results/merged/merged.vcf (or ./results/vep/output.vcf.vep if --output_vep)
 
 BIN="/usr/local/somaticwrapper/SomaticWrapper.pl"
 perl $BIN $ARGS $STEP

@@ -1,0 +1,26 @@
+(dp0
+S'isShellCmd'
+p1
+I01
+sS'cmd'
+p2
+S'"/usr/bin/python2" -E "/usr/local/strelka2/libexec/vcfCmdlineSwapper.py" "/usr/local/strelka2/bin/configureStrelkaSomaticWorkflow.py --exome --normalBam /data/StrelkaDemoCase.N.bam --tumorBam /data/StrelkaDemoCase.T.bam --referenceFasta /data/demo20.fa --config /data/strelka.WES.ini --runDir ./results/strelka/strelka_out" < "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.snvs.unfiltered.chromId_000_20_0000.vcf" > "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.snvs.unfiltered.chromId_000_20_0000.vcf.reheader.tmp" && mv "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.snvs.unfiltered.chromId_000_20_0000.vcf.reheader.tmp" "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.snvs.unfiltered.chromId_000_20_0000.vcf" && "/usr/bin/python2" -E "/usr/local/strelka2/libexec/vcfCmdlineSwapper.py" "/usr/local/strelka2/bin/configureStrelkaSomaticWorkflow.py --exome --normalBam /data/StrelkaDemoCase.N.bam --tumorBam /data/StrelkaDemoCase.T.bam --referenceFasta /data/demo20.fa --config /data/strelka.WES.ini --runDir ./results/strelka/strelka_out" < "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.indels.unfiltered.chromId_000_20_0000.vcf" > "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.indels.unfiltered.chromId_000_20_0000.vcf.reheader.tmp" && mv "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.indels.unfiltered.chromId_000_20_0000.vcf.reheader.tmp" "/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/genomeSegment.tmpdir/somatic.indels.unfiltered.chromId_000_20_0000.vcf"'
+p3
+sS'errFile'
+p4
+S'/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/pyflow.data/logs/pyflow_tasks_stderr_log.txt'
+p5
+sS'outFile'
+p6
+S'/usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/pyflow.data/logs/pyflow_tasks_stdout_log.txt'
+p7
+sS'env'
+p8
+NsS'nCores'
+p9
+I1
+sS'cwd'
+p10
+S''
+p11
+s.

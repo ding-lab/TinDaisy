@@ -1,0 +1,70 @@
+[2018-07-26T03:34:58.916194Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Initiating pyFlow run
+[2018-07-26T03:34:58.920344Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] pyFlowClientWorkflowClass: StrelkaSomaticWorkflow
+[2018-07-26T03:34:58.922275Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] pyFlowVersion: 1.1.20
+[2018-07-26T03:34:58.924345Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] pythonVersion: 2.7.12.final.0
+[2018-07-26T03:34:58.926166Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] WorkingDir: '/usr/local/tin-daisy/testing/results/strelka/strelka_out'
+[2018-07-26T03:34:58.927902Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] ProcessCmdLine: './runWorkflow.py -m local -j 8 -g 4'
+[2018-07-26T03:34:58.929631Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] mode: local
+[2018-07-26T03:34:58.931445Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] nCores: 8
+[2018-07-26T03:34:58.933959Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] memMb: 4096
+[2018-07-26T03:34:58.936453Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] dataDir: /usr/local/tin-daisy/testing/results/strelka/strelka_out/workspace/pyflow.data
+[2018-07-26T03:34:58.938511Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] isDryRun: False
+[2018-07-26T03:34:58.941495Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] isContinue: False
+[2018-07-26T03:34:58.948117Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] isForceContinue: True
+[2018-07-26T03:34:58.952864Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] [RunParameters] mailTo: ''
+[2018-07-26T03:34:58.955508Z] [61c351fcfdcc] [2769_1] [TaskRunner:masterWorkflow] Starting task specification for master workflow
+[2018-07-26T03:34:58.957881Z] [61c351fcfdcc] [2769_1] [StrelkaSomaticWorkflow] Initiating Strelka somatic workflow version: 2.9.3
+[2018-07-26T03:34:58.962667Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding sub-workflow task 'CallGenome' to master workflow
+[2018-07-26T03:34:58.977350Z] [61c351fcfdcc] [2769_1] [TaskRunner:masterWorkflow] Finished task specification for master workflow
+[2018-07-26T03:34:58.981176Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching sub-workflow task: 'CallGenome' from master workflow
+[2018-07-26T03:34:58.983828Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome] Starting task specification for sub-workflow
+[2018-07-26T03:34:58.986728Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+makeTmpDir' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:58.989402Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+callGenomeSegment_chromId_000_20_0000' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:58.992163Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+fixVcfHeader_chromId_000_20_0000' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:58.995631Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+makeTmpDir' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.000752Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+compressSegmentOutput_chromId_000_20_0000' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.006594Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+completedAllGenomeSegments' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.014274Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+SNV_concat_vcf' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.030735Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+SNV_index_vcf' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.038376Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+makeTmpDir] Task initiated on local node
+[2018-07-26T03:34:59.041760Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+Indel_concat_vcf' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.049908Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+Indel_index_vcf' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.059068Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+mergeRunStats' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.062610Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Adding command task 'CallGenome+removeTmpDir' to sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.065264Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome] Finished task specification for sub-workflow
+[2018-07-26T03:34:59.088289Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+makeTmpDir' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.097031Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+callGenomeSegment_chromId_000_20_0000' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.103230Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+callGenomeSegment_chromId_000_20_0000] Task initiated on local node
+[2018-07-26T03:34:59.317933Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+callGenomeSegment_chromId_000_20_0000' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.321370Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+fixVcfHeader_chromId_000_20_0000' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.332867Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+fixVcfHeader_chromId_000_20_0000] Task initiated on local node
+[2018-07-26T03:34:59.390765Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+fixVcfHeader_chromId_000_20_0000' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.400030Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+compressSegmentOutput_chromId_000_20_0000' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.415873Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+compressSegmentOutput_chromId_000_20_0000] Task initiated on local node
+[2018-07-26T03:34:59.478352Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+compressSegmentOutput_chromId_000_20_0000' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.481696Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+completedAllGenomeSegments' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.484114Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+mergeRunStats' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.487565Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+SNV_concat_vcf' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.491921Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+mergeRunStats] Task initiated on local node
+[2018-07-26T03:34:59.503765Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+SNV_concat_vcf] Task initiated on local node
+[2018-07-26T03:34:59.559825Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+SNV_concat_vcf' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.562408Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+mergeRunStats' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.565834Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+Indel_concat_vcf' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.569551Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+SNV_index_vcf' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.574041Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+Indel_concat_vcf] Task initiated on local node
+[2018-07-26T03:34:59.581853Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+SNV_index_vcf] Task initiated on local node
+[2018-07-26T03:34:59.639779Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+SNV_index_vcf' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.644444Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+Indel_concat_vcf' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.647772Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+Indel_index_vcf' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.653653Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+Indel_index_vcf] Task initiated on local node
+[2018-07-26T03:34:59.716455Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+Indel_index_vcf' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.724066Z] [61c351fcfdcc] [2769_1] [TaskManager] Launching command task: 'CallGenome+removeTmpDir' from sub-workflow 'CallGenome'
+[2018-07-26T03:34:59.746594Z] [61c351fcfdcc] [2769_1] [TaskRunner:CallGenome+removeTmpDir] Task initiated on local node
+[2018-07-26T03:34:59.797137Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed command task: 'CallGenome+removeTmpDir' launched from sub-workflow 'CallGenome'
+[2018-07-26T03:35:00.078415Z] [61c351fcfdcc] [2769_1] [TaskManager] Completed sub-workflow task: 'CallGenome' launched from master workflow
+[2018-07-26T03:35:01.699883Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Strelka somatic workflow successfully completed.
+[2018-07-26T03:35:01.699883Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] 
+[2018-07-26T03:35:01.699883Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] 	workflow version: 2.9.3
+[2018-07-26T03:35:01.703787Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] 
+[2018-07-26T03:35:01.706473Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Workflow successfully completed all tasks
+[2018-07-26T03:35:01.708800Z] [61c351fcfdcc] [2769_1] [WorkflowRunner] Elapsed time for full workflow: 2 sec

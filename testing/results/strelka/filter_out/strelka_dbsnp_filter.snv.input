@@ -1,0 +1,6 @@
+streka.dbsnp.snv.annotator = /usr/local/snpEff/SnpSift.jar
+streka.dbsnp.snv.db = /data/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
+streka.dbsnp.snv.rawvcf = ./results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz
+streka.dbsnp.snv.mode = filter
+streka.dbsnp.snv.passfile  = ./results/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf
+streka.dbsnp.snv.dbsnpfile = ./results/strelka/filter_out/strelka.somatic.snv.all.dbsnp_present.vcf

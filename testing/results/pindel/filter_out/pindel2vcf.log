@@ -1,0 +1,8 @@
+Samples:
+Chromosomes in which SVs have been found:
+Scanning chromosome: 20
+No reads for chromosome 20, skipping it.
+Removing chromosome 20 from memory.
+
+Note: for this conversion, the -G (GATK) compatibility option was not used; while this allows Pindel to indicate the uncertainty in genotypes, and should be compatible with most software, this format will not be compatible with GATK pipelines and tools such as GATK ValidateVariants; if you wish to input the vcf-file into the GATK pipeline, please use the -G option.
+
