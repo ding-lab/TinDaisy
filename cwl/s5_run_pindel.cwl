@@ -35,12 +35,12 @@ inputs:
       position: 0
       prefix: '--centromere_bed'
   - id: no_delete_temp
-    type: int?
+    type: boolean?
     inputBinding:
       position: 0
       prefix: '--no_delete_temp'
     label: Don't delete temp files
-    doc: 'If set to 1, will not delete large temporary Pindel output'
+    doc: 'If set, will not delete large temporary Pindel output'
   - id: results_dir
     type: string?
     inputBinding:

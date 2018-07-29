@@ -37,6 +37,12 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: no_delete_temp
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--no_delete_temp'
+    doc: 'If set, do not delete large temporary files'
 outputs:
   - id: pindel_dbsnp
     type: File

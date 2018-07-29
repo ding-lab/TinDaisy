@@ -30,14 +30,14 @@ inputs:
     'sbg:x': -475.1688232421875
     'sbg:y': 602.2885131835938
   - id: output_vep
-    type: string?
+    type: boolean?
     'sbg:exposed': true
   - id: centromere_bed
     type: File?
     'sbg:x': -522.3388671875
     'sbg:y': 475.5733642578125
   - id: no_delete_temp
-    type: int?
+    type: boolean?
     'sbg:exposed': true
   - id: vep_cache_gz
     type: File?
@@ -155,6 +155,7 @@ steps:
       - id: centromere_bed
         source: centromere_bed
       - id: no_delete_temp
+        default: false
         source: no_delete_temp
       - id: results_dir
         source: results_dir
@@ -176,6 +177,9 @@ steps:
         source: dbsnp_db
       - id: results_dir
         source: results_dir
+      - id: no_delete_temp
+        default: false
+        source: no_delete_temp
     out:
       - id: pindel_dbsnp
     run: s7_parse_pindel.cwl

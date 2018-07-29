@@ -28,10 +28,11 @@ inputs:
     label: assembly name for VEP annotation
     doc: Either GRCh37 or GRCh38 currently accepted
   - id: output_vep
-    type: string?
+    type: boolean?
     inputBinding:
       position: 0
       prefix: '--output_vep'
+    doc: 'If set, output in VEP format instead of VCF'
   - id: vep_cache_gz
     type: File?
     inputBinding:
