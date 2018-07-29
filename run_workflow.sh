@@ -5,7 +5,7 @@
 # Username: m_wyczalkowski
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 
-source demo_paths.sh
+source project_config.sh
 
 CWL="cwl/TinDaisy.workflow.cwl"
 
@@ -39,12 +39,13 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --varscan_config $VARSCAN_CONFIG \
 --pindel_config $PINDEL_CONFIG \
 --dbsnp_db $DBSNP_DB \
---output_vep 1 \
---assembly GRCh37 \
+--assembly $ASSEMBLY \
 --centromere_bed $CENTROMERE_BED \
---results_dir TinDaisyDemo \
+--results_dir $OUTPUT_DIR \
 --is_strelka2 \
 --vep_cache_gz $VEP_CACHE_GZ \
---vep_cache_version 90"
-#--no_delete_temp 1"
+--vep_cache_version 90 \
+"  
+#--no_delete_temp \
+#--output_vep \
 #--vep_cache_dir $VEP_CACHE_DIR "

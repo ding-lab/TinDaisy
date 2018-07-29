@@ -107,21 +107,22 @@ There are four levels of code development.
 3. Executing CWL-wrapped SomaticWrapper tool using Rabix Executor
 4. Executing a CWL workflow containing 1 or more SomaticWrapper tools
 
-For development and debugging, make sure all prior steps work.
+For development and debugging, make sure all prior steps work.  Note that can also run workflows
+directly from Rabix Composer.
 
 ## Running SomaticWrapper directly
 
-For development and testing, the StrelkaDemo.testing directory has scripts
+For development and testing, the StrelkaDemo.docker.testing directory has scripts
 which will run individual steps of SomaticWrapper directly (i.e., `perl SomaticWrapper.pl ...`)
-from within docker container.  See [documentation](StrelkaDemo.testing/README.md) for details.
+from within docker container.  See [documentation](StrelkaDemo.docker.testing/README.md) for details.
 
 
-## Rabix invocation
+## Rabix Executor invocation
 
 Individual steps of the SomaticWrapper workflow are defined as CWL tools in the `./cwl` directory and can
 be viewed and modified with [Rabix Composer](https://github.com/rabix/composer).
 
-Individual tools can be executed either from within Composer, or as individual shell scripts. For instance,
+Individual tools can be executed either from within Composer, or as individual shell scripts in `./StrelkaDemo.CWL.testing`. For instance,
 ```
 bash run_cwl_S1.sh
 ```
@@ -134,6 +135,12 @@ The entire pipeline can be executed using the StrelkaDemo test dataset with,
 ```
 bash run_workflow.sh
 ```
+
+## Beyond StrelkaDemo
+
+Edit `project_config.sh` appropriately.  Run `bash run_workflow.sh`.
+
+TODO: create template `project_config.GRCh38.sh` file to demonstrate real example
 
 # Development details
 

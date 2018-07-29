@@ -1,4 +1,5 @@
-source demo_paths.sh
+cd ..
+source project_config.sh
 CWL="cwl/s10_annotate_vep.cwl"
 
 # try to have all output go to output_dir
