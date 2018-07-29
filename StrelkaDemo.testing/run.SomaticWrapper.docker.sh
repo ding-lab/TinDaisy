@@ -25,7 +25,7 @@ CENTROMERE_BED=$DATAD/ucsc-centromere.GRCh37.bed
 #VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
 ASSEMBLY="GRCh37"
 
-OUTDIR="./results"
+OUTDIR="./StrelkaDemo.results"
 mkdir -p $OUTDIR
 
 SAMPLE="fastq2bam_test"
@@ -52,16 +52,16 @@ ARGS="\
 --nono_delete_temp \
 --centromere_bed $CENTROMERE_BED \
 --results_dir $OUTDIR \
---pindel_raw ./results/pindel/pindel_out/pindel-raw.dat \
---strelka_snv_raw ./results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz \
---strelka_snv_vcf ./results/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf \
---varscan_indel_raw ./results/varscan/varscan_out/varscan.out.som_indel.vcf \
---varscan_snv_raw ./results/varscan/varscan_out/varscan.out.som_snv.vcf \
---varscan_indel_vcf ./results/varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf \
---varscan_snv_vcf ./results/varscan/filter_out/varscan.out.som_snv.Somatic.hc.vcf \
---pindel_raw ./results/pindel/pindel_out/pindel-raw.dat \
---pindel_vcf ./results/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf \
---input_vcf ./results/merged/merged.vcf \
+--pindel_raw $OUTDIR/pindel/pindel_out/pindel-raw.dat \
+--strelka_snv_raw $OUTDIR/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz \
+--strelka_snv_vcf $OUTDIR/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf \
+--varscan_indel_raw $OUTDIR/varscan/varscan_out/varscan.out.som_indel.vcf \
+--varscan_snv_raw $OUTDIR/varscan/varscan_out/varscan.out.som_snv.vcf \
+--varscan_indel_vcf $OUTDIR/varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf \
+--varscan_snv_vcf $OUTDIR/varscan/filter_out/varscan.out.som_snv.Somatic.hc.vcf \
+--pindel_raw $OUTDIR/pindel/pindel_out/pindel-raw.dat \
+--pindel_vcf $OUTDIR/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf \
+--input_vcf $OUTDIR/merged/merged.vcf \
 "
 
 # final output of step 10 is ./results/merged/merged.vcf (or ./results/vep/output.vcf.vep if --output_vep)
