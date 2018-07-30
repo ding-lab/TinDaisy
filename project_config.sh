@@ -11,8 +11,8 @@ VEP_CACHE_GZ="/Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/im
 VEP_CACHE_VERSION="90"
 ASSEMBLY="GRCh37"
 
-OUTPUT_DIR=results  #/diskmnt/Projects/TinDaisy/results
+OUTPUT_DIR=results
 
-RABIX=rabix
+RABIX="/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix"
 #export RABIX=/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix
 

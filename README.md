@@ -140,7 +140,7 @@ bash run_workflow.sh
 
 Edit `project_config.sh` appropriately.  Run `bash run_workflow.sh`.
 
-TODO: create template `project_config.GRCh38.sh` file to demonstrate real example
+The file `run_workflow.C3N-01649.sh` provides an example using real data
 
 # Development details
 
