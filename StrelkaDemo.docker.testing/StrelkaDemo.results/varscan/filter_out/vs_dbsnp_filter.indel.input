@@ -1,6 +1,0 @@
-varscan.dbsnp.indel.annotator = /usr/local/snpEff/SnpSift.jar
-varscan.dbsnp.indel.db = /data/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
-varscan.dbsnp.indel.rawvcf = ./results/varscan/filter_out/varscan.out.som_indel.Somatic.hc.vcf
-varscan.dbsnp.indel.mode = filter
-varscan.dbsnp.indel.passfile  = ./results/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.vcf
-varscan.dbsnp.indel.dbsnpfile = ./results/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_present.vcf

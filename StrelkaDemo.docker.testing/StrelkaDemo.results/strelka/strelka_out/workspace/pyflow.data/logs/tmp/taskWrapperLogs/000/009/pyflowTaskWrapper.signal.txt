@@ -1,4 +1,0 @@
-[2018-07-26T03:34:59.668294Z] [61c351fcfdcc] [2769_1] [pyflowTaskWrapper:CallGenome+Indel_index_vcf] [wrapperSignal] wrapperStart
-[2018-07-26T03:34:59.675476Z] [61c351fcfdcc] [2769_1] [pyflowTaskWrapper:CallGenome+Indel_index_vcf] [wrapperSignal] taskStart
-[2018-07-26T03:34:59.680577Z] [61c351fcfdcc] [2769_1] [pyflowTaskWrapper:CallGenome+Indel_index_vcf] [wrapperSignal] taskExitCode 0
-[2018-07-26T03:34:59.686488Z] [61c351fcfdcc] [2769_1] [pyflowTaskWrapper:CallGenome+Indel_index_vcf] [wrapperSignal] taskElapsedSec 0

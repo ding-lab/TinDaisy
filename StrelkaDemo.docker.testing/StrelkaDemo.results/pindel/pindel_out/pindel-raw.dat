@@ -1,6 +1,0 @@
-pindel_D:0	D 1	NT 0 ""	ChrID 20	BP 3664	3666	BP_range 3664	3669	Supports 16	16	+ 9	9	- 7	7	S1 80	SUM_MS 960	2	NumSupSamples 1	1	pindel.N 0 0 0 0 0 0	pindel.T 0 0 9 9 7 7
-pindel_D:1	D 70	NT 70 "TAGGAAATTTGAGTCCAGCCAAGCATGAGGCGGCTGTTGCCCTCAAGGTTAACATGGATGGGCTGACCCC"	ChrID 20	BP 1269	1340	BP_range 1269	1340	Supports 1	1	+ 0	0	- 1	1	S1 2	SUM_MS 29	2	NumSupSamples 1	1	pindel.N 0 0 0 0 1 1	pindel.T 0 0 0 0 0 0
-pindel_D:2	D 11	NT 11 "TATTGGAAGCA"	ChrID 20	BP 3178	3190	BP_range 3178	3190	Supports 1	1	+ 1	1	- 0	0	S1 2	SUM_MS 60	2	NumSupSamples 1	1	pindel.N 0 0 1 1 0 0	pindel.T 0 0 0 0 0 0
-pindel_SI:0	I 3	NT 3 "TAT"	ChrID 20	BP 1148	1149	BP_range 1148	1153	Supports 6	6	+ 2	2	- 4	4	S1 15	SUM_MS 360	2	NumSupSamples 1	1	pindel.N 0 0 0 0 0 0	pindel.T 0 0 2 2 4 4
-pindel_SI:1	I 4	NT 4 "CTCC"	ChrID 20	BP 3662	3663	BP_range 3662	3668	Supports 1	1	+ 0	0	- 1	1	S1 2	SUM_MS 60	2	NumSupSamples 1	1	pindel.N 0 0 0 0 0 0	pindel.T 0 0 0 0 1 1
-pindel_INV:0	INV 95	NT 0:0 "":""	ChrID 20	BP 1316	1412	BP_range 1316	1412	Supports 1	1	+ 1	1	- 0	0	S1 2	SUM_MS 60	2	NumSupSamples 1	1	pindel.N 0 0 1 1 0 0	pindel.T 0 0 0 0 0 0
