@@ -1,9 +1,0 @@
-merged.vep.vcf = ./results/merged/merged.vcf
-merged.vep.output = ./results/vep/output.vcf
-merged.vep.vep_cmd = /usr/local/ensembl-vep/vep
-merged.vep.cachedir = 
-merged.vep.reffasta = /data/demo20.fa
-merged.vep.assembly = GRCh37
-merged.vep.cache_version = 
-merged.vep.usedb = 1  
-merged.vep.output_vep = 0

@@ -1,6 +1,0 @@
-pindel.dbsnp.indel.annotator = /usr/local/snpEff/SnpSift.jar
-pindel.dbsnp.indel.db = /data/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
-pindel.dbsnp.indel.rawvcf = ./results/pindel/filter_out/pindel-raw.dat.CvgVafStrand_pass.Homopolymer_pass.vcf
-pindel.dbsnp.indel.mode = filter
-pindel.dbsnp.indel.passfile  = ./results/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf
-pindel.dbsnp.indel.dbsnpfile = ./results/pindel/filter_out/pindel.out.current_final.dbsnp_present.vcf
