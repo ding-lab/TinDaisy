@@ -34,6 +34,13 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: varscan_vcf_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--varscan_vcf_filter_config'
+    label: VCF filter config
+    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
 outputs:
   - id: varscan_snv_dbsnp
     doc: Final SNV output of parsing

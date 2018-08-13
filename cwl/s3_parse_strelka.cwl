@@ -29,6 +29,13 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: strelka_vcf_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--strelka_vcf_filter_config'
+    label: VCF filter configuration file
+    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
 outputs:
   - id: strelka_snv_dbsnp
     type: File

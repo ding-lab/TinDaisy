@@ -43,6 +43,13 @@ inputs:
       position: 0
       prefix: '--no_delete_temp'
     doc: 'If set, do not delete large temporary files'
+  - id: pindel_vcf_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--pindel_vcf_filter_config'
+    label: VCF Filter config
+    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
 outputs:
   - id: pindel_dbsnp
     type: File
