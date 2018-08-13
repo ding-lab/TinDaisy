@@ -60,6 +60,18 @@ inputs:
   - id: is_strelka2
     type: boolean?
     'sbg:exposed': true
+  - id: pindel_vcf_filter_config
+    type: File
+    'sbg:x': -10.622802734375
+    'sbg:y': 637
+  - id: varscan_vcf_filter_config
+    type: File
+    'sbg:x': -202.622802734375
+    'sbg:y': -397
+  - id: strelka_vcf_filter_config
+    type: File
+    'sbg:x': -114.622802734375
+    'sbg:y': -534.2361450195312
 outputs:
   - id: output_dat
     outputSource:
@@ -119,6 +131,8 @@ steps:
         source: strelka_config
       - id: results_dir
         source: results_dir
+      - id: strelka_vcf_filter_config
+        source: strelka_vcf_filter_config
     out:
       - id: strelka_snv_dbsnp
     run: s3_parse_strelka.cwl
@@ -137,13 +151,15 @@ steps:
         source: varscan_config
       - id: results_dir
         source: results_dir
+      - id: varscan_vcf_filter_config
+        source: varscan_vcf_filter_config
     out:
       - id: varscan_snv_dbsnp
       - id: varscan_indel_dbsnp
     run: s4_parse_varscan.cwl
     label: s4_parse_varscan
-    'sbg:x': 128.203125
-    'sbg:y': 128
+    'sbg:x': 141
+    'sbg:y': 148
   - id: s5_run_pindel
     in:
       - id: tumor_bam
@@ -180,6 +196,8 @@ steps:
       - id: no_delete_temp
         default: false
         source: no_delete_temp
+      - id: pindel_vcf_filter_config
+        source: pindel_vcf_filter_config
     out:
       - id: pindel_dbsnp
     run: s7_parse_pindel.cwl
