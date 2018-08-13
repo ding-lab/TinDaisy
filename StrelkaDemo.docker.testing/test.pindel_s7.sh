@@ -9,8 +9,8 @@ VARSCAN_CONFIG=$DATAD/varscan.WES.ini
 PINDEL_CONFIG=$DATAD/pindel.WES.ini
 DBSNP_DB=$DATAD/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 CENTROMERE_BED=$DATAD/ucsc-centromere.GRCh37.bed
-/home/mwyczalk_test/data/docker/data/B_Filter/dbsnp.noCOSMIC.GRCh37.vcf.gz
-/home/mwyczalk_test/data/docker/data
+#/home/mwyczalk_test/data/docker/data/B_Filter/dbsnp.noCOSMIC.GRCh37.vcf.gz
+#/home/mwyczalk_test/data/docker/data
 #VEP_CACHE_DIR=/home/mwyczalk_test/data/docker/data/D_VEP
 ASSEMBLY="GRCh37"
 

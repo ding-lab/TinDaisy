@@ -30,6 +30,11 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # --output_vep 
 # --no_delete_temp
 
+
+# OUTPUT_DIR must not have leading "./".  Below we strip it.
+# In general, best to just have OUTPUT_DIR be sample name, not a path per se
+OUTPUT_DIR=${OUTPUT_DIR#./}
+
 # Cache file: not defined, so using vep_db
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
@@ -42,10 +47,12 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --assembly $ASSEMBLY \
 --centromere_bed $CENTROMERE_BED \
 --results_dir $OUTPUT_DIR \
+--no_delete_temp \
 --is_strelka2 \
---vep_cache_gz $VEP_CACHE_GZ \
---vep_cache_version 90 \
 "  
+#--is_strelka2 \
 #--no_delete_temp \
 #--output_vep \
 #--vep_cache_dir $VEP_CACHE_DIR "
+#--vep_cache_gz $VEP_CACHE_GZ \
+#--vep_cache_version 90 \
