@@ -55,7 +55,7 @@ outputs:
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.vcf
+        $(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.filtered.vcf
 label: s7_parse_pindel
 arguments:
   - position: 99

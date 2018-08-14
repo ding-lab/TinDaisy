@@ -41,7 +41,7 @@ outputs:
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.vcf
+        $(inputs.results_dir)/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.filtered.vcf
     secondaryFiles:
       - .tbi
 label: s3_parse_strelka

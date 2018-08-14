@@ -47,13 +47,13 @@ outputs:
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.dbsnp_pass.vcf
+        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.dbsnp_pass.filtered.vcf
   - id: varscan_indel_dbsnp
     doc: Final SNV output of parsing
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.vcf
+        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.filtered.vcf
 label: s4_parse_varscan
 arguments:
   - position: 99

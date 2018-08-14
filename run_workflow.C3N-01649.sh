@@ -22,6 +22,9 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # --pindel_config
 # --dbsnp_db
 # --assembly
+# --pindel_vcf_filter_config
+# --varscan_vcf_filter_config
+# --strelka_vcf_filter_config
 
 # optional args:
 # --centromere_bed 
@@ -34,7 +37,6 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # In general, best to just have OUTPUT_DIR be sample name, not a path per se
 OUTPUT_DIR=${OUTPUT_DIR#./}
 
-# Cache file: not defined, so using vep_db
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
@@ -49,6 +51,9 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --vep_cache_gz $VEP_CACHE_GZ \
 --vep_cache_version 90 \
 --no_delete_temp \
+--pindel_vcf_filter_config $PINDEL_VCF_FILTER_CONFIG \
+--varscan_vcf_filter_config $VARSCAN_VCF_FILTER_CONFIG \
+--strelka_vcf_filter_config $STRELKA_VCF_FILTER_CONFIG \
 "  
 #--is_strelka2 \
 #--no_delete_temp \

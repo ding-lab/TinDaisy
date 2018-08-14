@@ -10,6 +10,12 @@ REFERENCE_FASTA="/diskmnt/Projects/Users/mwyczalk/data/docker/data/A_Reference/H
 STRELKA_CONFIG="StrelkaDemo.dat/strelka.WES.ini"
 VARSCAN_CONFIG="StrelkaDemo.dat/varscan.WES.ini"
 PINDEL_CONFIG="StrelkaDemo.dat/pindel.WES.ini"
+
+# VCF Filter args.  Strelka and varscan use same parameters, pindel has a different value of min_vaf_somatic 
+PINDEL_VCF_FILTER_CONFIG="StrelkaDemo.dat/pindel-vcf_filter_config.ini"
+VARSCAN_VCF_FILTER_CONFIG="StrelkaDemo.dat/vcf_filter_config.ini"
+STRELKA_VCF_FILTER_CONFIG="StrelkaDemo.dat/vcf_filter_config.ini"
+
 #DBSNP_DB="/home/mwyczalk_test/data/docker/data/B_Filter/dbsnp.noCOSMIC.GRCh37.vcf.gz"
 DBSNP_DB="/diskmnt/Projects/Users/hsun/data/dbsnp/00-All.brief.pass.cosmic.vcf.gz"
 CENTROMERE_BED="StrelkaDemo.dat/pindel-centromere-exclude.bed"
