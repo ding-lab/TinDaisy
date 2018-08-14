@@ -44,7 +44,7 @@ outputs:
   - id: merged_vcf
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/merged/merged.vcf
+      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
 label: s8_merge_vcf
 arguments:
   - position: 99
