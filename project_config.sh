@@ -11,6 +11,9 @@ VEP_CACHE_GZ="/Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/im
 VEP_CACHE_VERSION="90"
 ASSEMBLY="GRCh37"
 
+VCF_FILTER_CONFIG="StrelkaDemo.dat/vcf_filter_config.ini"
+PINDEL_VCF_FILTER_CONFIG="StrelkaDemo.dat/pindel-vcf_filter_config.ini"
+
 OUTPUT_DIR=results
 
 RABIX="/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix"

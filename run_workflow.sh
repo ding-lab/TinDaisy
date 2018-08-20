@@ -23,12 +23,14 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # --dbsnp_db
 # --assembly
 
+
 # optional args:
 # --centromere_bed 
 # --vep_cache_dir  
-# --vep_cache_gz
-# --output_vep 
+# --vep_output 
 # --no_delete_temp
+# --is_strelka2
+# --results_dir 
 
 
 # OUTPUT_DIR must not have leading "./".  Below we strip it.
@@ -49,10 +51,10 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --results_dir $OUTPUT_DIR \
 --no_delete_temp \
 --is_strelka2 \
+--pindel_vcf_filter_config $PINDEL_VCF_FILTER_CONFIG \
+--varscan_vcf_filter_config $VCF_FILTER_CONFIG \
+--strelka_vcf_filter_config $VCF_FILTER_CONFIG \
 "  
-#--is_strelka2 \
-#--no_delete_temp \
-#--output_vep \
 #--vep_cache_dir $VEP_CACHE_DIR "
 #--vep_cache_gz $VEP_CACHE_GZ \
 #--vep_cache_version 90 \
