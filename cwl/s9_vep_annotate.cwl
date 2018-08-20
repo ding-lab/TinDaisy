@@ -2,31 +2,16 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s8_merge_vcf
+id: annotate_vep
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: strelka_snv_vcf
+  - id: input_vcf
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_snv_vcf'
-  - id: varscan_indel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_indel_vcf'
-  - id: varscan_snv_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_snv_vcf'
-  - id: pindel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf'
+      prefix: '--input_vcf'
   - id: reference_fasta
     type: File
     inputBinding:
@@ -35,29 +20,57 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
+  - id: assembly
+    type: string
+    inputBinding:
+      position: 0
+      prefix: '--assembly'
+    label: assembly name for VEP annotation
+    doc: Either GRCh37 or GRCh38 currently accepted
+  - id: vep_output
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--vep_output'
+    label: Define output format after annotation.
+    doc: 'Allowed values: vcf, vep.  vcf is default'
+  - id: vep_cache_version
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_version'
+    label: 'VEP Cache Version (e.g., 90)'
+    doc: 'This is required if VEP_CACHE_GZ is defined, and must match'
   - id: results_dir
     type: string?
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: bypass
-    type: boolean?
+  - id: vep_cache_dir
+    type: string?
     inputBinding:
       position: 0
-      prefix: '--bypass'
-    label: Bypass filter by retaining all reads
+      prefix: '--vep_cache_dir'
+    label: location of VEP cache directory
+    doc: >-
+      * if vep_cache_dir is not defined, will perform online VEP DB lookups
+
+      * If vep_cache_dir is a directory, it indicates location of VEP cache
+
+      * If vep_cache_dir is a file ending in .tar.gz, will extract its contents
+      into "./vep-cache" and use VEP cache
 outputs:
-  - id: merged_vcf
+  - id: output_dat
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
-label: s8_merge_vcf
+      glob: $(inputs.results_dir)/vep/output.v*
+label: s9_vep_annotate
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '8'
+    valueFrom: '9'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -65,7 +78,8 @@ requirements:
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    pindel_vcf:
+    assembly: assembly-string-value
+    input_vcf:
       basename: input.ext
       class: File
       contents: file contents
@@ -74,6 +88,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    output_vep: output_vep-string-value
     reference_fasta:
       basename: input.ext
       class: File
@@ -83,7 +98,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    strelka_snv_vcf:
+    vep_cache_gz:
       basename: input.ext
       class: File
       contents: file contents
@@ -92,24 +107,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    varscan_indel_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_snv_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
+    vep_cache_version: vep_cache_version-string-value
   runtime:
     cores: 1
     ram: 1000

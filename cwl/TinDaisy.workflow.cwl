@@ -39,10 +39,6 @@ inputs:
   - id: no_delete_temp
     type: boolean?
     'sbg:exposed': true
-  - id: vep_cache_gz
-    type: File?
-    'sbg:x': 98.81038665771484
-    'sbg:y': -419.2463073730469
   - id: vep_cache_version
     type: string?
     'sbg:exposed': true
@@ -232,17 +228,13 @@ steps:
         source: reference_fasta
       - id: assembly
         source: assembly
-      - id: output_vep
-        source: output_vep
-      - id: vep_cache_gz
-        source: vep_cache_gz
       - id: vep_cache_version
         source: vep_cache_version
       - id: results_dir
         source: results_dir
     out:
       - id: output_dat
-    run: s10_annotate_vep.cwl
+    run: s9_vep_annotate.cwl
     label: annotate_vep
     'sbg:x': 286.7515762749068
     'sbg:y': -244.10921975232046

@@ -27,19 +27,6 @@ inputs:
       prefix: '--assembly'
     label: assembly name for VEP annotation
     doc: Either GRCh37 or GRCh38 currently accepted
-  - id: output_vep
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--output_vep'
-    doc: 'If set, output in VEP format instead of VCF'
-  - id: vep_cache_gz
-    type: File?
-    inputBinding:
-      position: 0
-      prefix: '--vep_cache_gz'
-    label: VEP cache .tar.gz
-    doc: .tar.gz compressed VEP Cache file will be written to"./vep-cache"
   - id: vep_cache_version
     type: string?
     inputBinding:
@@ -52,12 +39,25 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: vep_cache_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_dir'
+    label: location of VEP cache directory
+    doc: >-
+      * if vep_cache_dir is not defined, will perform online VEP DB lookups
+
+      * If vep_cache_dir is a directory, it indicates location of VEP cache
+
+      * If vep_cache_dir is a file ending in .tar.gz, will extract its contents
+      into "./vep-cache" and use VEP cache
 outputs:
   - id: output_dat
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/vep/output.vcf*
-label: s10_annotate_vep
+      glob: $(inputs.results_dir)/maf/output.maf*
+label: s10_vcf_2_maf
 arguments:
   - position: 99
     prefix: ''

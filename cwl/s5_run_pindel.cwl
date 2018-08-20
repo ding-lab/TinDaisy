@@ -46,6 +46,12 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: pindel_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--pindel_config'
+    label: path to pindel.ini file
 outputs:
   - id: pindel_raw
     type: File
