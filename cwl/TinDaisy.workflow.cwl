@@ -230,6 +230,8 @@ steps:
         source: assembly
       - id: vep_cache_version
         source: vep_cache_version
+      - id: vep_cache_gz
+        source: vep_cache_gz
       - id: results_dir
         source: results_dir
     out:

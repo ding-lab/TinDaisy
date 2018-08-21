@@ -33,25 +33,22 @@ inputs:
       position: 0
       prefix: '--vep_cache_version'
     label: 'VEP Cache Version (e.g., 90)'
-    doc: 'This is required if VEP_CACHE_GZ is defined, and must match'
   - id: results_dir
-    type: string?
+    type: File
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: vep_cache_dir
-    type: string?
+  - id: vep_cache_gz
+    type: File?
     inputBinding:
       position: 0
       prefix: '--vep_cache_dir'
-    label: location of VEP cache directory
+    label: VEP Cache .tar.gz 
     doc: >-
-      * if vep_cache_dir is not defined, will perform online VEP DB lookups
-
-      * If vep_cache_dir is a directory, it indicates location of VEP cache
-
-      * If vep_cache_dir is a file ending in .tar.gz, will extract its contents
+      * if vep_cache_gz is not defined, will perform online VEP DB lookups
+      * If vep_cache_gz is a file ending in .tar.gz, will extract its contents
       into "./vep-cache" and use VEP cache
+      * If vep_cache_gz cannot be a directory in CWL
 outputs:
   - id: output_dat
     type: File
