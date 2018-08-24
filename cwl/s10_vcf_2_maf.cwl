@@ -34,7 +34,7 @@ inputs:
       prefix: '--vep_cache_version'
     label: 'VEP Cache Version (e.g., 90)'
   - id: results_dir
-    type: File
+    type: string?
     inputBinding:
       position: 0
       prefix: '--results_dir'
