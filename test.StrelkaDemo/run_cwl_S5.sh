@@ -10,11 +10,14 @@ source project_config.sh
 CWL="cwl/s5_run_pindel.cwl"
 
 # try to have all output go to output_dir
-mkdir -p $OUTPUT_DIR
-RABIX_ARGS="--basedir $OUTPUT_DIR"
+mkdir -p $RESULTS_DIR
+RABIX_ARGS="--basedir $RESULTS_DIR"
 
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
 --reference_fasta $REFERENCE_FASTA \
---centromere_bed $CENTROMERE_BED "  # optional 
+--pindel_config $PINDEL_CONFIG \
+--centromere_bed $CENTROMERE_BED \
+--results_dir $RESULTS_DIR \
+"  # optional 

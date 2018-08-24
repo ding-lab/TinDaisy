@@ -9,13 +9,13 @@ source project_config.sh
 CWL="cwl/s1_run_strelka.cwl"
 
 # try to have all output go to output_dir
-mkdir -p $OUTPUT_DIR
-RABIX_ARGS="--basedir $OUTPUT_DIR"
+mkdir -p $RESULTS_DIR
+RABIX_ARGS="--basedir $RESULTS_DIR"
 
 $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
 --reference_fasta $REFERENCE_FASTA \
 --strelka_config $STRELKA_CONFIG \
---results_dir results \
+--results_dir $RESULTS_DIR \
 --is_strelka2"

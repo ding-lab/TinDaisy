@@ -56,7 +56,11 @@ outputs:
   - id: pindel_raw
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/pindel/pindel_out/pindel-raw.dat
+      glob: |-
+        ${
+                return inputs.results_dir + '/pindel/pindel_out/pindel-raw.dat'
+
+        }
 label: s5_run_pindel
 arguments:
   - position: 99

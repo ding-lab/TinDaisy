@@ -21,7 +21,7 @@ inputs:
       - .fai
       - ^.dict
   - id: assembly
-    type: string
+    type: string?
     inputBinding:
       position: 0
       prefix: '--assembly'
@@ -51,6 +51,7 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--vep_cache_dir'
+      shellQuote: false
     label: location of VEP cache directory
     doc: >-
       * if vep_cache_dir is not defined, will perform online VEP DB lookups

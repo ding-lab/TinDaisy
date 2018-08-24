@@ -3,18 +3,21 @@ source project_config.sh
 CWL="cwl/s3_parse_strelka.cwl"
 
 # try to have all output go to output_dir
-mkdir -p $OUTPUT_DIR
-RABIX_ARGS="--basedir $OUTPUT_DIR"
+mkdir -p $RESULTS_DIR
+RABIX_ARGS="--basedir $RESULTS_DIR"
 
-$RABIX $RABIX_ARGS $CWL -- " \
---strelka_snv_raw /Users/mwyczalk/Projects/Rabix/SomaticWrapper.CWL1/results/workflow-v1-1-2018-03-25-164136.121/root/s1_run_strelka/strelka/strelka_out/results/passed.somatic.snvs.vcf \
---dbsnp_db /Users/mwyczalk/Data/SomaticWrapper/image/B_Filter/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz"
+# Output of previous run to use as input here
+OLD_RUND="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s1_run_strelka-2018-08-22-101130.617"
+# This is dependent on whether Strelka1 or Strelka2 is used
+STRELKA_SNV_RAW="$OLD_RUND/root/results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz"
 
 
-#--assembly GRCh37  \
-#--use_vep_db 1 \
-#--output_vep 1 \
-#--strelka_config /usr/local/somaticwrapper/params/strelka.WES.ini \
-#--results_dir . \
-#--dbsnp_db /Users/mwyczalk/Projects/SomaticWrapper.StrelkaDemo/StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz \
-#--annotate_intermediate 1 \
+ARGS="\
+--strelka_snv_raw $STRELKA_SNV_RAW \
+--strelka_config $STRELKA_CONFIG \
+--strelka_vcf_filter_config $VCF_FILTER_CONFIG \
+--dbsnp_db $DBSNP_DB \
+--results_dir $RESULTS_DIR \
+"
+
+$RABIX $RABIX_ARGS $CWL -- $ARGS

@@ -14,8 +14,9 @@ ASSEMBLY="GRCh37"
 VCF_FILTER_CONFIG="StrelkaDemo.dat/vcf_filter_config.ini"
 PINDEL_VCF_FILTER_CONFIG="StrelkaDemo.dat/pindel-vcf_filter_config.ini"
 
-OUTPUT_DIR=results
+RESULTS_DIR=results
 
-RABIX="/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix"
+#RABIX="/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix"
 #export RABIX=/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix
+RABIX="rabix"
 

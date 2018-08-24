@@ -38,22 +38,22 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: vep_cache_gz
-    type: File?
+  - id: vep_cache_dir
+    type: string?
     inputBinding:
       position: 0
       prefix: '--vep_cache_dir'
-    label: VEP Cache .tar.gz 
+    label: location of VEP cache directory
     doc: >-
-      * if vep_cache_gz is not defined, will perform online VEP DB lookups
-      * If vep_cache_gz is a file ending in .tar.gz, will extract its contents
-      into "./vep-cache" and use VEP cache
-      * If vep_cache_gz cannot be a directory in CWL
+      * if vep_cache_dir is not defined, error * If vep_cache_dir is a
+      directory, it indicates location of VEP cache * If vep_cache_dir is a file
+      ending in .tar.gz, will extract its contents into "./vep-cache" and use
+      VEP cache
 outputs:
   - id: output_dat
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/maf/output.maf*
+      glob: $(inputs.results_dir)/maf/output.maf
 label: s10_vcf_2_maf
 arguments:
   - position: 99
