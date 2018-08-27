@@ -27,7 +27,7 @@ VEP_CACHE_GZ="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.
 VEP_CACHE_VERSION="90"
 ASSEMBLY="GRCh37"
 
-OUTPUT_DIR="results"  #/diskmnt/Projects/TinDaisy/results
+RESULTS_DIR="results"  #/diskmnt/Projects/TinDaisy/results
 
 #RABIX="rabix"  # implies it is in path
 RABIX="/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix"
