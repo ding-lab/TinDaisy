@@ -14,7 +14,11 @@ ASSEMBLY="GRCh37"
 VCF_FILTER_CONFIG="StrelkaDemo.dat/vcf_filter_config.ini"
 PINDEL_VCF_FILTER_CONFIG="StrelkaDemo.dat/pindel-vcf_filter_config.ini"
 
+# RESULTS_DIR must not have leading "./"
+# In general, best to just have RESULTS_DIR be sample name, not a path per se
 RESULTS_DIR=results
+# RESULTS_DIR=${RESULTS_DIR#./}  # strip leading ./ if necessary
+
 
 #RABIX="/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix"
 #export RABIX=/home/mwyczalk_test/src/rabix-cli-1.0.5/rabix

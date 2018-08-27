@@ -9,19 +9,20 @@ source project_config.sh
 
 CWL="cwl/TinDaisy.workflow.cwl"
 
-# try to have all output go to output_dir
-mkdir -p $OUTPUT_DIR
-RABIX_ARGS="--basedir $OUTPUT_DIR"
+mkdir -p $RESULTS_DIR
+RABIX_ARGS="--basedir $RESULTS_DIR"
 
 # Mandatory args
 # --tumor_bam
 # --normal_bam
 # --reference_fasta
+# --dbsnp_db
 # --strelka_config
 # --varscan_config
 # --pindel_config
-# --dbsnp_db
-# --assembly
+# --strelka_vcf_filter_config 
+# --varscan_vcf_filter_config
+# --pindel_vcf_filter_config 
 
 
 # optional args:
@@ -31,30 +32,27 @@ RABIX_ARGS="--basedir $OUTPUT_DIR"
 # --no_delete_temp
 # --is_strelka2
 # --results_dir 
+# --assembly
+# --vep_cache_version 
 
-
-# OUTPUT_DIR must not have leading "./".  Below we strip it.
-# In general, best to just have OUTPUT_DIR be sample name, not a path per se
-OUTPUT_DIR=${OUTPUT_DIR#./}
-
-# Cache file: not defined, so using vep_db
-$RABIX $RABIX_ARGS $CWL -- " \
---tumor_bam $TUMOR_BAM \
---normal_bam $NORMAL_BAM \
---reference_fasta $REFERENCE_FASTA \
---strelka_config $STRELKA_CONFIG \
---varscan_config $VARSCAN_CONFIG \
---pindel_config $PINDEL_CONFIG \
---dbsnp_db $DBSNP_DB \
+ARGS=" \
 --assembly $ASSEMBLY \
 --centromere_bed $CENTROMERE_BED \
---results_dir $OUTPUT_DIR \
---no_delete_temp \
+--dbsnp_db $DBSNP_DB \
 --is_strelka2 \
+--no_delete_temp \
+--normal_bam $NORMAL_BAM \
+--pindel_config $PINDEL_CONFIG \
 --pindel_vcf_filter_config $PINDEL_VCF_FILTER_CONFIG \
---varscan_vcf_filter_config $VCF_FILTER_CONFIG \
+--reference_fasta $REFERENCE_FASTA \
+--results_dir $RESULTS_DIR \
+--strelka_config $STRELKA_CONFIG \
 --strelka_vcf_filter_config $VCF_FILTER_CONFIG \
+--tumor_bam $TUMOR_BAM \
+--varscan_config $VARSCAN_CONFIG \
+--varscan_vcf_filter_config $VCF_FILTER_CONFIG \
+--vep_cache_version $VEP_CACHE_VERSION \
+--vep_output vcf \
 "  
-#--vep_cache_dir $VEP_CACHE_DIR "
-#--vep_cache_gz $VEP_CACHE_GZ \
-#--vep_cache_version 90 \
+
+$RABIX $RABIX_ARGS $CWL -- $ARGS
