@@ -59,16 +59,25 @@ inputs:
     type: File
     'sbg:x': -114.622802734375
     'sbg:y': -534.2361450195312
+  - id: assembly
+    type: string?
+    'sbg:exposed': true
+  - id: vep_output
+    type: string?
+    'sbg:exposed': true
+  - id: vep_cache_version
+    type: string?
+    'sbg:exposed': true
 outputs:
   - id: merged_vep
     outputSource:
-      - annotate_vep/output_dat
+      - vep_annotate/output_dat
     type: File
     'sbg:x': 910.8768920898438
     'sbg:y': -99.391845703125
   - id: merged_maf
     outputSource:
-      - annotate_vep_1/output_dat
+      - vcf_2_maf/output_dat
     type: File
     'sbg:x': 908.414306640625
     'sbg:y': 295.8509521484375
@@ -91,7 +100,7 @@ steps:
     out:
       - id: snvs_passed
     run: s1_run_strelka.cwl
-    label: S1_run_strelka
+    label: s1_run_strelka
     'sbg:x': -245.796875
     'sbg:y': -96
   - id: s2_run_varscan
@@ -216,12 +225,18 @@ steps:
     label: s8_merge_vcf
     'sbg:x': 450.203125
     'sbg:y': 151
-  - id: annotate_vep
+  - id: vep_annotate
     in:
       - id: input_vcf
         source: s8_merge_vcf/merged_vcf
       - id: reference_fasta
         source: reference_fasta
+      - id: assembly
+        source: assembly
+      - id: vep_output
+        source: vep_output
+      - id: vep_cache_version
+        source: vep_cache_version
       - id: results_dir
         source: results_dir
     out:
@@ -230,12 +245,16 @@ steps:
     label: s9_vep_annotate
     'sbg:x': 749.5726928710938
     'sbg:y': -101.85477447509766
-  - id: annotate_vep_1
+  - id: vcf_2_maf
     in:
       - id: input_vcf
         source: s8_merge_vcf/merged_vcf
       - id: reference_fasta
         source: reference_fasta
+      - id: assembly
+        source: assembly
+      - id: vep_cache_version
+        source: vep_cache_version
       - id: results_dir
         source: results_dir
     out:
