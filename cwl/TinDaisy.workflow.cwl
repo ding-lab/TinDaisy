@@ -29,9 +29,6 @@ inputs:
     type: File
     'sbg:x': -475.1688232421875
     'sbg:y': 602.2885131835938
-  - id: output_vep
-    type: boolean?
-    'sbg:exposed': true
   - id: centromere_bed
     type: File?
     'sbg:x': -522.3388671875
@@ -39,16 +36,10 @@ inputs:
   - id: no_delete_temp
     type: boolean?
     'sbg:exposed': true
-  - id: vep_cache_version
-    type: string?
-    'sbg:exposed': true
   - id: tumor_bam
     type: File
     'sbg:x': -660.805908203125
     'sbg:y': 415.9395751953125
-  - id: assembly
-    type: string
-    'sbg:exposed': true
   - id: results_dir
     type: string
     'sbg:x': -699.0764770507812
@@ -69,13 +60,18 @@ inputs:
     'sbg:x': -114.622802734375
     'sbg:y': -534.2361450195312
 outputs:
-  - id: output_dat
+  - id: merged_vep
     outputSource:
       - annotate_vep/output_dat
     type: File
-    label: Output VCF
-    'sbg:x': 507.6928405761719
-    'sbg:y': -252.231201171875
+    'sbg:x': 910.8768920898438
+    'sbg:y': -99.391845703125
+  - id: merged_maf
+    outputSource:
+      - annotate_vep_1/output_dat
+    type: File
+    'sbg:x': 908.414306640625
+    'sbg:y': 295.8509521484375
 steps:
   - id: s1_run_strelka
     in:
@@ -226,18 +222,26 @@ steps:
         source: s8_merge_vcf/merged_vcf
       - id: reference_fasta
         source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
-      - id: vep_cache_gz
-        source: vep_cache_gz
       - id: results_dir
         source: results_dir
     out:
       - id: output_dat
-    run: s9_vep_annotate.cwl
-    label: annotate_vep
-    'sbg:x': 286.7515762749068
-    'sbg:y': -244.10921975232046
+    run: ./s9_vep_annotate.cwl
+    label: s9_vep_annotate
+    'sbg:x': 749.5726928710938
+    'sbg:y': -101.85477447509766
+  - id: annotate_vep_1
+    in:
+      - id: input_vcf
+        source: s8_merge_vcf/merged_vcf
+      - id: reference_fasta
+        source: reference_fasta
+      - id: results_dir
+        source: results_dir
+    out:
+      - id: output_dat
+    run: ./s10_vcf_2_maf.cwl
+    label: s10_vcf_2_maf
+    'sbg:x': 692.8646850585938
+    'sbg:y': 312.16314697265625
 requirements: []

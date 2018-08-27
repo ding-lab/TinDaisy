@@ -39,27 +39,43 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--vep_cache_version'
-    label: 'VEP Cache Version (e.g., 90)'
-    doc: 'This is required if VEP_CACHE_GZ is defined, and must match'
+    label: 'VEP Cache Version (e.g., 93)'
   - id: results_dir
     type: string?
     inputBinding:
       position: 0
       prefix: '--results_dir'
+    doc: Per-sample analysis results location. Often same as sample name
   - id: vep_cache_dir
-    type: string?
+    type: Directory?
     inputBinding:
       position: 0
       prefix: '--vep_cache_dir'
       shellQuote: false
     label: location of VEP cache directory
     doc: >-
-      * if vep_cache_dir is not defined, will perform online VEP DB lookups
+      * if neither vep_cache_dir nor vep-cache_gz defined, will perform online
+      VEP DB lookups
 
       * If vep_cache_dir is a directory, it indicates location of VEP cache
 
-      * If vep_cache_dir is a file ending in .tar.gz, will extract its contents
-      into "./vep-cache" and use VEP cache
+      * If vep_cache_gz is defined, extract its contents into "./vep-cache" and
+      use VEP cache
+  - id: vep_cache_gz
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_gz'
+    label: VEP Cache .tar.gz file
+    doc: >-
+      * if neither vep_cache_dir nor vep-cache_gz defined, will perform online
+      VEP DB lookups
+
+      * If vep_cache_dir is a directory, it indicates location of VEP cache
+
+      * If vep_cache_gz is defined, extract its contents into "./vep-cache" and
+      use VEP cache
+    'sbg:fileTypes': .tar.gz
 outputs:
   - id: output_dat
     type: File

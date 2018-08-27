@@ -21,7 +21,7 @@ inputs:
       - .fai
       - ^.dict
   - id: assembly
-    type: string
+    type: string?
     inputBinding:
       position: 0
       prefix: '--assembly'
@@ -39,16 +39,32 @@ inputs:
       position: 0
       prefix: '--results_dir'
   - id: vep_cache_dir
-    type: string?
+    type: Directory?
     inputBinding:
       position: 0
       prefix: '--vep_cache_dir'
-    label: location of VEP cache directory
+    label: Location of VEP cache directory
     doc: >-
-      * if vep_cache_dir is not defined, error * If vep_cache_dir is a
-      directory, it indicates location of VEP cache * If vep_cache_dir is a file
-      ending in .tar.gz, will extract its contents into "./vep-cache" and use
-      VEP cache
+      * if neither vep_cache_dir nor vep_cache_gz are defined, skip this step 
+
+      * If vep_cache_dir is a directory, it indicates location of VEP cache 
+
+      * If vep_cache_gz is defined, will extract its contents into "./vep-cache"
+      and use VEP cache
+  - id: vep_cache_gz
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--vep_cache_gz'
+    label: VEP Cache .tar.gz
+    doc: >-
+      * if neither vep_cache_dir nor vep_cache_gz are defined, skip this step 
+
+      * If vep_cache_dir is a directory, it indicates location of VEP cache 
+
+      * If vep_cache_gz is defined, it must be file ending in .tar.gz, and will
+      extract its contents into "./vep-cache" and use VEP cache
+    'sbg:fileTypes': .tar.gz
 outputs:
   - id: output_dat
     type: File
@@ -61,6 +77,19 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: '10'
+  - position: 0
+    prefix: ''
+    separate: false
+    shellQuote: false
+    valueFrom: |-
+      ${   if (inputs.vep_cache_dir  || inputs.vep_cache_gz)     {         
+          return      
+      }     else     {        
+          return "--skip VEP_CACHE.not.defined"   
+          
+      } 
+          
+      }
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
