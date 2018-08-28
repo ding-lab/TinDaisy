@@ -1,18 +1,13 @@
-cd ..
-source project_config.sh
-CWL="cwl/s9_vep_annotate.cwl"
+source project_config.C3N-01649-test.sh
+CWL="../cwl/s9_vep_annotate.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
 # Output of previous run to use as input here
-OLD_RUN="/home/mwyczalk_test/Projects/Rabix/tin-daisy.StrelkaDemo/results/s8_merge_vcf-2018-08-27-221747.533"
-INPUT_VCF="$OLD_RUN/root/results/merged/merged.filtered.vcf"
-
-# Specific to denali:
-VEP_CACHE_GZ="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz"
-VEP_CACHE_DIR="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP"
+OLD_RUN="/diskmnt/Projects/Users/hsun/beta_tinDaisy/tin-daisy/results/TinDaisy.workflow-2018-08-14-210442.362"
+INPUT_VCF="$OLD_RUN/root/s8_merge_vcf/results/merged/merged.filtered.vcf"
 
 ARGS_DB="\
 --input_vcf $INPUT_VCF \
@@ -32,6 +27,6 @@ $ARGS_DB \
 
 # We rely on online VEP cache lookup for initial testing, so vep_cache_dir is not specified
 
-$RABIX $RABIX_ARGS $CWL -- $ARGS_GZ
+$RABIX $RABIX_ARGS $CWL -- $ARGS_DB
 
 

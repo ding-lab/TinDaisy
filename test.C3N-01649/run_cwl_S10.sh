@@ -5,18 +5,22 @@ CWL="../cwl/s10_vcf_2_maf.cwl"
 mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
+# Output of previous run to use as input here
 OLD_RUN="/diskmnt/Projects/Users/hsun/beta_tinDaisy/tin-daisy/results/TinDaisy.workflow-2018-08-14-210442.362"
 INPUT_VCF="$OLD_RUN/root/s8_merge_vcf/results/merged/merged.filtered.vcf"
 
-ARGS=" \
+ARGS_DB="\
 --input_vcf $INPUT_VCF \
 --reference_fasta $REFERENCE_FASTA \
---vep_cache_dir $VEP_CACHE_GZ \
---vep_cache_version $VEP_CACHE_VERSION \
---assembly $ASSEMBLY \
 --results_dir $RESULTS_DIR \
 "
-#--vep_cache_dir $VEP_CACHE_GZ \
 
-$RABIX $RABIX_ARGS $CWL -- $ARGS
+ARGS_GZ="\
+$ARGS_DB \
+--vep_cache_version 90 \
+--assembly GRCh37 \
+--vep_cache_gz $VEP_CACHE_GZ \
+"
+
+$RABIX $RABIX_ARGS $CWL -- $ARGS_GZ
 

@@ -146,9 +146,12 @@ The file `run_workflow.C3N-01649.sh` provides an example using real data
 
 ## Configuration files
 
-`demo_paths.sh` has various path definitions.
+`project_config.sh` has various path definitions.
 
 **TODO** Look at and describe `VEP_CACHE_DIR` - it has an absolute file path here
+
+* currently, `--vep_cache_dir` is not supported as a way to share VEP cache with `vep_annotation` and `vcf_2_maf` steps
+because Rabix does not stage directories.  VEP cache must be passed as a `.tar.gz` file.  This may change in the future.
 
 
 ## StrelkaDemo details
