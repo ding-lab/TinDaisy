@@ -46,21 +46,6 @@ inputs:
       position: 0
       prefix: '--results_dir'
     doc: Per-sample analysis results location. Often same as sample name
-  - id: vep_cache_dir
-    type: Directory?
-    inputBinding:
-      position: 0
-      prefix: '--vep_cache_dir'
-      shellQuote: false
-    label: location of VEP cache directory
-    doc: >-
-      * if neither vep_cache_dir nor vep-cache_gz defined, will perform online
-      VEP DB lookups
-
-      * If vep_cache_dir is a directory, it indicates location of VEP cache
-
-      * If vep_cache_gz is defined, extract its contents into "./vep-cache" and
-      use VEP cache
   - id: vep_cache_gz
     type: File?
     inputBinding:
@@ -68,13 +53,8 @@ inputs:
       prefix: '--vep_cache_gz'
     label: VEP Cache .tar.gz file
     doc: >-
-      * if neither vep_cache_dir nor vep-cache_gz defined, will perform online
-      VEP DB lookups
-
-      * If vep_cache_dir is a directory, it indicates location of VEP cache
-
-      * If vep_cache_gz is defined, extract its contents into "./vep-cache" and
-      use VEP cache
+      if defined, extract contents into "./vep-cache" and use VEP cache. 
+      Otherwise, perform (much slower) online VEP DB lookups
     'sbg:fileTypes': .tar.gz
 outputs:
   - id: output_dat

@@ -38,19 +38,6 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: vep_cache_dir
-    type: Directory?
-    inputBinding:
-      position: 0
-      prefix: '--vep_cache_dir'
-    label: Location of VEP cache directory
-    doc: >-
-      * if neither vep_cache_dir nor vep_cache_gz are defined, skip this step 
-
-      * If vep_cache_dir is a directory, it indicates location of VEP cache 
-
-      * If vep_cache_gz is defined, will extract its contents into "./vep-cache"
-      and use VEP cache
   - id: vep_cache_gz
     type: File?
     inputBinding:
@@ -58,12 +45,8 @@ inputs:
       prefix: '--vep_cache_gz'
     label: VEP Cache .tar.gz
     doc: >-
-      * if neither vep_cache_dir nor vep_cache_gz are defined, skip this step 
-
-      * If vep_cache_dir is a directory, it indicates location of VEP cache 
-
-      * If vep_cache_gz is defined, it must be file ending in .tar.gz, and will
-      extract its contents into "./vep-cache" and use VEP cache
+      if defined, extract contents into "./vep-cache" and use VEP cache. 
+      Otherwise, skip this step entirely
     'sbg:fileTypes': .tar.gz
 outputs:
   - id: output_dat
@@ -82,11 +65,11 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: |-
-      ${   if (inputs.vep_cache_dir  || inputs.vep_cache_gz)     {         
+      ${   if (inputs.vep_cache_gz)     {         
           return      
       }     else     {        
-          return "--skip VEP_CACHE.not.defined"   
-          
+          return "--skip vep_cache_gz-not-defined"   
+          // Argument printed as an error message
       } 
           
       }
