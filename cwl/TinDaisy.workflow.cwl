@@ -68,6 +68,11 @@ inputs:
   - id: vep_cache_version
     type: string?
     'sbg:exposed': true
+  - id: vep_cache_gz
+    'sbg:fileTypes': .tar.gz
+    type: File?
+    'sbg:x': 365.0995788574219
+    'sbg:y': -340.94781494140625
 outputs:
   - id: merged_vep
     outputSource:
@@ -239,12 +244,14 @@ steps:
         source: vep_cache_version
       - id: results_dir
         source: results_dir
+      - id: vep_cache_gz
+        source: vep_cache_gz
     out:
       - id: output_dat
     run: ./s9_vep_annotate.cwl
     label: s9_vep_annotate
-    'sbg:x': 749.5726928710938
-    'sbg:y': -101.85477447509766
+    'sbg:x': 654.8348388671875
+    'sbg:y': -124.5412826538086
   - id: vcf_2_maf
     in:
       - id: input_vcf
@@ -257,6 +264,8 @@ steps:
         source: vep_cache_version
       - id: results_dir
         source: results_dir
+      - id: vep_cache_gz
+        source: vep_cache_gz
     out:
       - id: output_dat
     run: ./s10_vcf_2_maf.cwl

@@ -52,6 +52,7 @@ ARGS=" \
 --varscan_config $VARSCAN_CONFIG \
 --varscan_vcf_filter_config $VCF_FILTER_CONFIG \
 --vep_cache_version $VEP_CACHE_VERSION \
+--vep_cache_gz $VEP_CACHE_GZ \
 --vep_output vcf \
 "  
 
