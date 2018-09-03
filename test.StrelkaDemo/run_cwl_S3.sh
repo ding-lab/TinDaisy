@@ -7,7 +7,7 @@ mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
 # Output of previous run to use as input here
-OLD_RUND="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s1_run_strelka-2018-08-22-101130.617"
+OLD_RUND="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s1_run_strelka-2018-08-24-110004.139"
 # This is dependent on whether Strelka1 or Strelka2 is used
 STRELKA_SNV_RAW="$OLD_RUND/root/results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz"
 
