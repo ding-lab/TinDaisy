@@ -35,6 +35,8 @@ RABIX_ARGS="--basedir $RESULTS_DIR"
 # --assembly
 # --vep_cache_version 
 
+VEP_CACHE_GZ="/Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/image.setup/D_VEP/vep-cache.90_GRCh37.tar.gz"
+
 ARGS=" \
 --assembly $ASSEMBLY \
 --centromere_bed $CENTROMERE_BED \
@@ -53,7 +55,11 @@ ARGS=" \
 --varscan_vcf_filter_config $VCF_FILTER_CONFIG \
 --vep_cache_version $VEP_CACHE_VERSION \
 --vep_cache_gz $VEP_CACHE_GZ \
---vep_output vcf \
+--classification_filter_config $CLASSIFICATION_FILTER_CONFIG \
+--af_filter_config $AF_FILTER_CONFIG \
+--bypass_merge_vcf  \
+--bypass_parse_pindel  \
+--bypass_vep_annotate  \
 "  
 
 $RABIX $RABIX_ARGS $CWL -- $ARGS

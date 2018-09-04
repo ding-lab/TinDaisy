@@ -15,7 +15,7 @@ ASSEMBLY="GRCh37"
 VCF_FILTER_CONFIG="params/vcf_filter_config.ini"
 PINDEL_VCF_FILTER_CONFIG="params/pindel-vcf_filter_config.ini"
 AF_FILTER_CONFIG="params/af_filter_config.ini"
-CLASSIFIATION_FILTER_CONFIG="params/classification_filter_config.ini"
+CLASSIFICATION_FILTER_CONFIG="params/classification_filter_config.ini"
 
 # RESULTS_DIR must not have leading "./"
 # In general, best to just have RESULTS_DIR be sample name, not a path per se
