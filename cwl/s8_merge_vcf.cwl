@@ -45,7 +45,7 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--bypass'
-    label: Bypass filter by retaining all reads
+    label: Bypass merge filter by retaining all reads
 outputs:
   - id: merged_vcf
     type: File

@@ -7,16 +7,15 @@ mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
 # Output of previous run to use as input here
-OLD_RUN="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s8_merge_vcf-2018-08-22-123300.128"
-INPUT_VCF="$OLD_RUN/root/results/merged/merged.filtered.vcf"
+OLD_RUN="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s9_vep_annotate-2018-09-04-112440.91"
+INPUT_VCF="$OLD_RUN/root/results/vep/output.vcf"
 
 # Specific to denali:
 VEP_CACHE_GZ="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz"
 VEP_CACHE_DIR="/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP"
 
-# this will exit with no processing, since vcf_2_maf requires vep_cache_gz
-# it is not an error, however, so that processing proceeds
-FAKE_VEP_CACHE="results/test-workflow.tar.gz"
+# specific to epazote
+VEP_CACHE_GZ="/Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/image.setup/D_VEP/vep-cache.90_GRCh37.tar.gz"
 
 ARGS="\
 --input_vcf $INPUT_VCF \
@@ -27,13 +26,13 @@ ARGS="\
 #--vep_cache_dir $FAKE_VEP_CACHE \
 
 ARGS_GZ="\
-$ARGS_DB \
+$ARGS \
 --vep_cache_version 90 \
 --assembly GRCh37 \
 --vep_cache_gz $VEP_CACHE_GZ \
 "
 
-#echo $ARGS_DB
+#echo $ARGS
 #echo $ARGS_GZ
 
 # We rely on online VEP cache lookup for initial testing, so vep_cache_dir is not specified

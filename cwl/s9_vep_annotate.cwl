@@ -27,13 +27,6 @@ inputs:
       prefix: '--assembly'
     label: assembly name for VEP annotation
     doc: Either GRCh37 or GRCh38 currently accepted
-  - id: vep_output
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--vep_output'
-    label: Define output format after annotation.
-    doc: 'Allowed values: vcf, vep.  vcf is default'
   - id: vep_cache_version
     type: string?
     inputBinding:
@@ -56,6 +49,24 @@ inputs:
       if defined, extract contents into "./vep-cache" and use VEP cache. 
       Otherwise, perform (much slower) online VEP DB lookups
     'sbg:fileTypes': .tar.gz
+  - id: bypass
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass'
+    label: Skip AF and Classification annotation
+  - id: af_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--af_filter_config'
+    label: Configuration file for af (allele frequency) filter
+  - id: classification_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--classification_filter_config'
+    label: Configuration file for classification filter
 outputs:
   - id: output_dat
     type: File

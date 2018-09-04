@@ -62,30 +62,46 @@ inputs:
   - id: assembly
     type: string?
     'sbg:exposed': true
-  - id: vep_output
-    type: string?
-    'sbg:exposed': true
   - id: vep_cache_version
     type: string?
     'sbg:exposed': true
   - id: vep_cache_gz
     'sbg:fileTypes': .tar.gz
     type: File?
-    'sbg:x': 365.0995788574219
-    'sbg:y': -340.94781494140625
-outputs:
-  - id: merged_vep
-    outputSource:
-      - vep_annotate/output_dat
+    'sbg:x': 404.1976318359375
+    'sbg:y': -220.1764678955078
+  - id: bypass_merge_vcf
+    type: boolean?
+    'sbg:exposed': true
+  - id: classification_filter_config
     type: File
-    'sbg:x': 910.8768920898438
-    'sbg:y': -99.391845703125
+    'sbg:x': 883.6535034179688
+    'sbg:y': 321.17333984375
+  - id: af_filter_config
+    type: File
+    'sbg:x': 1154.0362548828125
+    'sbg:y': 274.5126953125
+  - id: bypass_vep_annotate
+    type: boolean?
+    'sbg:exposed': true
+  - id: bypass_parse_pindel
+    type: boolean?
+    'sbg:exposed': true
+outputs:
   - id: merged_maf
     outputSource:
       - vcf_2_maf/output_dat
     type: File
-    'sbg:x': 908.414306640625
-    'sbg:y': 295.8509521484375
+    'sbg:x': 2136.03369140625
+    'sbg:y': -204.2615966796875
+  - id: output_vcf
+    outputSource:
+      - vep_annotate/output_dat
+    type: File
+    label: Output VCF
+    doc: Principal output of workflow in VCF format
+    'sbg:x': 1454.6470947265625
+    'sbg:y': 107.07058715820312
 steps:
   - id: s1_run_strelka
     in:
@@ -204,6 +220,8 @@ steps:
         source: no_delete_temp
       - id: pindel_vcf_filter_config
         source: pindel_vcf_filter_config
+      - id: bypass
+        source: bypass_parse_pindel
     out:
       - id: pindel_dbsnp
     run: s7_parse_pindel.cwl
@@ -224,6 +242,8 @@ steps:
         source: reference_fasta
       - id: results_dir
         source: results_dir
+      - id: bypass
+        source: bypass_merge_vcf
     out:
       - id: merged_vcf
     run: s8_merge_vcf.cwl
@@ -238,24 +258,28 @@ steps:
         source: reference_fasta
       - id: assembly
         source: assembly
-      - id: vep_output
-        source: vep_output
       - id: vep_cache_version
         source: vep_cache_version
       - id: results_dir
         source: results_dir
       - id: vep_cache_gz
         source: vep_cache_gz
+      - id: bypass
+        source: bypass_vep_annotate
+      - id: af_filter_config
+        source: af_filter_config
+      - id: classification_filter_config
+        source: classification_filter_config
     out:
       - id: output_dat
     run: ./s9_vep_annotate.cwl
     label: s9_vep_annotate
-    'sbg:x': 654.8348388671875
-    'sbg:y': -124.5412826538086
+    'sbg:x': 1194.2918701171875
+    'sbg:y': -24.863866806030273
   - id: vcf_2_maf
     in:
       - id: input_vcf
-        source: s8_merge_vcf/merged_vcf
+        source: vep_annotate/output_dat
       - id: reference_fasta
         source: reference_fasta
       - id: assembly
@@ -270,6 +294,6 @@ steps:
       - id: output_dat
     run: ./s10_vcf_2_maf.cwl
     label: s10_vcf_2_maf
-    'sbg:x': 692.8646850585938
-    'sbg:y': 312.16314697265625
+    'sbg:x': 1599.6531982421875
+    'sbg:y': -281.6700439453125
 requirements: []

@@ -48,6 +48,13 @@ inputs:
       if defined, extract contents into "./vep-cache" and use VEP cache. 
       Otherwise, skip this step entirely
     'sbg:fileTypes': .tar.gz
+  - id: exac
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--exac'
+    label: ExAC database for custom annotation
+    doc: Passed to vcf_2_maf.pl as --filter-vcf
 outputs:
   - id: output_dat
     type: File

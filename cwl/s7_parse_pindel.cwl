@@ -50,6 +50,13 @@ inputs:
       prefix: '--pindel_vcf_filter_config'
     label: VCF Filter config
     doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
+  - id: bypass
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass'
+    label: Skip CvgVafStrand and Homopolymer filters
+    doc: Disables filtering in pindel_filter.pl
 outputs:
   - id: pindel_dbsnp
     type: File
