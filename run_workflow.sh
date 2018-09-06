@@ -35,8 +35,6 @@ RABIX_ARGS="--basedir $RESULTS_DIR"
 # --assembly
 # --vep_cache_version 
 
-VEP_CACHE_GZ="/Users/mwyczalk/Projects/Rabix/SomaticWrapper.d2/somaticwrapper/image.setup/D_VEP/vep-cache.90_GRCh37.tar.gz"
-
 ARGS=" \
 --assembly $ASSEMBLY \
 --centromere_bed $CENTROMERE_BED \
