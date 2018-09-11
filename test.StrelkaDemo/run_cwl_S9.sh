@@ -22,7 +22,7 @@ ARGS_DB="\
 --reference_fasta $REFERENCE_FASTA \
 --results_dir $RESULTS_DIR \
 --af_filter_config $AF_FILTER_CONFIG \
---classification_filter_config $CLASSIFIATION_FILTER_CONFIG \
+--classification_filter_config $CLASSIFICATION_FILTER_CONFIG \
 --bypass \
 "
 
