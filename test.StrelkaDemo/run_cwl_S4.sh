@@ -7,7 +7,7 @@ mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
 # Output of previous run to use as input here
-OLD_RUND="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s2_run_varscan-2018-08-24-110048.340"
+OLD_RUND="/home/mwyczalk_test/Projects/Rabix/tin-daisy.StrelkaDemo/results/s2_run_varscan-2018-09-03-001829.600"
 
 VARSCAN_SNV_RAW="$OLD_RUND/root/results/varscan/varscan_out/varscan.out.som_snv.vcf"
 VARSCAN_INDEL_RAW="$OLD_RUND/root/results/varscan/varscan_out/varscan.out.som_indel.vcf"

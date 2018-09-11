@@ -8,7 +8,7 @@ mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
 # Output of previous run to use as input here
-OLD_RUND="/Users/mwyczalk/Projects/Rabix/TinDaisy/results/s5_run_pindel-2018-08-24-110121.753"
+OLD_RUND="/home/mwyczalk_test/Projects/Rabix/tin-daisy.StrelkaDemo/results/s5_run_pindel-2018-09-03-002057.869"
 
 PINDEL_RAW="$OLD_RUND/root/results/pindel/pindel_out/pindel-raw.dat"
 
