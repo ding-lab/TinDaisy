@@ -51,7 +51,7 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--pindel_config'
-    label: path to pindel.ini file
+    label: pindel.ini
 outputs:
   - id: pindel_raw
     type: File
@@ -67,7 +67,7 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '5'
+    valueFrom: run_pindel
 requirements:
   - class: ShellCommandRequirement
   - class: ResourceRequirement

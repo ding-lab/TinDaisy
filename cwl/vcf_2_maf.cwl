@@ -66,7 +66,7 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '10'
+    valueFrom: vcf_2_maf
   - position: 0
     prefix: ''
     separate: false

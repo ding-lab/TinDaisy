@@ -2,31 +2,17 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: merge_vcf
+id: dbsnp_filter
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: strelka_snv_vcf
+  - id: input_vcf
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_snv_vcf'
-  - id: varscan_indel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_indel_vcf'
-  - id: varscan_snv_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_snv_vcf'
-  - id: pindel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf'
+      prefix: '--input_vcf'
+    label: VCF file to process.
   - id: reference_fasta
     type: File
     inputBinding:
@@ -40,30 +26,37 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: bypass_merge
+  - id: bypass_dbsnp
     type: boolean?
     inputBinding:
       position: 0
-      prefix: '--bypass_merge'
-    label: Bypass merge filter
+      prefix: '--bypass_dbsnp'
+    label: Bypass dbSNP filter
   - id: debug
     type: boolean?
     inputBinding:
       position: 0
       prefix: '--debug'
     label: print out processing details to STDERR
+  - id: dbsnp_db
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--dbsnp_db'
+    label: database for dbSNP filtering
+    doc: Step will be skipped if not defined
 outputs:
   - id: merged_vcf
     type: File
     outputBinding:
       glob: $(inputs.results_dir)/merged/merged.filtered.vcf
-label: merge_vcf
+label: dbsnp_filter
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: merge_vcf
+    valueFrom: dbsnp_filter
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

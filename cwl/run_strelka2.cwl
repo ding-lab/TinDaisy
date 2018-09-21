@@ -2,68 +2,67 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: merge_vcf
+id: run_strelka
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: strelka_snv_vcf
+  - id: tumor_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_snv_vcf'
-  - id: varscan_indel_vcf
+      prefix: '--tumor_bam'
+    secondaryFiles:
+      - ^.bai
+  - id: normal_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--varscan_indel_vcf'
-  - id: varscan_snv_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_snv_vcf'
-  - id: pindel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf'
+      prefix: '--normal_bam'
+    secondaryFiles:
+      - ^.bai
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
     secondaryFiles:
-      - .fai
       - ^.dict
+      - .fai
+  - id: strelka_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--strelka_config'
   - id: results_dir
-    type: string?
+    type: string
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: bypass_merge
-    type: boolean?
+    label: Results directory name
+    doc: Apparently should not have '.' in it
+  - id: manta_vcf
+    type: File?
     inputBinding:
       position: 0
-      prefix: '--bypass_merge'
-    label: Bypass merge filter
-  - id: debug
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--debug'
-    label: print out processing details to STDERR
+      prefix: '--manta_vcf'
+    label: Output from Manta
+    doc: Optional file for use with strelka2 processing
 outputs:
-  - id: merged_vcf
+  - id: snvs_passed
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
-label: merge_vcf
+      glob: |-
+        ${
+            return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+        }
+label: run_strelka
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: merge_vcf
+    valueFrom: run_strelka2
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -71,13 +70,13 @@ requirements:
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    pindel_vcf:
-      basename: input.ext
+    normal_bam:
+      basename: n.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
+      nameroot: 'n'
+      path: /path/to/n.ext
       secondaryFiles: []
       size: 0
     reference_fasta:
@@ -89,7 +88,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    strelka_snv_vcf:
+    strelka_config:
       basename: input.ext
       class: File
       contents: file contents
@@ -98,16 +97,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    varscan_indel_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_snv_vcf:
+    tumor_bam:
       basename: input.ext
       class: File
       contents: file contents

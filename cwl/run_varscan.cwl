@@ -54,7 +54,7 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '2'
+    valueFrom: run_varscan
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

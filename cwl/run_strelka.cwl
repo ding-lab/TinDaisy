@@ -41,22 +41,14 @@ inputs:
       prefix: '--results_dir'
     label: Results directory name
     doc: Apparently should not have '.' in it
-  - id: is_strelka2
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--is_strelka2'
-    doc: 'If set, run strelka2 instead of strelka version 1'
 outputs:
   - id: snvs_passed
     type: File
     outputBinding:
       glob: |-
         ${
-            if(inputs.is_strelka2 == true)
-                return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
-            else
-                return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'
+            
+            return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'
         }
 label: run_strelka
 arguments:
@@ -64,7 +56,7 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '1'
+    valueFrom: run_strelka
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

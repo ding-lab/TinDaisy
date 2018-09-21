@@ -25,13 +25,6 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--pindel_config'
-  - id: dbsnp_db
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--dbsnp_db'
-    secondaryFiles:
-      - .tbi
   - id: results_dir
     type: string?
     inputBinding:
@@ -43,20 +36,30 @@ inputs:
       position: 0
       prefix: '--no_delete_temp'
     doc: 'If set, do not delete large temporary files'
-  - id: pindel_vcf_filter_config
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf_filter_config'
-    label: VCF Filter config
-    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
   - id: bypass
     type: boolean?
     inputBinding:
       position: 0
       prefix: '--bypass'
-    label: Skip CvgVafStrand and Homopolymer filters
-    doc: Disables filtering in pindel_filter.pl
+    label: bypass all filters
+  - id: bypass_cvs
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass_cvs'
+    label: skip filtering for CvgVafStrand
+  - id: bypass_homopolymer
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass_homopolymer'
+    label: skip filtering for Homopolymer
+  - id: debug
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--debug'
+    label: print out processing details to STDERR
 outputs:
   - id: pindel_dbsnp
     type: File
@@ -69,7 +72,7 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '7'
+    valueFrom: parse_pindel
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

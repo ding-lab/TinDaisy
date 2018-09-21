@@ -54,7 +54,7 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--bypass'
-    label: Skip AF and Classification annotation
+    label: Bypass all filters
   - id: af_filter_config
     type: File
     inputBinding:
@@ -67,6 +67,24 @@ inputs:
       position: 0
       prefix: '--classification_filter_config'
     label: Configuration file for classification filter
+  - id: bypass_af
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass_af'
+    label: Bypass AF filter by retaining all reads
+  - id: bypass_classification
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass_classification'
+    label: Bypass Classification filter by retaining all reads
+  - id: debug
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--debug'
+    label: print out processing details to STDERR
 outputs:
   - id: output_dat
     type: File
@@ -78,7 +96,7 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '9'
+    valueFrom: vep_annotate
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
