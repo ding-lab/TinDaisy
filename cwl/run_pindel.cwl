@@ -2,31 +2,25 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s8_merge_vcf
+id: run_pindel
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: strelka_snv_vcf
+  - id: tumor_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_snv_vcf'
-  - id: varscan_indel_vcf
+      prefix: '--tumor_bam'
+    secondaryFiles:
+      - ^.bai
+  - id: normal_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--varscan_indel_vcf'
-  - id: varscan_snv_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_snv_vcf'
-  - id: pindel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf'
+      prefix: '--normal_bam'
+    secondaryFiles:
+      - ^.bai
   - id: reference_fasta
     type: File
     inputBinding:
@@ -35,37 +29,65 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
+  - id: centromere_bed
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--centromere_bed'
+  - id: no_delete_temp
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--no_delete_temp'
+    label: Don't delete temp files
+    doc: 'If set, will not delete large temporary Pindel output'
   - id: results_dir
     type: string?
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: bypass
-    type: boolean?
+  - id: pindel_config
+    type: File
     inputBinding:
       position: 0
-      prefix: '--bypass'
-    label: Bypass merge filter by retaining all reads
+      prefix: '--pindel_config'
+    label: path to pindel.ini file
 outputs:
-  - id: merged_vcf
+  - id: pindel_raw
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
-label: s8_merge_vcf
+      glob: |-
+        ${
+                return inputs.results_dir + '/pindel/pindel_out/pindel-raw.dat'
+
+        }
+label: run_pindel
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '8'
+    valueFrom: '5'
 requirements:
   - class: ShellCommandRequirement
+  - class: ResourceRequirement
+    ramMin: 8000
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    pindel_vcf:
+    centromere_bed:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    no_delete_temp: 9
+    normal_bam:
       basename: input.ext
       class: File
       contents: file contents
@@ -83,33 +105,15 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    strelka_snv_vcf:
-      basename: input.ext
+    tumor_bam:
+      basename: t.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_indel_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_snv_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
+      nameroot: t
+      path: /path/to/t.ext
       secondaryFiles: []
       size: 0
   runtime:
     cores: 1
-    ram: 1000
+    ram: 8000

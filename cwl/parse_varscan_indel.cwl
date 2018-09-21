@@ -2,33 +2,28 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s2_run_varscan
+id: parse_varscan_indel
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: tumor_bam
+  - id: varscan_indel_raw
     type: File
     inputBinding:
       position: 0
-      prefix: '--tumor_bam'
-    secondaryFiles:
-      - ^.bai
-  - id: normal_bam
+      prefix: '--varscan_indel_raw'
+  - id: varscan_snv_raw
     type: File
     inputBinding:
       position: 0
-      prefix: '--normal_bam'
-    secondaryFiles:
-      - ^.bai
-  - id: reference_fasta
+      prefix: '--varscan_snv_raw'
+  - id: dbsnp_db
     type: File
     inputBinding:
       position: 0
-      prefix: '--reference_fasta'
+      prefix: '--dbsnp_db'
     secondaryFiles:
-      - .fai
-      - ^.dict
+      - .tbi
   - id: varscan_config
     type: File
     inputBinding:
@@ -39,30 +34,41 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--results_dir'
+  - id: varscan_vcf_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--varscan_vcf_filter_config'
+    label: VCF filter config
+    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
 outputs:
-  - id: varscan_indel_raw
+  - id: varscan_snv_dbsnp
+    doc: Final SNV output of parsing
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/varscan/varscan_out/varscan.out.som_indel.vcf
-  - id: varscan_snv_raw
+      glob: >-
+        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.dbsnp_pass.filtered.vcf
+  - id: varscan_indel_dbsnp
+    doc: Final SNV output of parsing
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/varscan/varscan_out/varscan.out.som_snv.vcf
-label: s2_run_varscan
+      glob: >-
+        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.filtered.vcf
+label: parse_varscan_indel
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '2'
+    valueFrom: '4'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    normal_bam:
+    dbsnp_db:
       basename: input.ext
       class: File
       contents: file contents
@@ -71,7 +77,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    reference_fasta:
+    varscan_indel_raw:
       basename: input.ext
       class: File
       contents: file contents
@@ -80,16 +86,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    tumor_bam:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_config:
+    varscan_snv_raw:
       basename: input.ext
       class: File
       contents: file contents

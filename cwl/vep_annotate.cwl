@@ -72,7 +72,7 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.results_dir)/vep/output.v*
-label: s9_vep_annotate
+label: vep_annotate
 arguments:
   - position: 99
     prefix: ''
@@ -82,7 +82,7 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:

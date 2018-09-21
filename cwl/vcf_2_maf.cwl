@@ -2,7 +2,7 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: annotate_vep
+id: vcf_2_maf
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
@@ -60,7 +60,7 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.results_dir)/maf/output.maf
-label: s10_vcf_2_maf
+label: vcf_2_maf
 arguments:
   - position: 99
     prefix: ''
@@ -83,7 +83,7 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:

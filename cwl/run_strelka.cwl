@@ -2,109 +2,104 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s7_parse_pindel
+id: run_strelka
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: pindel_raw
+  - id: tumor_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--pindel_raw'
+      prefix: '--tumor_bam'
+    secondaryFiles:
+      - ^.bai
+  - id: normal_bam
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--normal_bam'
+    secondaryFiles:
+      - ^.bai
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
     secondaryFiles:
-      - .fai
       - ^.dict
-  - id: pindel_config
+      - .fai
+  - id: strelka_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--pindel_config'
-  - id: dbsnp_db
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--dbsnp_db'
-    secondaryFiles:
-      - .tbi
+      prefix: '--strelka_config'
   - id: results_dir
-    type: string?
+    type: string
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: no_delete_temp
+    label: Results directory name
+    doc: Apparently should not have '.' in it
+  - id: is_strelka2
     type: boolean?
     inputBinding:
       position: 0
-      prefix: '--no_delete_temp'
-    doc: 'If set, do not delete large temporary files'
-  - id: pindel_vcf_filter_config
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf_filter_config'
-    label: VCF Filter config
-    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
-  - id: bypass
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass'
-    label: Skip CvgVafStrand and Homopolymer filters
-    doc: Disables filtering in pindel_filter.pl
+      prefix: '--is_strelka2'
+    doc: 'If set, run strelka2 instead of strelka version 1'
 outputs:
-  - id: pindel_dbsnp
+  - id: snvs_passed
     type: File
     outputBinding:
-      glob: >-
-        $(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.filtered.vcf
-label: s7_parse_pindel
+      glob: |-
+        ${
+            if(inputs.is_strelka2 == true)
+                return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+            else
+                return  inputs.results_dir + '/strelka/strelka_out/results/passed.somatic.snvs.vcf'
+        }
+label: run_strelka
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '7'
+    valueFrom: '1'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    dbsnp_db:
-      basename: input.ext
+    normal_bam:
+      basename: n.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    pindel_config:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    pindel_raw:
-      basename: p.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: p
-      path: /path/to/p.ext
+      nameroot: 'n'
+      path: /path/to/n.ext
       secondaryFiles: []
       size: 0
     reference_fasta:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    strelka_config:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    tumor_bam:
       basename: input.ext
       class: File
       contents: file contents

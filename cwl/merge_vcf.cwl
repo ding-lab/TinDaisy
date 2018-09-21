@@ -2,73 +2,70 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s4_parse_varscan
+id: merge_vcf
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: varscan_indel_raw
+  - id: strelka_snv_vcf
     type: File
     inputBinding:
       position: 0
-      prefix: '--varscan_indel_raw'
-  - id: varscan_snv_raw
+      prefix: '--strelka_snv_vcf'
+  - id: varscan_indel_vcf
     type: File
     inputBinding:
       position: 0
-      prefix: '--varscan_snv_raw'
-  - id: dbsnp_db
+      prefix: '--varscan_indel_vcf'
+  - id: varscan_snv_vcf
     type: File
     inputBinding:
       position: 0
-      prefix: '--dbsnp_db'
+      prefix: '--varscan_snv_vcf'
+  - id: pindel_vcf
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--pindel_vcf'
+  - id: reference_fasta
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--reference_fasta'
     secondaryFiles:
-      - .tbi
-  - id: varscan_config
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_config'
+      - .fai
+      - ^.dict
   - id: results_dir
     type: string?
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: varscan_vcf_filter_config
-    type: File
+  - id: bypass
+    type: boolean?
     inputBinding:
       position: 0
-      prefix: '--varscan_vcf_filter_config'
-    label: VCF filter config
-    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
+      prefix: '--bypass'
+    label: Bypass merge filter by retaining all reads
 outputs:
-  - id: varscan_snv_dbsnp
-    doc: Final SNV output of parsing
+  - id: merged_vcf
     type: File
     outputBinding:
-      glob: >-
-        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.dbsnp_pass.filtered.vcf
-  - id: varscan_indel_dbsnp
-    doc: Final SNV output of parsing
-    type: File
-    outputBinding:
-      glob: >-
-        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.filtered.vcf
-label: s4_parse_varscan
+      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
+label: merge_vcf
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '4'
+    valueFrom: '8'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    dbsnp_db:
+    pindel_vcf:
       basename: input.ext
       class: File
       contents: file contents
@@ -77,7 +74,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    varscan_indel_raw:
+    reference_fasta:
       basename: input.ext
       class: File
       contents: file contents
@@ -86,7 +83,25 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    varscan_snv_raw:
+    strelka_snv_vcf:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    varscan_indel_vcf:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    varscan_snv_vcf:
       basename: input.ext
       class: File
       contents: file contents

@@ -2,25 +2,16 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s5_run_pindel
+id: parse_pindel
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: tumor_bam
+  - id: pindel_raw
     type: File
     inputBinding:
       position: 0
-      prefix: '--tumor_bam'
-    secondaryFiles:
-      - ^.bai
-  - id: normal_bam
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--normal_bam'
-    secondaryFiles:
-      - ^.bai
+      prefix: '--pindel_raw'
   - id: reference_fasta
     type: File
     inputBinding:
@@ -29,55 +20,64 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
-  - id: centromere_bed
-    type: File?
-    inputBinding:
-      position: 0
-      prefix: '--centromere_bed'
-  - id: no_delete_temp
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--no_delete_temp'
-    label: Don't delete temp files
-    doc: 'If set, will not delete large temporary Pindel output'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: pindel_config
     type: File
     inputBinding:
       position: 0
       prefix: '--pindel_config'
-    label: path to pindel.ini file
+  - id: dbsnp_db
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--dbsnp_db'
+    secondaryFiles:
+      - .tbi
+  - id: results_dir
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--results_dir'
+  - id: no_delete_temp
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--no_delete_temp'
+    doc: 'If set, do not delete large temporary files'
+  - id: pindel_vcf_filter_config
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--pindel_vcf_filter_config'
+    label: VCF Filter config
+    doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
+  - id: bypass
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass'
+    label: Skip CvgVafStrand and Homopolymer filters
+    doc: Disables filtering in pindel_filter.pl
 outputs:
-  - id: pindel_raw
+  - id: pindel_dbsnp
     type: File
     outputBinding:
-      glob: |-
-        ${
-                return inputs.results_dir + '/pindel/pindel_out/pindel-raw.dat'
-
-        }
-label: s5_run_pindel
+      glob: >-
+        $(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.filtered.vcf
+label: parse_pindel
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '5'
+    valueFrom: '7'
 requirements:
   - class: ShellCommandRequirement
-  - class: ResourceRequirement
-    ramMin: 8000
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    centromere_bed:
+    dbsnp_db:
       basename: input.ext
       class: File
       contents: file contents
@@ -86,14 +86,22 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    no_delete_temp: 9
-    normal_bam:
+    pindel_config:
       basename: input.ext
       class: File
       contents: file contents
       nameext: .ext
       nameroot: input
       path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    pindel_raw:
+      basename: p.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: p
+      path: /path/to/p.ext
       secondaryFiles: []
       size: 0
     reference_fasta:
@@ -105,15 +113,6 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    tumor_bam:
-      basename: t.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: t
-      path: /path/to/t.ext
-      secondaryFiles: []
-      size: 0
   runtime:
     cores: 1
-    ram: 8000
+    ram: 1000

@@ -2,16 +2,21 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: s3_parse_strelka
+id: parse_varscan_snv
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: strelka_snv_raw
+  - id: varscan_indel_raw
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_snv_raw'
+      prefix: '--varscan_indel_raw'
+  - id: varscan_snv_raw
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--varscan_snv_raw'
   - id: dbsnp_db
     type: File
     inputBinding:
@@ -19,42 +24,47 @@ inputs:
       prefix: '--dbsnp_db'
     secondaryFiles:
       - .tbi
-  - id: strelka_config
+  - id: varscan_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_config'
+      prefix: '--varscan_config'
   - id: results_dir
     type: string?
     inputBinding:
       position: 0
       prefix: '--results_dir'
-  - id: strelka_vcf_filter_config
+  - id: varscan_vcf_filter_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_vcf_filter_config'
-    label: VCF filter configuration file
+      prefix: '--varscan_vcf_filter_config'
+    label: VCF filter config
     doc: 'Configuration file for VCF filtering (depth, VAF, read count)'
 outputs:
-  - id: strelka_snv_dbsnp
+  - id: varscan_snv_dbsnp
+    doc: Final SNV output of parsing
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/strelka/filter_out/strelka.somatic.snv.all.dbsnp_pass.filtered.vcf
-    secondaryFiles:
-      - .tbi
-label: s3_parse_strelka
+        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.dbsnp_pass.filtered.vcf
+  - id: varscan_indel_dbsnp
+    doc: Final SNV output of parsing
+    type: File
+    outputBinding:
+      glob: >-
+        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_indel.Somatic.hc.dbsnp_pass.filtered.vcf
+label: parse_varscan_snv
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: '3'
+    valueFrom: '4'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180910'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
@@ -67,7 +77,16 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    strelka_snv_raw:
+    varscan_indel_raw:
+      basename: input.ext
+      class: File
+      contents: file contents
+      nameext: .ext
+      nameroot: input
+      path: /path/to/input.ext
+      secondaryFiles: []
+      size: 0
+    varscan_snv_raw:
       basename: input.ext
       class: File
       contents: file contents
