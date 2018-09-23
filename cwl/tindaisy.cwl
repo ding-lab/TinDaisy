@@ -135,10 +135,6 @@ inputs:
     type: File
     'sbg:x': -31.71896743774414
     'sbg:y': -374.38299560546875
-  - id: vcf_filter_config
-    type: File
-    'sbg:x': 34.839473724365234
-    'sbg:y': -41.590789794921875
   - id: debug_5
     type: boolean?
     'sbg:exposed': true
@@ -207,6 +203,18 @@ inputs:
     type: File
     'sbg:x': 778.2200317382812
     'sbg:y': 534.7636108398438
+  - id: centromere_bed
+    type: File?
+    'sbg:x': -659.09375
+    'sbg:y': -415.9898681640625
+  - id: strelka_vcf_filter_config
+    type: File
+    'sbg:x': 35.598453521728516
+    'sbg:y': -27.433225631713867
+  - id: varscan_vcf_filter_config
+    type: File
+    'sbg:x': 37.95334243774414
+    'sbg:y': 719.0504150390625
 outputs:
   - id: output_dat_1
     outputSource:
@@ -229,6 +237,8 @@ steps:
         source: normal_bam
       - id: reference_fasta
         source: reference_fasta
+      - id: centromere_bed
+        source: centromere_bed
       - id: no_delete_temp
         source: no_delete_temp
       - id: pindel_config
@@ -322,7 +332,7 @@ steps:
     label: parse_varscan_indel
     'sbg:x': -38.21725845336914
     'sbg:y': 476.6700744628906
-  - id: vaf_length_depth_filters
+  - id: pindel_vaf_length_depth_filters
     in:
       - id: bypass
         source: bypass_1
@@ -345,10 +355,10 @@ steps:
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
-    label: vaf_length_depth_filters
+    label: Pindel VAF Length Depth
     'sbg:x': 229.64466857910156
     'sbg:y': -169.85391235351562
-  - id: vaf_length_depth_filters_1
+  - id: strelka_vaf_length_depth_filters
     in:
       - id: bypass
         source: bypass_2
@@ -365,16 +375,16 @@ steps:
       - id: caller
         source: caller_1
       - id: vcf_filter_config
-        source: vcf_filter_config
+        source: strelka_vcf_filter_config
       - id: bypass_depth
         source: bypass_depth_1
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
-    label: vaf_length_depth_filters
+    label: Strelka SNV VAF Length Depth
     'sbg:x': 247.50181579589844
     'sbg:y': 63.91232681274414
-  - id: vaf_length_depth_filters_2
+  - id: varscan_snv_vaf_length_depth_filters
     in:
       - id: bypass
         source: bypass_3
@@ -391,16 +401,16 @@ steps:
       - id: caller
         source: caller_2
       - id: vcf_filter_config
-        source: vcf_filter_config
+        source: varscan_vcf_filter_config
       - id: bypass_depth
         source: bypass_depth_2
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
-    label: vaf_length_depth_filters
+    label: Varscan SNV VAF Length Depth 
     'sbg:x': 223.1511688232422
     'sbg:y': 247.3538818359375
-  - id: vaf_length_depth_filters_3
+  - id: varscan_indel_vaf_length_depth_filters
     in:
       - id: bypass
         source: bypass_4
@@ -417,25 +427,25 @@ steps:
       - id: caller
         source: caller_3
       - id: vcf_filter_config
-        source: vcf_filter_config
+        source: varscan_vcf_filter_config
       - id: bypass_depth
         source: bypass_depth_3
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
-    label: vaf_length_depth_filters
+    label: Varscan indel VAF Length Depth
     'sbg:x': 239.3849334716797
     'sbg:y': 416.18505859375
   - id: merge_vcf
     in:
       - id: strelka_snv_vcf
-        source: vaf_length_depth_filters_1/filtered_vcf
+        source: strelka_vaf_length_depth_filters/filtered_vcf
       - id: varscan_indel_vcf
-        source: vaf_length_depth_filters_3/filtered_vcf
+        source: varscan_indel_vaf_length_depth_filters/filtered_vcf
       - id: varscan_snv_vcf
-        source: vaf_length_depth_filters_2/filtered_vcf
+        source: varscan_snv_vaf_length_depth_filters/filtered_vcf
       - id: pindel_vcf
-        source: vaf_length_depth_filters/filtered_vcf
+        source: pindel_vaf_length_depth_filters/filtered_vcf
       - id: reference_fasta
         source: reference_fasta
       - id: bypass_merge
