@@ -41,11 +41,6 @@ inputs:
       prefix: '--no_delete_temp'
     label: Don't delete temp files
     doc: 'If set, will not delete large temporary Pindel output'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: pindel_config
     type: File
     inputBinding:
@@ -58,7 +53,7 @@ outputs:
     outputBinding:
       glob: |-
         ${
-                return inputs.results_dir + '/pindel/pindel_out/pindel-raw.dat'
+                return 'results/pindel/pindel_out/pindel-raw.dat'
 
         }
 label: run_pindel
@@ -68,6 +63,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: run_pindel
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: ResourceRequirement

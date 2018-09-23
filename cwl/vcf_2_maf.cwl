@@ -33,11 +33,6 @@ inputs:
       position: 0
       prefix: '--vep_cache_version'
     label: 'VEP Cache Version (e.g., 90)'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: vep_cache_gz
     type: File?
     inputBinding:
@@ -59,7 +54,7 @@ outputs:
   - id: output_dat
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/maf/output.maf
+      glob: results/maf/output.maf
 label: vcf_2_maf
 arguments:
   - position: 99
@@ -80,6 +75,9 @@ arguments:
       } 
           
       }
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

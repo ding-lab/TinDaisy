@@ -2,7 +2,7 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: annotate_vep
+id: vep_annotate
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
@@ -33,12 +33,6 @@ inputs:
       position: 0
       prefix: '--vep_cache_version'
     label: 'VEP Cache Version (e.g., 93)'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
-    doc: Per-sample analysis results location. Often same as sample name
   - id: vep_cache_gz
     type: File?
     inputBinding:
@@ -49,47 +43,11 @@ inputs:
       if defined, extract contents into "./vep-cache" and use VEP cache. 
       Otherwise, perform (much slower) online VEP DB lookups
     'sbg:fileTypes': .tar.gz
-  - id: bypass
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass'
-    label: Bypass all filters
-  - id: af_filter_config
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--af_filter_config'
-    label: Configuration file for af (allele frequency) filter
-  - id: classification_filter_config
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--classification_filter_config'
-    label: Configuration file for classification filter
-  - id: bypass_af
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass_af'
-    label: Bypass AF filter by retaining all reads
-  - id: bypass_classification
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass_classification'
-    label: Bypass Classification filter by retaining all reads
-  - id: debug
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--debug'
-    label: print out processing details to STDERR
 outputs:
   - id: output_dat
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/vep/output.v*
+      glob: results/vep/output_vep.vcf
 label: vep_annotate
 arguments:
   - position: 99
@@ -97,6 +55,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: vep_annotate
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

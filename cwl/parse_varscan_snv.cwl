@@ -22,25 +22,23 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--varscan_config'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
 outputs:
-  - id: varscan_snv_dbsnp
+  - id: varscan_snv
     doc: Final SNV output of parsing
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/varscan/filter_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf
+        results/varscan/filter_snv_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf
 label: parse_varscan_snv
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: run_varscan_snv
+    valueFrom: parse_varscan_snv
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

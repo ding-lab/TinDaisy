@@ -34,13 +34,6 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--strelka_config'
-  - id: results_dir
-    type: string
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
-    label: Results directory name
-    doc: Apparently should not have '.' in it
   - id: manta_vcf
     type: File?
     inputBinding:
@@ -49,12 +42,12 @@ inputs:
     label: Output from Manta
     doc: Optional file for use with strelka2 processing
 outputs:
-  - id: snvs_passed
+  - id: strelka2_vcf
     type: File
     outputBinding:
       glob: |-
         ${
-            return  inputs.results_dir + '/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+            return  'results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
         }
 label: run_strelka
 arguments:
@@ -63,6 +56,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: run_strelka2
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

@@ -34,20 +34,15 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--varscan_config'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
 outputs:
   - id: varscan_indel_raw
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/varscan/varscan_out/varscan.out.som_indel.vcf
+      glob: results/varscan/varscan_out/varscan.out.som_indel.vcf
   - id: varscan_snv_raw
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/varscan/varscan_out/varscan.out.som_snv.vcf
+      glob: results/varscan/varscan_out/varscan.out.som_snv.vcf
 label: run_varscan
 arguments:
   - position: 99
@@ -55,6 +50,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: run_varscan
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

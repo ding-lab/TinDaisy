@@ -2,54 +2,64 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com'
-id: run_strelka
+id: vep_filter
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: tumor_bam
+  - id: input_vcf
     type: File
     inputBinding:
       position: 0
-      prefix: '--tumor_bam'
-    secondaryFiles:
-      - ^.bai
-  - id: normal_bam
+      prefix: '--input_vcf'
+  - id: bypass
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass'
+    label: Bypass all filters
+  - id: af_filter_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--normal_bam'
-    secondaryFiles:
-      - ^.bai
-  - id: reference_fasta
+      prefix: '--af_filter_config'
+    label: Configuration file for af (allele frequency) filter
+  - id: classification_filter_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--reference_fasta'
-    secondaryFiles:
-      - ^.dict
-      - .fai
-  - id: strelka_config
-    type: File
+      prefix: '--classification_filter_config'
+    label: Configuration file for classification filter
+  - id: bypass_af
+    type: boolean?
     inputBinding:
       position: 0
-      prefix: '--strelka_config'
+      prefix: '--bypass_af'
+    label: Bypass AF filter by retaining all reads
+  - id: bypass_classification
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass_classification'
+    label: Bypass Classification filter by retaining all reads
+  - id: debug
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--debug'
+    label: print out processing details to STDERR
 outputs:
-  - id: strelka_vcf
+  - id: output_dat
     type: File
     outputBinding:
-      glob: |-
-        ${
-            
-            return  'results/strelka/strelka_out/results/passed.somatic.snvs.vcf'
-        }
-label: run_strelka
+      glob: results/vep_filter/vep_filtered.vcf
+label: vep_filter
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: run_strelka
+    valueFrom: vep_filter
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
@@ -60,15 +70,17 @@ requirements:
   - class: InlineJavascriptRequirement
 'sbg:job':
   inputs:
-    normal_bam:
-      basename: n.ext
+    assembly: assembly-string-value
+    input_vcf:
+      basename: input.ext
       class: File
       contents: file contents
       nameext: .ext
-      nameroot: 'n'
-      path: /path/to/n.ext
+      nameroot: input
+      path: /path/to/input.ext
       secondaryFiles: []
       size: 0
+    output_vep: output_vep-string-value
     reference_fasta:
       basename: input.ext
       class: File
@@ -78,7 +90,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    strelka_config:
+    vep_cache_gz:
       basename: input.ext
       class: File
       contents: file contents
@@ -87,15 +99,7 @@ requirements:
       path: /path/to/input.ext
       secondaryFiles: []
       size: 0
-    tumor_bam:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
+    vep_cache_version: vep_cache_version-string-value
   runtime:
     cores: 1
     ram: 1000

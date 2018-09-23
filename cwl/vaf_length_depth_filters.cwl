@@ -7,11 +7,6 @@ baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: bypass
     type: boolean?
     inputBinding:
@@ -74,7 +69,7 @@ outputs:
     type: File
     outputBinding:
       glob: |
-        $(inputs.results_dir)/vaf_length_depth_filters/$(inputs.output_vcf)
+        results/vaf_length_depth_filters/$(inputs.output_vcf)
 label: vaf_length_depth_filters
 arguments:
   - position: 99
@@ -82,6 +77,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: vaf_length_depth_filters
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

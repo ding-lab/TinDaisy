@@ -25,11 +25,6 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--pindel_config'
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: no_delete_temp
     type: boolean?
     inputBinding:
@@ -61,11 +56,11 @@ inputs:
       prefix: '--debug'
     label: print out processing details to STDERR
 outputs:
-  - id: pindel_dbsnp
+  - id: pindel_vcf
     type: File
     outputBinding:
       glob: >-
-        $(inputs.results_dir)/pindel/filter_out/pindel.out.current_final.dbsnp_pass.filtered.vcf
+        results/pindel/filter_out/pindel-raw.dat.CvgVafStrand_pass.Homopolymer_pass.vcf
 label: parse_pindel
 arguments:
   - position: 99
@@ -73,6 +68,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: parse_pindel
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

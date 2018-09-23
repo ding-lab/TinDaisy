@@ -35,11 +35,6 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: bypass_merge
     type: boolean?
     inputBinding:
@@ -56,7 +51,7 @@ outputs:
   - id: merged_vcf
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
+      glob: results/merged/merged.filtered.vcf
 label: merge_vcf
 arguments:
   - position: 99
@@ -64,6 +59,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: merge_vcf
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

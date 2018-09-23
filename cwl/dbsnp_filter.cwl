@@ -21,11 +21,6 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
-  - id: results_dir
-    type: string?
-    inputBinding:
-      position: 0
-      prefix: '--results_dir'
   - id: bypass_dbsnp
     type: boolean?
     inputBinding:
@@ -49,7 +44,7 @@ outputs:
   - id: merged_vcf
     type: File
     outputBinding:
-      glob: $(inputs.results_dir)/merged/merged.filtered.vcf
+      glob: results/dbsnp_filter/merged.filtered.vcf.dbsnp_pass.vcf
 label: dbsnp_filter
 arguments:
   - position: 99
@@ -57,6 +52,9 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: dbsnp_filter
+  - position: 0
+    prefix: '--results_dir'
+    valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
