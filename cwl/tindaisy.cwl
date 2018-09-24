@@ -32,9 +32,6 @@ inputs:
     type: File
     'sbg:x': -597.774658203125
     'sbg:y': 400.7431640625
-  - id: no_delete_temp_1
-    type: boolean?
-    'sbg:exposed': true
   - id: bypass
     type: boolean?
     'sbg:exposed': true
@@ -47,104 +44,50 @@ inputs:
   - id: debug
     type: boolean?
     'sbg:exposed': true
-  - id: bypass_1
-    type: boolean?
-    'sbg:exposed': true
   - id: bypass_vaf
     type: boolean?
     'sbg:exposed': true
   - id: bypass_length
     type: boolean?
     'sbg:exposed': true
-  - id: debug_1
-    type: boolean?
+  - id: output_vcf_pindel
+    type: string?
     'sbg:exposed': true
-  - id: output_vcf
-    type: string
-    'sbg:exposed': true
-  - id: caller
-    type: string
+  - id: caller_pindel
+    type: string?
     'sbg:exposed': true
   - id: bypass_depth
     type: boolean?
     'sbg:exposed': true
-  - id: bypass_2
-    type: boolean?
+  - id: output_vcf_strelka
+    type: string?
     'sbg:exposed': true
-  - id: bypass_vaf_1
-    type: boolean?
-    'sbg:exposed': true
-  - id: bypass_length_1
-    type: boolean?
-    'sbg:exposed': true
-  - id: debug_2
-    type: boolean?
-    'sbg:exposed': true
-  - id: output_vcf_1
-    type: string
-    'sbg:exposed': true
-  - id: caller_1
-    type: string
-    'sbg:exposed': true
-  - id: bypass_depth_1
-    type: boolean?
+  - id: caller_strelka
+    type: string?
     'sbg:exposed': true
   - id: bypass_3
     type: boolean?
     'sbg:exposed': true
-  - id: bypass_vaf_2
-    type: boolean?
+  - id: output_vcf_varscan_snv
+    type: string?
     'sbg:exposed': true
-  - id: bypass_length_2
-    type: boolean?
-    'sbg:exposed': true
-  - id: debug_3
-    type: boolean?
-    'sbg:exposed': true
-  - id: output_vcf_2
-    type: string
-    'sbg:exposed': true
-  - id: caller_2
-    type: string
-    'sbg:exposed': true
-  - id: bypass_depth_2
-    type: boolean?
+  - id: caller_varscan
+    type: string?
     'sbg:exposed': true
   - id: bypass_4
     type: boolean?
     'sbg:exposed': true
-  - id: bypass_vaf_3
-    type: boolean?
-    'sbg:exposed': true
-  - id: bypass_length_3
-    type: boolean?
-    'sbg:exposed': true
-  - id: debug_4
-    type: boolean?
-    'sbg:exposed': true
-  - id: output_vcf_3
-    type: string
-    'sbg:exposed': true
-  - id: caller_3
-    type: string
-    'sbg:exposed': true
-  - id: bypass_depth_3
-    type: boolean?
+  - id: output_vcf_varscan_indel
+    type: string?
     'sbg:exposed': true
   - id: pindel_vcf_filter_config
     type: File
     'sbg:x': -31.71896743774414
     'sbg:y': -374.38299560546875
-  - id: debug_5
-    type: boolean?
-    'sbg:exposed': true
   - id: bypass_merge
     type: boolean?
     'sbg:exposed': true
   - id: bypass_dbsnp
-    type: boolean?
-    'sbg:exposed': true
-  - id: debug_6
     type: boolean?
     'sbg:exposed': true
   - id: dbsnp_db
@@ -160,9 +103,6 @@ inputs:
   - id: bypass_af
     type: boolean?
     'sbg:exposed': true
-  - id: debug_7
-    type: boolean?
-    'sbg:exposed': true
   - id: classification_filter_config
     type: File
     'sbg:x': 794.95068359375
@@ -172,33 +112,6 @@ inputs:
     type: File?
     'sbg:x': 855.1481323242188
     'sbg:y': -110.74287414550781
-  - id: assembly_1
-    type: string?
-    'sbg:exposed': true
-  - id: vep_cache_version_1
-    type: string?
-    'sbg:exposed': true
-  - id: results_dir_2
-    type: string
-    'sbg:exposed': true
-  - id: results_dir_4
-    type: string?
-    'sbg:exposed': true
-  - id: results_dir_6
-    type: string?
-    'sbg:exposed': true
-  - id: results_dir_8
-    type: string?
-    'sbg:exposed': true
-  - id: results_dir_10
-    type: string?
-    'sbg:exposed': true
-  - id: results_dir_12
-    type: string?
-    'sbg:exposed': true
-  - id: results_dir
-    type: string?
-    'sbg:exposed': true
   - id: af_filter_config
     type: File
     'sbg:x': 778.2200317382812
@@ -291,7 +204,7 @@ steps:
       - id: pindel_config
         source: pindel_config
       - id: no_delete_temp
-        source: no_delete_temp_1
+        source: no_delete_temp
       - id: bypass
         source: bypass
       - id: bypass_cvs
@@ -334,20 +247,20 @@ steps:
     'sbg:y': 476.6700744628906
   - id: pindel_vaf_length_depth_filters
     in:
-      - id: bypass
-        source: bypass_1
       - id: bypass_vaf
         source: bypass_vaf
       - id: bypass_length
         source: bypass_length
       - id: debug
-        source: debug_1
+        source: debug
       - id: input_vcf
         source: parse_pindel/pindel_vcf
       - id: output_vcf
-        source: output_vcf
+        default: pindel.indel.vcf
+        source: output_vcf_pindel
       - id: caller
-        source: caller
+        default: pindel
+        source: caller_pindel
       - id: vcf_filter_config
         source: pindel_vcf_filter_config
       - id: bypass_depth
@@ -360,24 +273,24 @@ steps:
     'sbg:y': -169.85391235351562
   - id: strelka_vaf_length_depth_filters
     in:
-      - id: bypass
-        source: bypass_2
       - id: bypass_vaf
-        source: bypass_vaf_1
+        source: bypass_vaf
       - id: bypass_length
-        source: bypass_length_1
+        source: bypass_length
       - id: debug
-        source: debug_2
+        source: debug
       - id: input_vcf
         source: run_strelka/strelka_vcf
       - id: output_vcf
-        source: output_vcf_1
+        default: strelka.snv.vcf
+        source: output_vcf_strelka
       - id: caller
-        source: caller_1
+        default: strelka
+        source: caller_strelka
       - id: vcf_filter_config
         source: strelka_vcf_filter_config
       - id: bypass_depth
-        source: bypass_depth_1
+        source: bypass_depth
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
@@ -389,25 +302,27 @@ steps:
       - id: bypass
         source: bypass_3
       - id: bypass_vaf
-        source: bypass_vaf_2
+        source: bypass_vaf
       - id: bypass_length
-        source: bypass_length_2
+        source: bypass_length
       - id: debug
-        source: debug_3
+        source: debug
       - id: input_vcf
         source: parse_varscan_snv/varscan_snv
       - id: output_vcf
-        source: output_vcf_2
+        default: varscan.snv.vcf
+        source: output_vcf_varscan_snv
       - id: caller
-        source: caller_2
+        default: varscan
+        source: caller_varscan
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
-        source: bypass_depth_2
+        source: bypass_depth
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
-    label: Varscan SNV VAF Length Depth 
+    label: Varscan SNV VAF Length Depth
     'sbg:x': 223.1511688232422
     'sbg:y': 247.3538818359375
   - id: varscan_indel_vaf_length_depth_filters
@@ -415,21 +330,23 @@ steps:
       - id: bypass
         source: bypass_4
       - id: bypass_vaf
-        source: bypass_vaf_3
+        source: bypass_vaf
       - id: bypass_length
-        source: bypass_length_3
+        source: bypass_length
       - id: debug
-        source: debug_4
+        source: debug
       - id: input_vcf
         source: parse_varscan_indel/varscan_indel
       - id: output_vcf
-        source: output_vcf_3
+        default: varscan.indel.vcf
+        source: output_vcf_varscan_indel
       - id: caller
-        source: caller_3
+        default: varscan
+        source: caller_varscan
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
-        source: bypass_depth_3
+        source: bypass_depth
     out:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
@@ -451,7 +368,7 @@ steps:
       - id: bypass_merge
         source: bypass_merge
       - id: debug
-        source: debug_5
+        source: debug
     out:
       - id: merged_vcf
     run: ./merge_vcf.cwl
@@ -467,7 +384,7 @@ steps:
       - id: bypass_dbsnp
         source: bypass_dbsnp
       - id: debug
-        source: debug_6
+        source: debug
       - id: dbsnp_db
         source: dbsnp_db
     out:
@@ -501,9 +418,9 @@ steps:
       - id: reference_fasta
         source: reference_fasta
       - id: assembly
-        source: assembly_1
+        source: assembly
       - id: vep_cache_version
-        source: vep_cache_version_1
+        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
     out:

@@ -49,7 +49,7 @@ inputs:
       prefix: '--debug'
     label: print out processing details to STDERR
 outputs:
-  - id: output_dat
+  - id: output_vcf
     type: File
     outputBinding:
       glob: results/vep_filter/vep_filtered.vcf
