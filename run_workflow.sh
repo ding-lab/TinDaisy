@@ -23,20 +23,20 @@ ARGS=" \
 --pindel_config $PINDEL_CONFIG \
 --pindel_vcf_filter_config $PINDEL_VCF_FILTER_CONFIG \
 --reference_fasta $REFERENCE_FASTA \
---results_dir $RESULTS_DIR \
 --strelka_config $STRELKA_CONFIG \
---strelka_vcf_filter_config $VCF_FILTER_CONFIG \
+--strelka_vcf_filter_config $STRELKA_VCF_FILTER_CONFIG \
 --tumor_bam $TUMOR_BAM \
 --varscan_config $VARSCAN_CONFIG \
---varscan_vcf_filter_config $VCF_FILTER_CONFIG \
+--varscan_vcf_filter_config $VARSCAN_VCF_FILTER_CONFIG \
 --vep_cache_version $VEP_CACHE_VERSION \
 --classification_filter_config $CLASSIFICATION_FILTER_CONFIG \
 --af_filter_config $AF_FILTER_CONFIG \
+--vep_cache_gz $VEP_CACHE_GZ \
 "  
-#--vep_cache_gz $VEP_CACHE_GZ \
 
 #--bypass_merge_vcf  \
 #--bypass_parse_pindel  \
 #--bypass_vep_annotate  \
 
 $RABIX $RABIX_ARGS $CWL -- $ARGS
+
