@@ -12,12 +12,6 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--input_vcf'
-  - id: bypass
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass'
-    label: Bypass all filters
   - id: af_filter_config
     type: File
     inputBinding:

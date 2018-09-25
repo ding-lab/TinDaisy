@@ -7,12 +7,6 @@ baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: bypass
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass'
-    label: bypass all filters
   - id: bypass_vaf
     type: boolean?
     inputBinding:
@@ -37,20 +31,6 @@ inputs:
       position: 0
       prefix: '--input_vcf'
     label: VCF file to process
-  - id: output_vcf
-    type: string
-    inputBinding:
-      position: 0
-      prefix: '--output_vcf'
-    label: Name of output VCF file
-    doc: written to results_dir/vaf_length_depth_filters/output_vcf
-  - id: caller
-    type: string
-    inputBinding:
-      position: 0
-      prefix: '--caller'
-    label: Variant caller
-    doc: 'One of strelka, pindel, varscan'
   - id: vcf_filter_config
     type: File
     inputBinding:
@@ -69,7 +49,7 @@ outputs:
     type: File
     outputBinding:
       glob: |
-        results/vaf_length_depth_filters/$(inputs.output_vcf)
+        results/vaf_length_depth_filters/filtered.vcf
 label: vaf_length_depth_filters
 arguments:
   - position: 99
@@ -80,6 +60,9 @@ arguments:
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
+  - position: 0
+    prefix: '--output_vcf'
+    valueFrom: filtered.vcf
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

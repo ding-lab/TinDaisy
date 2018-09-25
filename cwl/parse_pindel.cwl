@@ -31,12 +31,6 @@ inputs:
       position: 0
       prefix: '--no_delete_temp'
     doc: 'If set, do not delete large temporary files'
-  - id: bypass
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--bypass'
-    label: bypass all filters
   - id: bypass_cvs
     type: boolean?
     inputBinding:

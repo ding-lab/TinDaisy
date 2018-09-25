@@ -32,9 +32,6 @@ inputs:
     type: File
     'sbg:x': -597.774658203125
     'sbg:y': 400.7431640625
-  - id: bypass
-    type: boolean?
-    'sbg:exposed': true
   - id: bypass_cvs
     type: boolean?
     'sbg:exposed': true
@@ -50,35 +47,8 @@ inputs:
   - id: bypass_length
     type: boolean?
     'sbg:exposed': true
-  - id: output_vcf_pindel
-    type: string?
-    'sbg:exposed': true
-  - id: caller_pindel
-    type: string?
-    'sbg:exposed': true
   - id: bypass_depth
     type: boolean?
-    'sbg:exposed': true
-  - id: output_vcf_strelka
-    type: string?
-    'sbg:exposed': true
-  - id: caller_strelka
-    type: string?
-    'sbg:exposed': true
-  - id: bypass_3
-    type: boolean?
-    'sbg:exposed': true
-  - id: output_vcf_varscan_snv
-    type: string?
-    'sbg:exposed': true
-  - id: caller_varscan
-    type: string?
-    'sbg:exposed': true
-  - id: bypass_4
-    type: boolean?
-    'sbg:exposed': true
-  - id: output_vcf_varscan_indel
-    type: string?
     'sbg:exposed': true
   - id: pindel_vcf_filter_config
     type: File
@@ -100,22 +70,11 @@ inputs:
   - id: vep_cache_version
     type: string?
     'sbg:exposed': true
-  - id: bypass_af
-    type: boolean?
-    'sbg:exposed': true
-  - id: classification_filter_config
-    type: File
-    'sbg:x': 794.95068359375
-    'sbg:y': 406.7112121582031
   - id: vep_cache_gz
     'sbg:fileTypes': .tar.gz
     type: File?
     'sbg:x': 855.1481323242188
     'sbg:y': -110.74287414550781
-  - id: af_filter_config
-    type: File
-    'sbg:x': 778.2200317382812
-    'sbg:y': 534.7636108398438
   - id: centromere_bed
     type: File?
     'sbg:x': -659.09375
@@ -129,18 +88,12 @@ inputs:
     'sbg:x': 37.95334243774414
     'sbg:y': 719.0504150390625
 outputs:
-  - id: output_dat_1
-    outputSource:
-      - vcf_2_maf/output_dat
-    type: File
-    'sbg:x': 1708.0706787109375
-    'sbg:y': 227.937255859375
   - id: output_dat
     outputSource:
-      - vep_filter/output_dat
+      - vep_annotate/output_dat
     type: File
-    'sbg:x': 1459.08984375
-    'sbg:y': 454.402587890625
+    'sbg:x': 1244.65234375
+    'sbg:y': 184.58351135253906
 steps:
   - id: run_pindel
     in:
@@ -205,8 +158,6 @@ steps:
         source: pindel_config
       - id: no_delete_temp
         source: no_delete_temp
-      - id: bypass
-        source: bypass
       - id: bypass_cvs
         source: bypass_cvs
       - id: bypass_homopolymer
@@ -255,12 +206,6 @@ steps:
         source: debug
       - id: input_vcf
         source: parse_pindel/pindel_vcf
-      - id: output_vcf
-        default: pindel.indel.vcf
-        source: output_vcf_pindel
-      - id: caller
-        default: pindel
-        source: caller_pindel
       - id: vcf_filter_config
         source: pindel_vcf_filter_config
       - id: bypass_depth
@@ -281,12 +226,6 @@ steps:
         source: debug
       - id: input_vcf
         source: run_strelka/strelka_vcf
-      - id: output_vcf
-        default: strelka.snv.vcf
-        source: output_vcf_strelka
-      - id: caller
-        default: strelka
-        source: caller_strelka
       - id: vcf_filter_config
         source: strelka_vcf_filter_config
       - id: bypass_depth
@@ -299,8 +238,6 @@ steps:
     'sbg:y': 63.91232681274414
   - id: varscan_snv_vaf_length_depth_filters
     in:
-      - id: bypass
-        source: bypass_3
       - id: bypass_vaf
         source: bypass_vaf
       - id: bypass_length
@@ -309,12 +246,6 @@ steps:
         source: debug
       - id: input_vcf
         source: parse_varscan_snv/varscan_snv
-      - id: output_vcf
-        default: varscan.snv.vcf
-        source: output_vcf_varscan_snv
-      - id: caller
-        default: varscan
-        source: caller_varscan
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
@@ -327,8 +258,6 @@ steps:
     'sbg:y': 247.3538818359375
   - id: varscan_indel_vaf_length_depth_filters
     in:
-      - id: bypass
-        source: bypass_4
       - id: bypass_vaf
         source: bypass_vaf
       - id: bypass_length
@@ -337,12 +266,6 @@ steps:
         source: debug
       - id: input_vcf
         source: parse_varscan_indel/varscan_indel
-      - id: output_vcf
-        default: varscan.indel.vcf
-        source: output_vcf_varscan_indel
-      - id: caller
-        default: varscan
-        source: caller_varscan
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
@@ -411,36 +334,4 @@ steps:
     label: vep_annotate
     'sbg:x': 1010.4227905273438
     'sbg:y': 190.464599609375
-  - id: vcf_2_maf
-    in:
-      - id: input_vcf
-        source: vep_filter/output_dat
-      - id: reference_fasta
-        source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
-      - id: vep_cache_gz
-        source: vep_cache_gz
-    out:
-      - id: output_dat
-    run: ./vcf_2_maf.cwl
-    label: vcf_2_maf
-    'sbg:x': 1448.525146484375
-    'sbg:y': 234.188232421875
-  - id: vep_filter
-    in:
-      - id: input_vcf
-        source: vep_annotate/output_dat
-      - id: af_filter_config
-        source: af_filter_config
-      - id: classification_filter_config
-        source: classification_filter_config
-    out:
-      - id: output_dat
-    run: ./vep_filter.cwl
-    label: vep_filter
-    'sbg:x': 1229.893798828125
-    'sbg:y': 338.4498596191406
 requirements: []
