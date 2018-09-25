@@ -95,12 +95,6 @@ inputs:
     type: File
     'sbg:x': 1843.500732421875
     'sbg:y': 534.21875
-  - id: assembly_1
-    type: string?
-    'sbg:exposed': true
-  - id: vep_cache_version_1
-    type: string?
-    'sbg:exposed': true
 outputs:
   - id: output_maf
     outputSource:
@@ -375,9 +369,9 @@ steps:
       - id: reference_fasta
         source: reference_fasta
       - id: assembly
-        source: assembly_1
+        source: assembly
       - id: vep_cache_version
-        source: vep_cache_version_1
+        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
     out:
