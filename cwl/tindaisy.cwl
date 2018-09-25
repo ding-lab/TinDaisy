@@ -95,6 +95,12 @@ inputs:
     type: File
     'sbg:x': 1843.500732421875
     'sbg:y': 534.21875
+  - id: bypass_af
+    type: boolean?
+    'sbg:exposed': true
+  - id: bypass_classification
+    type: boolean?
+    'sbg:exposed': true
 outputs:
   - id: output_maf
     outputSource:
@@ -356,6 +362,10 @@ steps:
         source: af_filter_config
       - id: classification_filter_config
         source: classification_filter_config
+      - id: bypass_af
+        source: bypass_af
+      - id: bypass_classification
+        source: bypass_classification
     out:
       - id: output_vcf
     run: ./vep_filter.cwl
