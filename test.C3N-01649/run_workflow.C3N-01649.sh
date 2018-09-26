@@ -1,11 +1,10 @@
 
 source project_config.C3N-01649-test.sh
 
-CWL="../cwl/TinDaisy.workflow.cwl"
+CWL="../cwl/tindaisy.cwl"
 
 # try to have all output go to output_dir
-mkdir -p $RESULTS_DIR
-RABIX_ARGS="--basedir $RESULTS_DIR"
+RABIX_ARGS="--basedir $RABIX_OUT_DIR"
 
 # Mandatory args
 # --tumor_bam
@@ -39,14 +38,15 @@ ARGS=" \
 --pindel_config $PINDEL_CONFIG \
 --pindel_vcf_filter_config $PINDEL_VCF_FILTER_CONFIG \
 --reference_fasta $REFERENCE_FASTA \
---results_dir $RESULTS_DIR \
 --strelka_config $STRELKA_CONFIG \
 --strelka_vcf_filter_config $STRELKA_VCF_FILTER_CONFIG \
 --tumor_bam $TUMOR_BAM \
 --varscan_config $VARSCAN_CONFIG \
 --varscan_vcf_filter_config $VARSCAN_VCF_FILTER_CONFIG \
+--vep_cache_version $VEP_CACHE_VERSION \
+--classification_filter_config $CLASSIFICATION_FILTER_CONFIG \
+--af_filter_config $AF_FILTER_CONFIG \
 --vep_cache_gz $VEP_CACHE_GZ \
---vep_cache_version 90 \
 "  
 
 $RABIX $RABIX_ARGS $CWL -- $ARGS
