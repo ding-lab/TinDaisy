@@ -1,10 +1,4 @@
 
-# Remember, need to login first.  Read the README, 
-# Be sure docker is running
-# docker login cgc-images.sbgenomics.com
-# Username: m_wyczalkowski
-# Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
-
 source project_config.sh
 
 CWL="cwl/tindaisy.cwl"
@@ -12,8 +6,36 @@ CWL="cwl/tindaisy.cwl"
 mkdir -p $RESULTS_DIR
 RABIX_ARGS="--basedir $RESULTS_DIR"
 
-# TODO: test debug output
-
+# Valid inputs are:
+#     --af_filter_config <arg>
+#     --assembly <arg>
+#     --bypass_af
+#     --bypass_classification
+#     --bypass_cvs
+#     --bypass_dbsnp
+#     --bypass_depth
+#     --bypass_homopolymer
+#     --bypass_length
+#     --bypass_merge
+#     --bypass_vaf
+#     --centromere_bed <arg>
+#     --classification_filter_config <arg>
+#     --dbsnp_db <arg>
+#     --debug
+#     --no_delete_temp
+#     --normal_bam <arg>
+#     --pindel_config <arg>
+#     --pindel_vcf_filter_config <arg>
+#     --reference_fasta <arg>
+#     --strelka_config <arg>
+#     --strelka_vcf_filter_config <arg>
+#     --tumor_bam <arg>
+#     --varscan_config <arg>
+#     --varscan_vcf_filter_config <arg>
+#     --vep_cache_gz <arg>
+#     --vep_cache_version <arg>
+ 
+ 
 ARGS=" \
 --assembly $ASSEMBLY \
 --centromere_bed $CENTROMERE_BED \
@@ -31,12 +53,8 @@ ARGS=" \
 --vep_cache_version $VEP_CACHE_VERSION \
 --classification_filter_config $CLASSIFICATION_FILTER_CONFIG \
 --af_filter_config $AF_FILTER_CONFIG \
---vep_cache_gz $VEP_CACHE_GZ \
 "  
-
-#--bypass_merge_vcf  \
-#--bypass_parse_pindel  \
-#--bypass_vep_annotate  \
+# --vep_cache_gz $VEP_CACHE_GZ \
 
 $RABIX $RABIX_ARGS $CWL -- $ARGS
 
