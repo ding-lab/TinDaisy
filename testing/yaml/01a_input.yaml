@@ -1,0 +1,12 @@
+normal_bam:
+  class: File
+  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/StrelkaDemoCase.N.bam
+reference_fasta:
+  class: File
+  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/demo20.fa
+strelka_config:
+  class: File
+  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/strelka.WES.ini
+tumor_bam:
+  class: File
+  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/StrelkaDemoCase.T.bam
