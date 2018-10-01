@@ -6,7 +6,7 @@
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 cd ../..
 source project_config.sh
-CWL="cwl/run_strelka.cwl"
+CWL="cwl/run_varscan.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $RESULTS_DIR
@@ -16,5 +16,5 @@ $RABIX $RABIX_ARGS $CWL -- " \
 --tumor_bam $TUMOR_BAM \
 --normal_bam $NORMAL_BAM \
 --reference_fasta $REFERENCE_FASTA \
---strelka_config $STRELKA_CONFIG \
+--varscan_config $VARSCAN_CONFIG \
 "

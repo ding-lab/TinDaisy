@@ -6,7 +6,7 @@
 # Password: this is a token obtained from https://cgc.sbgenomics.com/developer#token, which requies login via ERA Commons
 cd ../..
 source project_config.sh
-CWL="cwl/run_strelka.cwl"
+CWL="cwl/run_strelka2.cwl"
 
 # try to have all output go to output_dir
 mkdir -p $RESULTS_DIR
