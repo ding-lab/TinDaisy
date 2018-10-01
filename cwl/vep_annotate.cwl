@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com'
 id: vep_annotate
 baseCommand:
   - /usr/bin/perl
@@ -42,7 +40,6 @@ inputs:
     doc: >-
       if defined, extract contents into "./vep-cache" and use VEP cache. 
       Otherwise, perform (much slower) online VEP DB lookups
-    'sbg:fileTypes': .tar.gz
 outputs:
   - id: output_dat
     type: File
@@ -63,38 +60,3 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
-'sbg:job':
-  inputs:
-    assembly: assembly-string-value
-    input_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    output_vep: output_vep-string-value
-    reference_fasta:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    vep_cache_gz:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    vep_cache_version: vep_cache_version-string-value
-  runtime:
-    cores: 1
-    ram: 1000

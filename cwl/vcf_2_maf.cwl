@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com'
 id: vcf_2_maf
 baseCommand:
   - /usr/bin/perl
@@ -42,7 +40,6 @@ inputs:
     doc: >-
       if defined, extract contents into "./vep-cache" and use VEP cache. 
       Otherwise, skip this step entirely
-    'sbg:fileTypes': .tar.gz
   - id: exac
     type: File?
     inputBinding:
@@ -83,38 +80,3 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl-dev'
   - class: InlineJavascriptRequirement
-'sbg:job':
-  inputs:
-    assembly: assembly-string-value
-    input_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    output_vep: output_vep-string-value
-    reference_fasta:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    vep_cache_gz:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    vep_cache_version: vep_cache_version-string-value
-  runtime:
-    cores: 1
-    ram: 1000

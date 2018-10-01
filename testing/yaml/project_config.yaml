@@ -1,42 +1,42 @@
 tumor_bam:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/StrelkaDemoCase.T.bam
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/StrelkaDemoCase.T.bam
 centromere_bed:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/ucsc-centromere.GRCh37.bed
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/ucsc-centromere.GRCh37.bed
 dbsnp_db:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 normal_bam:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/StrelkaDemoCase.N.bam
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/StrelkaDemoCase.N.bam
 pindel_vcf_filter_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/vcf_filter_config-pindel.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/vcf_filter_config-pindel.ini
 pindel_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/pindel.WES.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/pindel.WES.ini
 reference_fasta:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/StrelkaDemo.dat/demo20.fa
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/demo20.fa
 strelka_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/strelka.WES.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/strelka.WES.ini
 strelka_vcf_filter_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/vcf_filter_config-strelka.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/vcf_filter_config-strelka.ini
 varscan_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/varscan.WES.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/varscan.WES.ini
 varscan_vcf_filter_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/vcf_filter_config-varscan.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/vcf_filter_config-varscan.ini
 classification_filter_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/classification_filter_config.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/classification_filter_config.ini
 af_filter_config:
   class: File
-  path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/af_filter_config.ini
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/af_filter_config.ini
 vep_cache_version: 90
 assembly: GRCh37
 no_delete_temp: true
