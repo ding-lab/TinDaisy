@@ -60,11 +60,11 @@ inputs:
 outputs:
   - id: output_maf
     outputSource:
-      - vcf_2_maf/output_maf
+      vcf_2_maf/output_maf
     type: File
   - id: output_vcf
     outputSource:
-      - vep_filter/output_vcf
+      vep_filter/output_vcf
     type: File
 steps:
   - id: run_pindel
