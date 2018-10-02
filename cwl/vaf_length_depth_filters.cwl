@@ -46,8 +46,7 @@ outputs:
   - id: filtered_vcf
     type: File
     outputBinding:
-      glob: |
-        results/vaf_length_depth_filters/filtered.vcf
+      glob: results/vaf_length_depth_filters/filtered.vcf
 label: vaf_length_depth_filters
 arguments:
   - position: 99
