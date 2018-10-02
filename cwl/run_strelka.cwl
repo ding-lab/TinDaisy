@@ -11,14 +11,14 @@ inputs:
       position: 0
       prefix: '--tumor_bam'
     secondaryFiles:
-      - ^.bai
+      - .bai
   - id: normal_bam
     type: File
     inputBinding:
       position: 0
       prefix: '--normal_bam'
     secondaryFiles:
-      - ^.bai
+      - .bai
   - id: reference_fasta
     type: File
     inputBinding:
