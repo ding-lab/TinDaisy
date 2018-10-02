@@ -36,6 +36,8 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--dbsnp_db'
+    secondaryFiles:
+      - .tbi
     label: database for dbSNP filtering
     doc: Step will be skipped if not defined
 outputs:
