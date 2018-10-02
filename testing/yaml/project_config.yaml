@@ -37,6 +37,6 @@ classification_filter_config:
 af_filter_config:
   class: File
   path: /Users/mwyczalk/Projects/Rabix/TinDaisy/params/af_filter_config.ini
-vep_cache_version: 90
-assembly: GRCh37
+vep_cache_version: "90"
+assembly: "GRCh37"
 no_delete_temp: true
