@@ -1,15 +1,15 @@
 tumor_bam:
   class: File
-  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/StrelkaDemoCase.T.bam
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/testing/StrelkaDemo.dat/StrelkaDemoCase.T.bam
 centromere_bed:
   class: File
-  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/ucsc-centromere.GRCh37.bed
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/testing/StrelkaDemo.dat/ucsc-centromere.GRCh37.bed
 dbsnp_db:
   class: File
-  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/testing/StrelkaDemo.dat/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 normal_bam:
   class: File
-  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/StrelkaDemoCase.N.bam
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/testing/StrelkaDemo.dat/StrelkaDemoCase.N.bam
 pindel_vcf_filter_config:
   class: File
   path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/vcf_filter_config-pindel.ini
@@ -18,7 +18,7 @@ pindel_config:
   path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/pindel.WES.ini
 reference_fasta:
   class: File
-  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/StrelkaDemo.dat/demo20.fa
+  path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/testing/StrelkaDemo.dat/demo20.fa
 strelka_config:
   class: File
   path: /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/tin-daisy/params/strelka.WES.ini
