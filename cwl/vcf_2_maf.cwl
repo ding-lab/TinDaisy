@@ -49,7 +49,7 @@ inputs:
     doc: Passed to vcf_2_maf.pl as --filter-vcf
 outputs:
   - id: output_maf
-    type: File
+    type: File?
     outputBinding:
       glob: results/maf/output.maf
 label: vcf_2_maf
