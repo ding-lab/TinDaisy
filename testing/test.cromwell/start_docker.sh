@@ -9,7 +9,8 @@
 
 #IMAGE="mwyczalkowski/importgdc:latest"
 #IMAGE="lbwang/dailybox"
-IMAGE="mgibio/cle"
+#IMAGE="mgibio/cle"
+IMAGE="registry.gsc.wustl.edu/apipe-builder/genome_perl_environment:5"
 #IMAGE="cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl"
 #IMAGE="registry.gsc.wustl.edu/genome/genome_perl_environment:latest"
 bsub -Is -q research-hpc -a "docker($IMAGE)" /bin/bash
