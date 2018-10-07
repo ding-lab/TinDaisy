@@ -2,41 +2,73 @@ class: Workflow
 cwlVersion: v1.0
 id: tindaisy
 label: TinDaisy
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 inputs:
   - id: reference_fasta
     type: File
+    'sbg:x': 203.8125
+    'sbg:y': 132.5
   - id: debug
     type: boolean?
+    'sbg:x': 0
+    'sbg:y': 321
   - id: bypass_dbsnp
     type: boolean?
+    'sbg:x': 0
+    'sbg:y': 535
   - id: dbsnp_db
     type: File?
+    'sbg:x': 0
+    'sbg:y': 428
   - id: assembly
     type: string?
+    'sbg:x': 201.16781616210938
+    'sbg:y': 455.3938293457031
   - id: vep_cache_version
     type: string?
+    'sbg:x': 0
+    'sbg:y': 0
   - id: vep_cache_gz
     type: File?
+    'sbg:x': 0
+    'sbg:y': 107
   - id: af_filter_config
     type: File
+    'sbg:x': 618.875
+    'sbg:y': 481.5
   - id: classification_filter_config
     type: File
+    'sbg:x': 618.875
+    'sbg:y': 160.5
   - id: bypass_af
     type: boolean?
+    'sbg:x': 618.875
+    'sbg:y': 374.5
   - id: bypass_classification
     type: boolean?
+    'sbg:x': 618.875
+    'sbg:y': 267.5
   - id: input_vcf
     type: File
+    'sbg:x': 0
+    'sbg:y': 214
+  - id: bypass_vcf2maf
+    type: boolean?
+    'sbg:exposed': true
 outputs:
-# should not have '-' after OutputSource:
   - id: output_vcf
     outputSource:
-      vep_filter/output_vcf
+      - vep_filter/output_vcf
     type: File
+    'sbg:x': 1436.0235595703125
+    'sbg:y': 416.2088928222656
   - id: output_maf
     outputSource:
-      vcf_2_maf/output_maf
+      - vcf_2_maf/output_maf
     type: File?
+    'sbg:x': 1705.9761962890625
+    'sbg:y': 267.5
 steps:
   - id: dbsnp_filter
     in:
@@ -54,6 +86,8 @@ steps:
       - id: merged_vcf
     run: ./dbsnp_filter.cwl
     label: dbsnp_filter
+    'sbg:x': 203.8125
+    'sbg:y': 267.5
   - id: vep_annotate
     in:
       - id: input_vcf
@@ -70,6 +104,8 @@ steps:
       - id: output_dat
     run: ./vep_annotate.cwl
     label: vep_annotate
+    'sbg:x': 618.875
+    'sbg:y': 25.5
   - id: vep_filter
     in:
       - id: input_vcf
@@ -86,6 +122,8 @@ steps:
       - id: output_vcf
     run: ./vep_filter.cwl
     label: vep_filter
+    'sbg:x': 987.168212890625
+    'sbg:y': 239.5
   - id: vcf_2_maf
     in:
       - id: input_vcf
@@ -98,8 +136,12 @@ steps:
         source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
+      - id: bypass_vcf2maf
+        source: bypass_vcf2maf
     out:
       - id: output_maf
     run: ./vcf_2_maf.cwl
     label: vcf_2_maf
+    'sbg:x': 1438.668212890625
+    'sbg:y': 200
 requirements: []
