@@ -30,11 +30,11 @@ inputs:
 outputs:
   - id: output_vcf
     outputSource:
-      - vep_filter/output_vcf
+      vep_filter/output_vcf
     type: File
   - id: output_maf
     outputSource:
-      - vcf_2_maf/output_maf
+      vcf_2_maf/output_maf
     type: File?
 steps:
   - id: dbsnp_filter

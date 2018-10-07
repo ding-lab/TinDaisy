@@ -38,4 +38,15 @@ This is specified in config.ini, and is currently set for /gscmnt/gc2741/ding/cp
 Use TMUX from virtual workstation to capture logs and disconnect / attach at will without killing
 job.  nohup will die when log out, bsub takes a long time
 
+# Restarting
+
+We're trying a restart from after the merge step using the workflow `tindaisy-dbsnp_restart.cwl`
+
+## Error with tindaisy-dbsnp_restart.cwl
+
+Getting error with `run_cromwell.C3N-01649.sh` circa 10/6/18, log in its entirety in `dbsnp-restart.log`
+Failure on `vcf_2_maf`:
+```
+While decoding the output org.mozilla.javascript.Undefined@0 of the Javascript interpreter, we encountered org.mozilla.javascript.Undefined@0 and were unable to reify it.
+```
 

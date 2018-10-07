@@ -57,24 +57,31 @@ centromere_bed:
 # Has a hg38 version:
 #   Created on denali: /home/mwyczalk_test/src/SomaticWrapper/somaticwrapper/image.setup/B_Filter
 #   Stored on denali: /home/mwyczalk_test/data/docker/data/B_Filter
-#   Not clear if this exists at MGI
+#   Stored on MGI: /gscuser/mwyczalk/projects/SomaticWrapper/data/image.data
+
 # Note that this is somewhat different from Song's version:
 #   MGI:/gscmnt/gc3027/dinglab/medseq/cosmic/00-All.brief.pass.cosmic.vcf
+#     equivalent, but with .gz and .gz.tbi: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/B_Filter/00-All.brief.pass.cosmic.vcf.gz
 #   denali:/diskmnt/Projects/Users/hsun/data/dbsnp/00-All.brief.pass.cosmic.vcf.gz
 dbsnp_db:
   class: File
-  path: /gscmnt/gc3027/dinglab/medseq/cosmic/00-All.brief.pass.cosmic.vcf
+  path: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/B_Filter/00-All.brief.pass.cosmic.vcf.gz
 
 # VEP Cache is used for VEP annotation and vcf_2_maf.  
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
 # For performance reasons, defining vep_cache_gz is suggested for production systems
 
 # Copied from denali:/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# MGI: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh37.tar.gz
 vep_cache_gz:
   class: File
-  path: /diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
+  path: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh37.tar.gz
 vep_cache_version: "90"
 assembly: "GRCh37"
 
 # no_delete_temp = true preserves intermediate files from pindel run and parse
 # no_delete_temp: false
+
+input_vcf:  # This is used by tindaisy-dbsnp_restart.cwl as input to dbsnp filter step
+  class: File
+  path: /gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/ba2d414c-e19e-4fe3-a9c0-fcf4f6595ab8/call-merge_vcf/execution/results/merged/merged.filtered.vcf

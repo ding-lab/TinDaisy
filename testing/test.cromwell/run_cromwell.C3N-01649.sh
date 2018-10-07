@@ -6,7 +6,14 @@ source /opt/lsf9/conf/lsf.conf
 
 
 CONFIG="config.dat"
-CWL="../../cwl/tindaisy.cwl"
+#CWL="../../cwl/tindaisy.cwl"
+
+# here we're restarting after merging, to test dbsnp filter and downstream
+CWL="../../cwl/tindaisy-dbsnp_restart.cwl"
 YAML="../test.C3N-01649/project_config.C3N-01649.yaml"
-/usr/bin/java -Dconfig.file=$CONFIG -jar /gscmnt/gc2764/cad/tmooney/cromwell/cromwell-34.jar run -t cwl -i $YAML $CWL
+
+# Cromwell 35 in image  registry.gsc.wustl.edu/apipe-builder/genome_perl_environment:5
+CROMWELL="/opt/cromwell.jar"
+
+/usr/bin/java -Dconfig.file=$CONFIG -jar $CROMWELL run -t cwl -i $YAML $CWL
 
