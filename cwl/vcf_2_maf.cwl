@@ -47,6 +47,13 @@ inputs:
       prefix: '--exac'
     label: ExAC database for custom annotation
     doc: Passed to vcf_2_maf.pl as --filter-vcf
+  - id: bypass_vcf2maf
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--skip bypass_vcf2maf'
+    label: Do not perform vcf2maf conversion
+    doc: Necessary if vep_cache_gz not defined
 outputs:
   - id: output_maf
     type: File?
@@ -59,19 +66,6 @@ arguments:
     separate: false
     shellQuote: false
     valueFrom: vcf_2_maf
-  - position: 0
-    prefix: ''
-    separate: false
-    shellQuote: false
-    valueFrom: |-
-      ${   if (inputs.vep_cache_gz)     {         
-          return      
-      }     else     {        
-          return "--skip vep_cache_gz-not-defined"   
-          // Argument printed as an error message
-      } 
-          
-      }
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
