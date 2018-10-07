@@ -50,3 +50,5 @@ Failure on `vcf_2_maf`:
 While decoding the output org.mozilla.javascript.Undefined@0 of the Javascript interpreter, we encountered org.mozilla.javascript.Undefined@0 and were unable to reify it.
 ```
 
+Final result from restart run:
+/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy-dbsnp_restart.cwl/2100d784-2c6a-4971-b221-525a31360e86/call-vcf_2_maf/execution/results/maf
