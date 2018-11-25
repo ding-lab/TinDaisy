@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com'
 id: merge_vcf
 baseCommand:
   - /usr/bin/perl
@@ -67,53 +65,3 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180926'
   - class: InlineJavascriptRequirement
-'sbg:job':
-  inputs:
-    pindel_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    reference_fasta:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    strelka_snv_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_indel_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    varscan_snv_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-  runtime:
-    cores: 1
-    ram: 1000

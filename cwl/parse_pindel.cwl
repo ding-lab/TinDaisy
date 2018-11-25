@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com'
 id: parse_pindel
 baseCommand:
   - /usr/bin/perl
@@ -70,44 +68,3 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180926'
   - class: InlineJavascriptRequirement
-'sbg:job':
-  inputs:
-    dbsnp_db:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    pindel_config:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    pindel_raw:
-      basename: p.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: p
-      path: /path/to/p.ext
-      secondaryFiles: []
-      size: 0
-    reference_fasta:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-  runtime:
-    cores: 1
-    ram: 1000

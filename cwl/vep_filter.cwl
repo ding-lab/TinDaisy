@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com'
 id: vep_filter
 baseCommand:
   - /usr/bin/perl
@@ -62,38 +60,3 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180926'
   - class: InlineJavascriptRequirement
-'sbg:job':
-  inputs:
-    assembly: assembly-string-value
-    input_vcf:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    output_vep: output_vep-string-value
-    reference_fasta:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    vep_cache_gz:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    vep_cache_version: vep_cache_version-string-value
-  runtime:
-    cores: 1
-    ram: 1000

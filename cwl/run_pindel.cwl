@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com'
 id: run_pindel
 baseCommand:
   - /usr/bin/perl
@@ -13,14 +11,14 @@ inputs:
       position: 0
       prefix: '--tumor_bam'
     secondaryFiles:
-      - ^.bai
+      - .bai
   - id: normal_bam
     type: File
     inputBinding:
       position: 0
       prefix: '--normal_bam'
     secondaryFiles:
-      - ^.bai
+      - .bai
   - id: reference_fasta
     type: File
     inputBinding:
@@ -73,45 +71,3 @@ requirements:
   - class: DockerRequirement
     dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180926'
   - class: InlineJavascriptRequirement
-'sbg:job':
-  inputs:
-    centromere_bed:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    no_delete_temp: 9
-    normal_bam:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    reference_fasta:
-      basename: input.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: input
-      path: /path/to/input.ext
-      secondaryFiles: []
-      size: 0
-    tumor_bam:
-      basename: t.ext
-      class: File
-      contents: file contents
-      nameext: .ext
-      nameroot: t
-      path: /path/to/t.ext
-      secondaryFiles: []
-      size: 0
-  runtime:
-    cores: 1
-    ram: 8000

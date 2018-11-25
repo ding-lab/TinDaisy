@@ -1,0 +1,5 @@
+
+Using cwltool as a local proxy for testing against Cromwell on MGI - seems more
+compatible with Cromwell than Rabix.
+
+useful for validation and execution
