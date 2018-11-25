@@ -69,5 +69,5 @@ requirements:
   - class: ResourceRequirement
     ramMin: 8000
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:20180926'
+    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:latest'
   - class: InlineJavascriptRequirement
