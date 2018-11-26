@@ -113,6 +113,10 @@ inputs:
     type: boolean?
     'sbg:x': 2271.801025390625
     'sbg:y': 640.6875
+  - id: bypass_vcf2maf
+    type: boolean?
+    'sbg:x': 2797.294921875
+    'sbg:y': 769.046142578125
 outputs:
   - id: output_maf
     outputSource:
@@ -397,6 +401,8 @@ steps:
         source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
+      - id: bypass_vcf2maf
+        source: bypass_vcf2maf
     out:
       - id: output_maf
     run: ./vcf_2_maf.cwl

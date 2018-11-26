@@ -59,15 +59,15 @@ This should run for a few seconds and then produce output like,
 }
 ```
 
-Optionally install [SomaticWrapper (CWL branch)](https://github.com/ding-lab/somaticwrapper/tree/cwl). Note
-  SomaticWrapper is distributed within the Docker image `cgc-images.sbgenomics.com/m_wyczalkowski/somatic-wrapper:cwl`
+Optionally install [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core). Note
+that this project is distributed within the Docker image `cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core`.
 ``` 
-git clone -b cwl https://github.com/ding-lab/somaticwrapper 
+git clone https://github.com/ding-lab/TinDaisy-Core
 ```
 
 ## Log into CGC
 
-In some cases (all?) it is necessary to log into CGC to pull latest somatic-wrapper image.  To do this,
+In some cases (all?) it is necessary to log into CGC to pull latest TinDaisy-Core image.  To do this,
 `docker login cgc-images.sbgenomics.com`
 Username is normal, password is token string obtained from CGC: https://cgc.sbgenomics.com
 
@@ -75,83 +75,79 @@ Username is normal, password is token string obtained from CGC: https://cgc.sbge
 
 To run the entire TinDaisy workflow on a test dataset (named "StrelkaDemo"),
 ```
-bash run_workflow.sh
+cd testing
+bash run_workflow.StrelkaDemo.sh
 ```
 This should run for a minute or so and produce a lot of output ending in something like,
 ```
-[2018-04-20 14:45:21.787] [INFO] Job root.annotate_vep has completed
+[2018-11-26 13:18:28.681] [INFO] Job root.vcf_2_maf has completed
 {
-  "output_dat" : [ {
-    "basename" : "output.vcf.vep",
-    ...
-    "size" : 2769
-  }, {
-    "basename" : "output.vcf.vep_summary.html",
-    ...
-    "size" : 11178
-  } ]
+  "output_maf" : null,
+  "output_vcf" : {
+    "basename" : "vep_filtered.vcf",
+...
+    "size" : 11009
+  }
 }
 ```
 
 You will be able to find output for each of the steps of the TinDaisy workflow in the `./results` directory.
 
-Details of the StrelkaDemo dataset are found below.
+Details of the StrelkaDemo test dataset are found below.
 
 
 # Development and testing
 
 There are four levels of code development.
 
-1. Direct command line invocation of SomaticWrapper
-2. Executing SomaticWrapper from within a docker container
-3. Executing CWL-wrapped SomaticWrapper tool using Rabix Executor
-4. Executing a CWL workflow containing 1 or more SomaticWrapper tools
+1. Direct command line invocation of TinDaisy-Core
+2. Executing TinDaisy-Core from within a docker container
+3. Executing CWL-wrapped TinDaisy tool using Rabix Executor
+4. Executing a CWL workflow containing 1 or more TinDaisy tools
 
 For development and debugging, make sure all prior steps work.  Note that can also run workflows
 directly from Rabix Composer.
 
 ## Running SomaticWrapper directly
 
-For development and testing, the StrelkaDemo.docker.testing directory has scripts
-which will run individual steps of SomaticWrapper directly (i.e., `perl SomaticWrapper.pl ...`)
-from within docker container.  See [documentation](StrelkaDemo.docker.testing/README.md) for details.
+For development and testing, the `testing/test.rabix` directory has scripts
+which will run individual steps of TinDaisy-Core directly (i.e., `perl SomaticWrapper.pl ...`)
+from within docker container.  See [documentation](testing/README.md) for details.
 
 
-## Rabix Executor invocation
+## Rabix Composer invocation
 
 Individual steps of the SomaticWrapper workflow are defined as CWL tools in the `./cwl` directory and can
 be viewed and modified with [Rabix Composer](https://github.com/rabix/composer).
 
-Individual tools can be executed either from within Composer, or as individual shell scripts in `./StrelkaDemo.CWL.testing`. For instance,
+Individual tools can be executed either from within Composer, or as individual shell scripts in `testing/test.rabix`. For instance,
 ```
 bash run_cwl_S1.sh
 ```
 will run the `run_strelka` (step 1) of the Somatic Wrapper workflow.
 
-The CWL workflow consists of 8 such tools, seen below in a Rabix Composer view
-<img src="docs/TinDaisy.Rabix.2018-03-26.png"/> 
-
-The entire pipeline can be executed using the StrelkaDemo test dataset with,
+As mentioned above, entire pipeline can be executed using the StrelkaDemo test dataset with,
 ```
-bash run_workflow.sh
+cd testing
+bash run_workflow.StrelkaDemo.sh
 ```
+This will read configuration file in `testing/StrelkaDemo.dat/project_config.StrelkaDemo.yaml` to drive the analysis.
 
 ## Beyond StrelkaDemo
 
-Edit `project_config.sh` appropriately.  Run `bash run_workflow.sh`.
-
-The file `run_workflow.C3N-01649.sh` provides an example using real data
+Use `testing/run_workflow.StrelkaDemo.sh` and `testing/test.C3N-01649/project_config.C3N-01649.yaml` as basis for 
+additional work.  Note that production runs require somewhat different parameters, including an installed VEP cache 
+and deletion of intermediate files.
 
 # Development details
 
 ## Configuration files
 
-`project_config.sh` has various path definitions.
+YAML files supercede `project_config.sh` files to define variables for runs, since YAML can be used for both
+Cromwell and Rabix executions.
 
-**TODO** Look at and describe `VEP_CACHE_DIR` - it has an absolute file path here
-
-* currently, `--vep_cache_dir` is not supported as a way to share VEP cache with `vep_annotation` and `vcf_2_maf` steps
-because Rabix does not stage directories.  VEP cache must be passed as a `.tar.gz` file.  This may change in the future.
+Currently, `--vep_cache_dir` is not supported as a way to share VEP cache with `vep_annotation` and `vcf_2_maf` steps
+because Rabix does not stage directories.  VEP cache must be passed as a `.tar.gz` file and defined with `vep_cache_gz`
 
 
 ## StrelkaDemo details

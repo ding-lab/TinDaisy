@@ -1,13 +1,3 @@
-Getting errors such as,
+Example analysis using Rabix command line arguments with real data (C3N-01649).
 
-[2018-10-03 15:11:06,22] [warn] Localization via copy has failed: /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/9c91aa54-a11b-4316-a8a9-3aa38aa09771/CPT0088680009.WholeExome.RP-1303.bam -> /gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/cromwell-executions/tindaisy.cwl/89c9c9a7-35f5-4fd2-b986-0e85c2d7d812/call-run_strelka/inputs/1257968511/CPT0088680009.WholeExome.RP-1303.bam.tmp: Disk quota exceeded
-
--> cromwell-executions should be on a relatively large drive
-/gscuser/mwyczalk/projects/CWL/tin-daisy-cromwell/cromwell-executions
-
-Do: use /gscmnt/gc2508/dinglab/mwyczalk/cromwell as base dir for all cromwell output
-
-However, we get the following warning:
-    [2018-10-03 15:21:07,89] [warn] Localization via hard link has failed: /gscmnt/gc2508/dinglab/mwyczalk/cromwell/cromwell-executions/tindaisy.cwl/5fc4b6a6-e1f8-43f6-8456-8d8fd48f9f81/call-run_pindel/inputs/-1359319482/CPT0088630009.WholeExome.RP-1303.bam -> /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/e8e6b393-a65b-43c9-982b-7910b5b55eac/CPT0088630009.WholeExome.RP-1303.bam: Invalid cross-device link
-
-This suggests that having the output directory be on the same partition as the BAMs (thus permitting hard link) would make things much faster, since a lot of initial time is spent copying the BAMs over
+TODO: update to use YAML file instead
