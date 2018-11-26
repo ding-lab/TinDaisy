@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 id: dbsnp_filter
 baseCommand:
   - /usr/bin/perl
@@ -36,15 +38,15 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--dbsnp_db'
-    secondaryFiles:
-      - .tbi
     label: database for dbSNP filtering
     doc: Step will be skipped if not defined
+    secondaryFiles:
+      - .tbi
 outputs:
-  - id: merged_vcf
+  - id: filtered_vcf
     type: File
     outputBinding:
-      glob: results/dbsnp_filter/merged.filtered.vcf.dbsnp_pass.vcf
+      glob: results/dbsnp_filter/dbsnp_pass.vcf
 label: dbsnp_filter
 arguments:
   - position: 99

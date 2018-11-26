@@ -2,70 +2,130 @@ class: Workflow
 cwlVersion: v1.0
 id: tindaisy
 label: TinDaisy
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 inputs:
   - id: no_delete_temp
     type: boolean?
+    'sbg:x': 0
+    'sbg:y': 1174.59375
   - id: tumor_bam
     type: File
+    'sbg:x': 0
+    'sbg:y': 427.125
   - id: normal_bam
     type: File
+    'sbg:x': 0
+    'sbg:y': 1067.8125
   - id: reference_fasta
     type: File
+    'sbg:x': 0
+    'sbg:y': 747.46875
   - id: strelka_config
     type: File
+    'sbg:x': 0
+    'sbg:y': 640.6875
   - id: pindel_config
     type: File
+    'sbg:x': 0
+    'sbg:y': 961.03125
   - id: varscan_config
     type: File
+    'sbg:x': 0
+    'sbg:y': 320.34375
   - id: bypass_cvs
     type: boolean?
+    'sbg:x': 247.28125
+    'sbg:y': 1123.8125
   - id: bypass_homopolymer
     type: boolean?
+    'sbg:x': 247.28125
+    'sbg:y': 910.25
   - id: debug
     type: boolean?
+    'sbg:x': 247.28125
+    'sbg:y': 589.90625
   - id: bypass_vaf
     type: boolean?
+    'sbg:x': 247.28125
+    'sbg:y': 696.6875
   - id: bypass_length
     type: boolean?
+    'sbg:x': 247.28125
+    'sbg:y': 803.46875
   - id: bypass_depth
     type: boolean?
+    'sbg:x': 247.28125
+    'sbg:y': 1017.03125
   - id: pindel_vcf_filter_config
     type: File
+    'sbg:x': 0
+    'sbg:y': 854.25
   - id: bypass_merge
     type: boolean?
+    'sbg:x': 1004.5568237304688
+    'sbg:y': 870.859375
   - id: bypass_dbsnp
     type: boolean?
+    'sbg:x': 1427.963134765625
+    'sbg:y': 747.46875
   - id: dbsnp_db
     type: File?
+    'sbg:x': 1427.963134765625
+    'sbg:y': 640.6875
   - id: assembly
     type: string?
+    'sbg:x': 1856.738525390625
+    'sbg:y': 694.078125
   - id: vep_cache_version
     type: string?
+    'sbg:x': 1847.685302734375
+    'sbg:y': 248.6655731201172
   - id: vep_cache_gz
     type: File?
+    'sbg:x': 1847.6796875
+    'sbg:y': 383.77581787109375
   - id: centromere_bed
     type: File?
+    'sbg:x': 0
+    'sbg:y': 1281.375
   - id: strelka_vcf_filter_config
     type: File
+    'sbg:x': 0
+    'sbg:y': 533.90625
   - id: varscan_vcf_filter_config
     type: File
+    'sbg:x': 0
+    'sbg:y': 213.5625
   - id: af_filter_config
     type: File
+    'sbg:x': 2271.801025390625
+    'sbg:y': 854.25
   - id: classification_filter_config
     type: File
+    'sbg:x': 2271.801025390625
+    'sbg:y': 533.90625
   - id: bypass_af
     type: boolean?
+    'sbg:x': 2271.801025390625
+    'sbg:y': 747.46875
   - id: bypass_classification
     type: boolean?
+    'sbg:x': 2271.801025390625
+    'sbg:y': 640.6875
 outputs:
   - id: output_maf
     outputSource:
-      vcf_2_maf/output_maf
+      - vcf_2_maf/output_maf
     type: File
+    'sbg:x': 3463.528076171875
+    'sbg:y': 640.6875
   - id: output_vcf
     outputSource:
-      vep_filter/output_vcf
+      - vep_filter/output_vcf
     type: File
+    'sbg:x': 3091.59423828125
+    'sbg:y': 694.078125
 steps:
   - id: run_pindel
     in:
@@ -85,6 +145,8 @@ steps:
       - id: pindel_raw
     run: ./run_pindel.cwl
     label: run_pindel
+    'sbg:x': 247.28125
+    'sbg:y': 448.1250305175781
   - id: run_strelka
     in:
       - id: tumor_bam
@@ -99,6 +161,8 @@ steps:
       - id: strelka_vcf
     run: ./run_strelka.cwl
     label: run_strelka
+    'sbg:x': 247.28125
+    'sbg:y': 285.3437805175781
   - id: run_varscan
     in:
       - id: tumor_bam
@@ -114,6 +178,8 @@ steps:
       - id: varscan_snv_raw
     run: ./run_varscan.cwl
     label: run_varscan
+    'sbg:x': 247.28125
+    'sbg:y': 136.56253051757812
   - id: parse_pindel
     in:
       - id: pindel_raw
@@ -134,6 +200,8 @@ steps:
       - id: pindel_vcf
     run: ./parse_pindel.cwl
     label: parse_pindel
+    'sbg:x': 573.6038208007812
+    'sbg:y': 821.859375
   - id: parse_varscan_snv
     in:
       - id: varscan_indel_raw
@@ -146,6 +214,8 @@ steps:
       - id: varscan_snv
     run: ./parse_varscan_snv.cwl
     label: parse_varscan_snv
+    'sbg:x': 573.6038208007812
+    'sbg:y': 538.296875
   - id: parse_varscan_indel
     in:
       - id: varscan_indel_raw
@@ -156,6 +226,8 @@ steps:
       - id: varscan_indel
     run: ./parse_varscan_indel.cwl
     label: parse_varscan_indel
+    'sbg:x': 573.6038208007812
+    'sbg:y': 666.078125
   - id: pindel_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -174,6 +246,8 @@ steps:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
     label: Pindel VAF Length Depth
+    'sbg:x': 1004.5568237304688
+    'sbg:y': 729.078125
   - id: strelka_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -192,6 +266,8 @@ steps:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
     label: Strelka SNV VAF Length Depth
+    'sbg:x': 573.6038208007812
+    'sbg:y': 382.5156555175781
   - id: varscan_snv_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -210,6 +286,8 @@ steps:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
     label: Varscan SNV VAF Length Depth
+    'sbg:x': 1004.5568237304688
+    'sbg:y': 375.5156555175781
   - id: varscan_indel_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -228,6 +306,8 @@ steps:
       - id: filtered_vcf
     run: ./vaf_length_depth_filters.cwl
     label: Varscan indel VAF Length Depth
+    'sbg:x': 1004.5568237304688
+    'sbg:y': 552.296875
   - id: merge_vcf
     in:
       - id: strelka_snv_vcf
@@ -248,6 +328,8 @@ steps:
       - id: merged_vcf
     run: ./merge_vcf.cwl
     label: merge_vcf
+    'sbg:x': 1427.963134765625
+    'sbg:y': 491.9062805175781
   - id: dbsnp_filter
     in:
       - id: input_vcf
@@ -261,13 +343,16 @@ steps:
       - id: dbsnp_db
         source: dbsnp_db
     out:
-      - id: merged_vcf
+      - id: filtered_vcf
     run: ./dbsnp_filter.cwl
     label: dbsnp_filter
+    'sbg:x': 1856.738525390625
+    'sbg:y': 559.296875
   - id: vep_annotate
     in:
       - id: input_vcf
-        source: dbsnp_filter/merged_vcf
+        source:
+          - dbsnp_filter/filtered_vcf
       - id: reference_fasta
         source: reference_fasta
       - id: assembly
@@ -280,6 +365,8 @@ steps:
       - id: output_dat
     run: ./vep_annotate.cwl
     label: vep_annotate
+    'sbg:x': 2271.801025390625
+    'sbg:y': 399.1250305175781
   - id: vep_filter
     in:
       - id: input_vcf
@@ -296,6 +383,8 @@ steps:
       - id: output_vcf
     run: ./vep_filter.cwl
     label: vep_filter
+    'sbg:x': 2640.09423828125
+    'sbg:y': 612.6875
   - id: vcf_2_maf
     in:
       - id: input_vcf
@@ -312,4 +401,7 @@ steps:
       - id: output_maf
     run: ./vcf_2_maf.cwl
     label: vcf_2_maf
-requirements: []
+    'sbg:x': 3091.59423828125
+    'sbg:y': 559.296875
+requirements:
+  - class: MultipleInputFeatureRequirement
