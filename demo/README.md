@@ -1,4 +1,4 @@
-Contents of testing directory
+Contents of demo directory
 
 * StrelkaDemo.dat - small test dataset
 * test.C3N-01649 - demonstration of running real dataset using rabix with command line arguments
