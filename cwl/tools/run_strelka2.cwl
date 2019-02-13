@@ -1,62 +1,66 @@
 class: CommandLineTool
 cwlVersion: v1.0
-id: merge_vcf
+id: run_strelka2
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: strelka_snv_vcf
+  - id: tumor_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--strelka_snv_vcf'
-  - id: varscan_indel_vcf
+      prefix: '--tumor_bam'
+    secondaryFiles:
+      - .bai
+  - id: normal_bam
     type: File
     inputBinding:
       position: 0
-      prefix: '--varscan_indel_vcf'
-  - id: varscan_snv_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--varscan_snv_vcf'
-  - id: pindel_vcf
-    type: File
-    inputBinding:
-      position: 0
-      prefix: '--pindel_vcf'
+      prefix: '--normal_bam'
+    secondaryFiles:
+      - .bai
   - id: reference_fasta
     type: File
     inputBinding:
       position: 0
       prefix: '--reference_fasta'
     secondaryFiles:
-      - .fai
       - ^.dict
-  - id: bypass_merge
-    type: boolean?
+      - .fai
+  - id: strelka_config
+    type: File
     inputBinding:
       position: 0
-      prefix: '--bypass_merge'
-    label: Bypass merge filter
-  - id: debug
-    type: boolean?
+      prefix: '--strelka_config'
+  - id: manta_vcf
+    type: File?
     inputBinding:
       position: 0
-      prefix: '--debug'
-    label: print out processing details to STDERR
+      prefix: '--manta_vcf'
+    label: Output from Manta
+    doc: Optional file for use with strelka2 processing
 outputs:
-  - id: merged_vcf
+  - id: strelka2_snv_vcf
     type: File
     outputBinding:
-      glob: results/merged/merged.filtered.vcf
-label: merge_vcf
+      glob: |-
+        ${
+            return  'results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+        }
+  - id: strelka2_indel_vcf
+    type: File
+    outputBinding:
+      glob: |-
+        ${
+            return  'results/strelka/strelka_out/results/variants/somatic.indels.vcf.gz"
+        }
+label: run_strelka2
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: merge_vcf
+    valueFrom: run_strelka2
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
