@@ -4,8 +4,8 @@
 # Production runs should be based on example in test.C3N-01649, which 
 # uses VEP cache and deletes intermediate files
 
-cd ..
-CWL="cwl/tindaisy.cwl"
+cd ../..
+CWL="cwl/workflows/tindaisy.cwl"
 #YAML="project_config.yaml"
 
 # Location TinDaisy installed

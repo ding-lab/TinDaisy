@@ -113,7 +113,7 @@ inputs:
     type: boolean?
     'sbg:x': 2797.294921875
     'sbg:y': 769.046142578125
-  - id: Mutect_vcf_filter_config
+  - id: mutect_vcf_filter_config
     type: File
     'sbg:x': 6.4631853103637695
     'sbg:y': 83.9405517578125
@@ -450,11 +450,11 @@ steps:
       - id: input_vcf
         source: mutect/mutations
       - id: vcf_filter_config
-        source: Mutect_vcf_filter_config
+        source: mutect_vcf_filter_config
     out:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
-    label: Mutect vaf_length_depth
+    label: mutect vaf_length_depth
     'sbg:x': 1020
     'sbg:y': -438.0108947753906
 requirements: []
