@@ -1,0 +1,4 @@
+Test data from manta distribution: https://github.com/Illumina/manta/tree/master/src/demo/data
+
+First, uncompress reference with,
+	tar -xvjf Homo_sapiens_assembly19.COST16011_region.fa.tar.bz2
