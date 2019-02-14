@@ -69,5 +69,5 @@ requirements:
   - class: ResourceRequirement
     ramMin: 8000
   - class: DockerRequirement
-    dockerPull: 'm_wyczalkowski/tindaisy-core:mutect-shiso'
+    dockerPull: 'm_wyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement

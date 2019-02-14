@@ -75,5 +75,5 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'm_wyczalkowski/tindaisy-core:mutect-shiso'
+    dockerPull: 'm_wyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement
