@@ -117,6 +117,10 @@ inputs:
     type: File
     'sbg:x': 6.4631853103637695
     'sbg:y': 83.9405517578125
+  - id: strelka_config
+    type: File
+    'sbg:x': -7.595465660095215
+    'sbg:y': -84.29430389404297
 outputs:
   - id: output_maf
     outputSource:
@@ -413,7 +417,15 @@ steps:
     'sbg:x': 226.59056091308594
     'sbg:y': -297.95751953125
   - id: run_strelka2
-    in: []
+    in:
+      - id: tumor_bam
+        source: tumor_bam
+      - id: normal_bam
+        source: normal_bam
+      - id: reference_fasta
+        source: reference_fasta
+      - id: strelka_config
+        source: strelka_config
     out:
       - id: strelka2_snv_vcf
       - id: strelka2_indel_vcf

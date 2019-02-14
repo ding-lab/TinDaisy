@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 id: run_strelka2
 baseCommand:
   - /usr/bin/perl
@@ -45,14 +47,14 @@ outputs:
     outputBinding:
       glob: |-
         ${
-            return  'results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+            return  'results/strelka2/strelka_out/results/variants/somatic.snvs.vcf.gz'
         }
   - id: strelka2_indel_vcf
     type: File
     outputBinding:
       glob: |-
         ${
-            return  'results/strelka/strelka_out/results/variants/somatic.indels.vcf.gz"
+            return  'results/strelka2/strelka_out/results/variants/somatic.indels.vcf.gz'
         }
 label: run_strelka2
 arguments:
