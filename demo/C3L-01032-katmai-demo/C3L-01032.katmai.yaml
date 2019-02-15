@@ -19,7 +19,7 @@ normal_bam:
   path: /diskmnt/Projects/cptac_downloads_6/GDC_import/data/6f5110f3-ee1b-4870-846a-e4a07daaf8c7/CPT0167270002.WholeExome.RP-1303.bam
 reference_fasta:
   class: File
-  path: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/A_Reference/Homo_sapiens_assembly19.fasta
+  path: /diskmnt/Datasets/Reference/Homo_sapiens_assembly19/Homo_sapiens_assembly19.fasta
 
 # vcf (vaf length depth) filter config
 pindel_vcf_filter_config:
@@ -59,13 +59,6 @@ centromere_bed:
   class: File
   path: ../../params/centromere//ucsc-centromere.GRCh37.bed
 
-##### from MutectDemo ######
-
-
-dbsnp_db: # this is not correct for MutectDemo, but allows the pipeline to proceed
-  class: File
-  path: ../demo_data/StrelkaDemo-data/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
-
 # Reference and other options
 vep_cache_version: "90"
 assembly: "GRCh37"
@@ -97,7 +90,7 @@ bypass_vcf2maf: true
 #   d98b7d382f98b0e53aabb316962fae69  /diskmnt/Datasets/COSMIC/gc3027/dinglab/medseq/cosmic/00-All.brief.pass.cosmic.vcf.gz
 dbsnp_db:
   class: File
-    path: /diskmnt/Datasets/VEP/dbsnp.noCOSMIC.GRCh37.vcf.gz
+  path: /diskmnt/Datasets/VEP/dbsnp.noCOSMIC.GRCh37.vcf.gz
 
 # VEP Cache is used for VEP annotation and vcf_2_maf.
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
