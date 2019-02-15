@@ -412,7 +412,7 @@ steps:
       - id: call_stats
       - id: coverage
       - id: mutations
-    run: ../../../../TinDaisy/mutect-tool/mutect-tool/cwl/mutect.cwl
+    run: ../../../mutect-tool/cwl/mutect.cwl
     label: MuTect
     'sbg:x': 226.59056091308594
     'sbg:y': -297.95751953125
