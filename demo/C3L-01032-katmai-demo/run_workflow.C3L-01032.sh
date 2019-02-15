@@ -5,16 +5,18 @@
 # uses VEP cache and deletes intermediate files
 
 # The TinDaisy installation directory
-TDD="/home/mwyczalk_test/Projects/TinDaisy/TinDaisy"
+TD_BASE="/home/mwyczalk_test/Projects/TinDaisy/TinDaisy"
 
 CWL="cwl/workflows/tindaisy.cwl"
 
-cd $TDD
+cd $TD_BASE
 YAML="demo/C3L-01032-katmai-demo/C3L-01032.katmai.yaml"
+#YAML="demo/C3L-01032-katmai-demo/project_config.MutectDemo.yaml"
 
 OUTD="/diskmnt/Projects/cptac_downloads_4/TinDaisy"
 mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
+pwd
 echo rabix $RABIX_ARGS $CWL $YAML
 
