@@ -32,20 +32,14 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--strelka_config'
-  - id: manta_vcf
-    type: File?
-    inputBinding:
-      position: 0
-      prefix: '--manta_vcf'
-    label: Output from Manta
-    doc: Optional file for use with strelka2 processing
 outputs:
-  - id: strelka2_vcf
+  - id: strelka_vcf
     type: File
     outputBinding:
       glob: |-
         ${
-            return  'results/strelka/strelka_out/results/variants/somatic.snvs.vcf.gz'
+            
+            return  'results/strelka/strelka_out/results/passed.somatic.snvs.vcf'
         }
 label: run_strelka
 arguments:
@@ -53,12 +47,12 @@ arguments:
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: run_strelka2
+    valueFrom: run_strelka
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:20181126'
+    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement

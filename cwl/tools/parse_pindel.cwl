@@ -1,39 +1,46 @@
 class: CommandLineTool
 cwlVersion: v1.0
-id: vep_filter
+id: parse_pindel
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
 inputs:
-  - id: input_vcf
+  - id: pindel_raw
     type: File
     inputBinding:
       position: 0
-      prefix: '--input_vcf'
-  - id: af_filter_config
+      prefix: '--pindel_raw'
+  - id: reference_fasta
     type: File
     inputBinding:
       position: 0
-      prefix: '--af_filter_config'
-    label: Configuration file for af (allele frequency) filter
-  - id: classification_filter_config
+      prefix: '--reference_fasta'
+    secondaryFiles:
+      - .fai
+      - ^.dict
+  - id: pindel_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--classification_filter_config'
-    label: Configuration file for classification filter
-  - id: bypass_af
+      prefix: '--pindel_config'
+  - id: no_delete_temp
     type: boolean?
     inputBinding:
       position: 0
-      prefix: '--bypass_af'
-    label: Bypass AF filter by retaining all reads
-  - id: bypass_classification
+      prefix: '--no_delete_temp'
+    doc: 'If set, do not delete large temporary files'
+  - id: bypass_cvs
     type: boolean?
     inputBinding:
       position: 0
-      prefix: '--bypass_classification'
-    label: Bypass Classification filter by retaining all reads
+      prefix: '--bypass_cvs'
+    label: skip filtering for CvgVafStrand
+  - id: bypass_homopolymer
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--bypass_homopolymer'
+    label: skip filtering for Homopolymer
   - id: debug
     type: boolean?
     inputBinding:
@@ -41,22 +48,23 @@ inputs:
       prefix: '--debug'
     label: print out processing details to STDERR
 outputs:
-  - id: output_vcf
+  - id: pindel_vcf
     type: File
     outputBinding:
-      glob: results/vep_filter/vep_filtered.vcf
-label: vep_filter
+      glob: >-
+        results/pindel/filter_out/pindel-raw.dat.CvgVafStrand_pass.Homopolymer_pass.vcf
+label: parse_pindel
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: vep_filter
+    valueFrom: parse_pindel
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:20181126'
+    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement

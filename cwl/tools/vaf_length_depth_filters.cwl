@@ -63,5 +63,5 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:20181126'
+    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement

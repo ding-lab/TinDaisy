@@ -15,6 +15,9 @@ The goal of TinDaisy is to
 
 # Getting Started
 
+** New ** Require mutect-tool to be installed in same directory as TinDaisy.  Required by
+relative path to mutect-tool in tindaisy.cwl
+
 ## Installation
 TinDaisy requires several packages to run.
 

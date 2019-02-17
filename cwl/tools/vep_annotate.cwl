@@ -1,6 +1,6 @@
 class: CommandLineTool
 cwlVersion: v1.0
-id: vcf_2_maf
+id: vep_annotate
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
@@ -30,47 +30,36 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--vep_cache_version'
-    label: 'VEP Cache Version (e.g., 90)'
+    label: 'VEP Cache Version (e.g., 93)'
   - id: vep_cache_gz
     type: File?
     inputBinding:
       position: 0
       prefix: '--vep_cache_gz'
-    label: VEP Cache .tar.gz
+    label: VEP Cache .tar.gz file
     doc: >-
       if defined, extract contents into "./vep-cache" and use VEP cache. 
-      Otherwise, skip this step entirely
-  - id: exac
-    type: File?
-    inputBinding:
-      position: 0
-      prefix: '--exac'
-    label: ExAC database for custom annotation
-    doc: Passed to vcf_2_maf.pl as --filter-vcf
-  - id: bypass_vcf2maf
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--skip bypass_vcf2maf'
-    label: Do not perform vcf2maf conversion
-    doc: Necessary if vep_cache_gz not defined
+      Otherwise, perform (much slower) online VEP DB lookups
 outputs:
-  - id: output_maf
-    type: File?
+  - id: output_dat
+    type: File
     outputBinding:
-      glob: results/maf/output.maf
-label: vcf_2_maf
+      glob: results/vep/output_vep.vcf
+label: vep_annotate
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: vcf_2_maf
+    valueFrom: vep_annotate
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
+  - position: 0
+    prefix: '--vep_opts'
+    valueFrom: "'--pick --pick_order tsl'"
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:20181126'
+    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement

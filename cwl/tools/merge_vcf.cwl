@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 id: merge_vcf
 baseCommand:
   - /usr/bin/perl
@@ -45,6 +47,16 @@ inputs:
       position: 0
       prefix: '--debug'
     label: print out processing details to STDERR
+  - id: strelka_indel_vcf
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--strelka_indel_vcf'
+  - id: mutect_vcf
+    type: File
+    inputBinding:
+      position: 0
+      prefix: '--mutect_vcf'
 outputs:
   - id: merged_vcf
     type: File
@@ -63,5 +75,5 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:20181126'
+    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement

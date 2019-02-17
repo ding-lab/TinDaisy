@@ -21,10 +21,6 @@ inputs:
     type: File
     'sbg:x': 0
     'sbg:y': 747.46875
-  - id: strelka_config
-    type: File
-    'sbg:x': 0
-    'sbg:y': 640.6875
   - id: pindel_config
     type: File
     'sbg:x': 0
@@ -117,6 +113,14 @@ inputs:
     type: boolean?
     'sbg:x': 2797.294921875
     'sbg:y': 769.046142578125
+  - id: mutect_vcf_filter_config
+    type: File
+    'sbg:x': 6.4631853103637695
+    'sbg:y': 83.9405517578125
+  - id: strelka_config
+    type: File
+    'sbg:x': -7.595465660095215
+    'sbg:y': -84.29430389404297
 outputs:
   - id: output_maf
     outputSource:
@@ -147,26 +151,10 @@ steps:
         source: pindel_config
     out:
       - id: pindel_raw
-    run: ./run_pindel.cwl
+    run: ../tools/run_pindel.cwl
     label: run_pindel
     'sbg:x': 247.28125
     'sbg:y': 448.1250305175781
-  - id: run_strelka
-    in:
-      - id: tumor_bam
-        source: tumor_bam
-      - id: normal_bam
-        source: normal_bam
-      - id: reference_fasta
-        source: reference_fasta
-      - id: strelka_config
-        source: strelka_config
-    out:
-      - id: strelka_vcf
-    run: ./run_strelka.cwl
-    label: run_strelka
-    'sbg:x': 247.28125
-    'sbg:y': 285.3437805175781
   - id: run_varscan
     in:
       - id: tumor_bam
@@ -180,7 +168,7 @@ steps:
     out:
       - id: varscan_indel_raw
       - id: varscan_snv_raw
-    run: ./run_varscan.cwl
+    run: ../tools/run_varscan.cwl
     label: run_varscan
     'sbg:x': 247.28125
     'sbg:y': 136.56253051757812
@@ -202,7 +190,7 @@ steps:
         source: debug
     out:
       - id: pindel_vcf
-    run: ./parse_pindel.cwl
+    run: ../tools/parse_pindel.cwl
     label: parse_pindel
     'sbg:x': 573.6038208007812
     'sbg:y': 821.859375
@@ -216,7 +204,7 @@ steps:
         source: varscan_config
     out:
       - id: varscan_snv
-    run: ./parse_varscan_snv.cwl
+    run: ../tools/parse_varscan_snv.cwl
     label: parse_varscan_snv
     'sbg:x': 573.6038208007812
     'sbg:y': 538.296875
@@ -228,7 +216,7 @@ steps:
         source: varscan_config
     out:
       - id: varscan_indel
-    run: ./parse_varscan_indel.cwl
+    run: ../tools/parse_varscan_indel.cwl
     label: parse_varscan_indel
     'sbg:x': 573.6038208007812
     'sbg:y': 666.078125
@@ -248,7 +236,7 @@ steps:
         source: bypass_depth
     out:
       - id: filtered_vcf
-    run: ./vaf_length_depth_filters.cwl
+    run: ../tools/vaf_length_depth_filters.cwl
     label: Pindel VAF Length Depth
     'sbg:x': 1004.5568237304688
     'sbg:y': 729.078125
@@ -261,17 +249,17 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: run_strelka/strelka_vcf
+        source: run_strelka2/strelka2_snv_vcf
       - id: vcf_filter_config
         source: strelka_vcf_filter_config
       - id: bypass_depth
         source: bypass_depth
     out:
       - id: filtered_vcf
-    run: ./vaf_length_depth_filters.cwl
+    run: ../tools/vaf_length_depth_filters.cwl
     label: Strelka SNV VAF Length Depth
-    'sbg:x': 573.6038208007812
-    'sbg:y': 382.5156555175781
+    'sbg:x': 1019.2607421875
+    'sbg:y': -88.8577651977539
   - id: varscan_snv_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -288,7 +276,7 @@ steps:
         source: bypass_depth
     out:
       - id: filtered_vcf
-    run: ./vaf_length_depth_filters.cwl
+    run: ../tools/vaf_length_depth_filters.cwl
     label: Varscan SNV VAF Length Depth
     'sbg:x': 1004.5568237304688
     'sbg:y': 375.5156555175781
@@ -308,7 +296,7 @@ steps:
         source: bypass_depth
     out:
       - id: filtered_vcf
-    run: ./vaf_length_depth_filters.cwl
+    run: ../tools/vaf_length_depth_filters.cwl
     label: Varscan indel VAF Length Depth
     'sbg:x': 1004.5568237304688
     'sbg:y': 552.296875
@@ -328,12 +316,16 @@ steps:
         source: bypass_merge
       - id: debug
         source: debug
+      - id: strelka_indel_vcf
+        source: strelka_indel_vaf_length_depth/filtered_vcf
+      - id: mutect_vcf
+        source: mutect_vaf_length_depth/filtered_vcf
     out:
       - id: merged_vcf
-    run: ./merge_vcf.cwl
+    run: ../tools/merge_vcf.cwl
     label: merge_vcf
-    'sbg:x': 1427.963134765625
-    'sbg:y': 491.9062805175781
+    'sbg:x': 1502.548095703125
+    'sbg:y': 158.9398651123047
   - id: dbsnp_filter
     in:
       - id: input_vcf
@@ -348,15 +340,14 @@ steps:
         source: dbsnp_db
     out:
       - id: filtered_vcf
-    run: ./dbsnp_filter.cwl
+    run: ../tools/dbsnp_filter.cwl
     label: dbsnp_filter
     'sbg:x': 1856.738525390625
     'sbg:y': 559.296875
   - id: vep_annotate
     in:
       - id: input_vcf
-        source:
-          - dbsnp_filter/filtered_vcf
+        source: dbsnp_filter/filtered_vcf
       - id: reference_fasta
         source: reference_fasta
       - id: assembly
@@ -367,7 +358,7 @@ steps:
         source: vep_cache_gz
     out:
       - id: output_dat
-    run: ./vep_annotate.cwl
+    run: ../tools/vep_annotate.cwl
     label: vep_annotate
     'sbg:x': 2271.801025390625
     'sbg:y': 399.1250305175781
@@ -385,7 +376,7 @@ steps:
         source: bypass_classification
     out:
       - id: output_vcf
-    run: ./vep_filter.cwl
+    run: ../tools/vep_filter.cwl
     label: vep_filter
     'sbg:x': 2640.09423828125
     'sbg:y': 612.6875
@@ -405,9 +396,65 @@ steps:
         source: bypass_vcf2maf
     out:
       - id: output_maf
-    run: ./vcf_2_maf.cwl
+    run: ../tools/vcf_2_maf.cwl
     label: vcf_2_maf
     'sbg:x': 3091.59423828125
     'sbg:y': 559.296875
-requirements:
-  - class: MultipleInputFeatureRequirement
+  - id: mutect
+    in:
+      - id: normal
+        source: normal_bam
+      - id: reference
+        source: reference_fasta
+      - id: tumor
+        source: tumor_bam
+    out:
+      - id: call_stats
+      - id: coverage
+      - id: mutations
+    run: ../../../mutect-tool/cwl/mutect.cwl
+    label: MuTect
+    'sbg:x': 226.59056091308594
+    'sbg:y': -297.95751953125
+  - id: run_strelka2
+    in:
+      - id: tumor_bam
+        source: tumor_bam
+      - id: normal_bam
+        source: normal_bam
+      - id: reference_fasta
+        source: reference_fasta
+      - id: strelka_config
+        source: strelka_config
+    out:
+      - id: strelka2_snv_vcf
+      - id: strelka2_indel_vcf
+    run: ../tools/run_strelka2.cwl
+    label: run_strelka2
+    'sbg:x': 223.633056640625
+    'sbg:y': -81.21533966064453
+  - id: strelka_indel_vaf_length_depth
+    in:
+      - id: input_vcf
+        source: run_strelka2/strelka2_indel_vcf
+      - id: vcf_filter_config
+        source: strelka_vcf_filter_config
+    out:
+      - id: filtered_vcf
+    run: ../tools/vaf_length_depth_filters.cwl
+    label: Strelka Indel vaf_length_depth
+    'sbg:x': 1021
+    'sbg:y': -246.59422302246094
+  - id: mutect_vaf_length_depth
+    in:
+      - id: input_vcf
+        source: mutect/mutations
+      - id: vcf_filter_config
+        source: mutect_vcf_filter_config
+    out:
+      - id: filtered_vcf
+    run: ../tools/vaf_length_depth_filters.cwl
+    label: mutect vaf_length_depth
+    'sbg:x': 1020
+    'sbg:y': -438.0108947753906
+requirements: []

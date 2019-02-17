@@ -1,6 +1,6 @@
 class: CommandLineTool
 cwlVersion: v1.0
-id: run_varscan
+id: run_pindel
 baseCommand:
   - /usr/bin/perl
   - /usr/local/somaticwrapper/SomaticWrapper.pl
@@ -27,32 +27,47 @@ inputs:
     secondaryFiles:
       - .fai
       - ^.dict
-  - id: varscan_config
+  - id: centromere_bed
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--centromere_bed'
+  - id: no_delete_temp
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '--no_delete_temp'
+    label: Don't delete temp files
+    doc: 'If set, will not delete large temporary Pindel output'
+  - id: pindel_config
     type: File
     inputBinding:
       position: 0
-      prefix: '--varscan_config'
+      prefix: '--pindel_config'
+    label: pindel.ini
 outputs:
-  - id: varscan_indel_raw
+  - id: pindel_raw
     type: File
     outputBinding:
-      glob: results/varscan/varscan_out/varscan.out.som_indel.vcf
-  - id: varscan_snv_raw
-    type: File
-    outputBinding:
-      glob: results/varscan/varscan_out/varscan.out.som_snv.vcf
-label: run_varscan
+      glob: |-
+        ${
+                return 'results/pindel/pindel_out/pindel-raw.dat'
+
+        }
+label: run_pindel
 arguments:
   - position: 99
     prefix: ''
     separate: false
     shellQuote: false
-    valueFrom: run_varscan
+    valueFrom: run_pindel
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
 requirements:
   - class: ShellCommandRequirement
+  - class: ResourceRequirement
+    ramMin: 8000
   - class: DockerRequirement
-    dockerPull: 'cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core:20181126'
+    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
   - class: InlineJavascriptRequirement
