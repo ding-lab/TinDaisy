@@ -7,7 +7,7 @@
 # The TinDaisy installation directory
 TD_BASE="/home/mwyczalk_test/Projects/TinDaisy/TinDaisy"
 
-CWL="cwl/workflows/tindaisy.cwl"
+CWL="cwl/workflows/tindaisy-restart.cwl"
 
 cd $TD_BASE
 YAML="demo/C3L-01032-katmai-demo/C3L-01032.katmai.yaml"
@@ -17,7 +17,5 @@ OUTD="/diskmnt/Projects/cptac_downloads_4/TinDaisy"
 mkdir -p $OUTD
 RABIX_ARGS="--basedir $OUTD"
 
-CMD="rabix $RABIX_ARGS $CWL $YAML"
-echo $CMD
-eval $CMD
+rabix $RABIX_ARGS $CWL $YAML
 

@@ -1,0 +1,89 @@
+# test YAML for running C3L-00004 on MGI 
+
+# Relative paths are with respect to location of this YAML file.
+#
+# Assume the following paths:
+#     Current dir: TinDaisy/demo/C3L-00004-katmai-demo
+#      Params dir: TinDaisy/params
+#      Centromere: TinDaisy/params/centromere
+
+# From /home/mwyczalk_test/Projects/CPTAC3/CPTAC3.catalog/katmai.BamMap.dat,
+
+# C3L-00004.WXS.N.hg38	C3L-00004	CCRCC	WXS	blood_normal	/diskmnt/Projects/cptac/GDC_import/data/1dee4e84-b617-43a2-add1-c68c5e36bcec/1561b97d-8c8f-4fe6-a244-06452760074d_gdc_realn.bam	40586776249	BAM	hg38	1dee4e84-b617-43a2-add1-c68c5e36bcec	katmai
+# C3L-00004.WXS.T.hg38	C3L-00004	CCRCC	WXS	tumor	/diskmnt/Projects/cptac/GDC_import/data/524d1cea-62cd-483c-8137-19450faf72b6/82ccdf4e-4527-47ca-8151-7e1248f1da09_gdc_realn.bam	53186219044	BAM	hg38	524d1cea-62cd-483c-8137-19450faf72b6	katmai
+
+tumor_bam:
+  class: File
+  path: /diskmnt/Projects/cptac/GDC_import/data/524d1cea-62cd-483c-8137-19450faf72b6/82ccdf4e-4527-47ca-8151-7e1248f1da09_gdc_realn.bam
+normal_bam:
+  class: File
+  path: /diskmnt/Projects/cptac/GDC_import/data/1dee4e84-b617-43a2-add1-c68c5e36bcec/1561b97d-8c8f-4fe6-a244-06452760074d_gdc_realn.bam
+reference_fasta:
+  class: File
+  path: /diskmnt/Datasets/Reference/GRCh38.d1.vd1/GRCh38.d1.vd1.fa
+
+# vcf (vaf length depth) filter config
+pindel_vcf_filter_config:
+  class: File
+  path: ../../params/vcf_filter_config-pindel.ini
+strelka_vcf_filter_config:
+  class: File
+  path: ../../params/vcf_filter_config-strelka.ini
+varscan_vcf_filter_config:
+  class: File
+  path: ../../params/vcf_filter_config-varscan.ini
+mutect_vcf_filter_config:
+  class: File
+  path: ../../params/vcf_filter_config-mutect.ini
+
+# Caller config.  Note mutect does not have a caller config file
+pindel_config:
+  class: File
+  path: ../../params/pindel.WES.ini
+strelka_config:
+  class: File
+  path: ../../params/strelka.WES.ini
+varscan_config:
+  class: File
+  path: ../../params/varscan.WES.ini
+
+# Other filter config
+classification_filter_config:
+  class: File
+  path: ../../params/classification_filter_config.ini
+af_filter_config:
+  class: File
+  path: ../../params/af_filter_config.ini
+
+# Data files
+centromere_bed: 
+  class: File
+  path: ../../params/centromere/ucsc-centromere.GRCh38.bed
+
+# See README.md for discussion of dbSnP references
+dbsnp_db:
+  class: File
+  path: /diskmnt/Datasets/dbSNP/SomaticWrapper/B_Filter/dbsnp.noCOSMIC.GRCh38.vcf.gz
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+# Created on denali:/home/mwyczalk_test/src/SomaticWrapper/somaticwrapper/image.setup/D_VEP
+# Copied from denali:/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# MGI: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# katmai: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
+
+vep_cache_gz:
+  class: File
+  path: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
+
+vep_cache_version: "90"
+assembly: "GRCh38"
+
+# no_delete_temp = true preserves intermediate files from pindel run and parse
+# no_delete_temp: false
+
+no_delete_temp: false
+bypass_vcf2maf: false
+

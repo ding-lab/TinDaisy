@@ -1,0 +1,6 @@
+* prior run died at dbSnP filter step, after merge.  Merge details here:
+  /diskmnt/Projects/cptac_downloads_4/TinDaisy/tindaisy-2019-02-14-231532.904/root/merge_vcf
+
+* Restart with a dbSnP filter whose path exists
+* evaluate which is best to use
+* consider making another pipeline which just starts at merge

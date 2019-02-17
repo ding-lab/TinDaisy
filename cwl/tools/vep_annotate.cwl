@@ -55,6 +55,9 @@ arguments:
   - position: 0
     prefix: '--results_dir'
     valueFrom: results
+  - position: 0
+    prefix: '--vep_opts'
+    valueFrom: "'--pick --pick_order tsl'"
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
