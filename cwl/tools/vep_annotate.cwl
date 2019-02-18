@@ -57,7 +57,7 @@ arguments:
     valueFrom: results
   - position: 0
     prefix: '--vep_opts'
-    valueFrom: "'--pick --pick_order tsl'"
+    valueFrom: '--pick_order tsl'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
