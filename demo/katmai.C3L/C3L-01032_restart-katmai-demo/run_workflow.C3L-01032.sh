@@ -10,7 +10,7 @@ TD_BASE="/home/mwyczalk_test/Projects/TinDaisy/TinDaisy"
 CWL="cwl/workflows/tindaisy-postmerge.cwl"
 
 cd $TD_BASE
-YAML="demo/C3L-01032_restart-katmai-demo/C3L-01032-restart.katmai.yaml"
+YAML="demo/katmai.C3L/C3L-01032_restart-katmai-demo/C3L-01032-restart.katmai.yaml"
 
 OUTD="/diskmnt/Projects/cptac_downloads_4/TinDaisy"
 mkdir -p $OUTD
