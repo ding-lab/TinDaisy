@@ -1,4 +1,4 @@
-# Relative paths are with respect to location of this YAML file.
+# TinDaisy run of GRCh38 dataset
 #
 # Assume the following paths:
 #     Current dir: TinDaisy/demo/katmai.C3L/C3N-00560
@@ -74,7 +74,7 @@ dbsnp_db:
 
 vep_cache_gz:
   class: File
-  path: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
+  path: /diskmnt/Datasets/VEP/vep-cache.90_GRCh38.tar.gz
 
 vep_cache_version: "90"
 assembly: "GRCh38"
