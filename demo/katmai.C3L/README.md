@@ -4,9 +4,6 @@ All configuration is via YAML
 
 By order of development
 
-* C3L-00004-katmai-demo
-*   Test dataset is C3L-00004, which is CCRCC hg38 WXS dataset.
-*   Goal is to do a preliminary run of mutect branch on real dataset
 * C3L-01032
   * Demonstration of hg19 YAML run on katmai
   * Test dataset is C3L-01032 bulk tumor vs. blood normal, which is part of CPTAC3 PDA8 core / bulk test.
