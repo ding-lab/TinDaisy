@@ -1,0 +1,85 @@
+# Template for TinDaisy YAML input file
+# The following arguments must be substituted:
+# * NORMAL_BAM
+# * TUMOR_BAM
+# * REF
+# * TD_ROOT
+# * DBSNP_DB
+# * VEP_CACHE_GZ
+
+
+normal_bam:
+  class: File
+  path: ${NORMAL_BAM}
+tumor_bam:
+  class: File
+  path: ${TUMOR_BAM}
+reference_fasta:
+  class: File
+  path: ${REF}
+
+# vcf (vaf length depth) filter config
+pindel_vcf_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/vcf_filter_config-pindel.ini
+strelka_vcf_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/vcf_filter_config-strelka.ini
+varscan_vcf_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/vcf_filter_config-varscan.ini
+mutect_vcf_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/vcf_filter_config-mutect.ini
+
+# Caller config.  Note mutect does not have a caller config file
+pindel_config:
+  class: File
+  path: ${TD_ROOT}/params/pindel.WES.ini
+strelka_config:
+  class: File
+  path: ${TD_ROOT}/params/strelka.WES.ini
+varscan_config:
+  class: File
+  path: ${TD_ROOT}/params/varscan.WES.ini
+
+# Other filter config
+classification_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/classification_filter_config.ini
+af_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/af_filter_config.ini
+
+# Data files
+centromere_bed: 
+  class: File
+  path: ${TD_ROOT}/params/centromere/ucsc-centromere.GRCh38.bed
+
+# See README.md for discussion of dbSnP references
+dbsnp_db:
+  class: File
+  path: ${DBSNP_DB}
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+# Created on denali:/home/mwyczalk_test/src/SomaticWrapper/somaticwrapper/image.setup/D_VEP
+# Copied from denali:/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# MGI: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# katmai: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
+
+vep_cache_gz:
+  class: File
+  path: ${VEP_CACHE_GZ}
+
+vep_cache_version: "90"
+assembly: "GRCh38"
+
+# no_delete_temp = true preserves intermediate files from pindel run and parse
+# no_delete_temp: false
+
+no_delete_temp: false
+bypass_vcf2maf: true
+

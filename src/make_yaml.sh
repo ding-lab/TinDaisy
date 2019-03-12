@@ -5,24 +5,33 @@
 
 read -r -d '' USAGE <<'EOF'
 Usage: make_yaml.sh [options] CASE [ CASE2 ... ]
-  Create YAML files for SomaticSV runs
+  Create YAML files for TinDaisy runs
+
+Reqired Options:
+-b BAMMAP: path to BamMap data file.  Required, must exist
+-Y YAML_TEMPLATE: template YAML file upon which we'll do variable substitution
+-P PARAMS: parameters file which holds varibles for substution in template
 
 Options:
 -h: print usage information
--b BAMMAP: path to BamMap data file.  Required, must exist
-    Format defined here: https://github.com/ding-lab/importGDC/blob/master/make_bam_map.sh
--r REF: path to reference file.  Required, must exist
 -y YAMLD: output directory of YAML files.  If "-", write YAML to stdout.  Default: .
 -p PRE_SUMMARY: analysis pre-summary filename
 -1 : Quit after evaluating one case
 
 If CASE is - then read CASEs from STDIN
 
-Output YAML file filename is CASE.yaml.  It defines tumor WGS BAM, normal WGS BAM, and reference file which is required to run SomaticSV CWL 
-BAM paths obtained from BAMMAP 
+Output YAML file filename is CASE.yaml.  It is based on YAML_TEMPLATE, with the following variables substituted:
+    * NORMAL_BAM
+    * TUMOR_BAM
+    * REF
+    * TD_ROOT
+    * DBSNP_DB
+    * VEP_CACHE_GZ
+The BAMs are defined by lookup of CASE in BamMap, the remainder in PARAMS
 Assuming all references are hg38 (this is used for searching BAMMAP)
 Analysis pre-summary is an optional output file which contains the UUID and sample names of input data; this information will be
   combined with run results at the conclusion of analysis to generate analysis summary file.  Columns: case, tumor name, tumor uuid, normal name, normal uuid
+Format of BamMap is defined here: https://github.com/ding-lab/importGDC/blob/master/make_bam_map.sh
     
 
 EOF
@@ -30,7 +39,7 @@ EOF
 SCRIPT=$(basename $0)
 
 YAMLD="."
-while getopts ":hb:r:y:1p:" opt; do
+while getopts ":hb:Y:P:p:y:1" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -39,8 +48,11 @@ while getopts ":hb:r:y:1p:" opt; do
     b)  # Required
       BAMMAP="$OPTARG"
       ;;
-    r)  # Required
-      REF="$OPTARG"
+    Y)  # Required
+      YAML_TEMPLATE="$OPTARG"
+      ;;
+    P)  # Required
+      PARAM_FILE="$OPTARG"
       ;;
     y)  
       YAMLD="$OPTARG"
@@ -66,22 +78,42 @@ while getopts ":hb:r:y:1p:" opt; do
 done
 shift $((OPTIND-1))
 
+function confirm {
+    FN=$1
+    if [ ! -s $FN ]; then
+        >&2 echo ERROR: $FN does not exist or is empty
+        exit 1
+    fi
+}
+
+function test_exit_status {
+    # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
+    rcs=${PIPESTATUS[*]};
+    for rc in ${rcs}; do
+        if [[ $rc != 0 ]]; then
+            >&2 echo $SCRIPT: Fatal ERROR.  Exiting.
+            exit $rc;
+        fi;
+    done
+}
+
 if [ -z $BAMMAP ]; then
     >&2 echo ERROR: BamMap file not defined \(-b\)
     exit 1
 fi
-if [ ! -e $BAMMAP ]; then
-    >&2 echo "ERROR: $BAMMAP does not exist"
+confirm $BAMMAP 
+
+if [ -z $YAML_TEMPLATE ]; then
+    >&2 echo ERROR: YAML template not defined \(-Y\)
     exit 1
 fi
-if [ -z $REF ]; then
-    >&2 echo ERROR: Reference not defined \(-r\)
+confirm $YAML_TEMPLATE 
+
+if [ -z $PARAM_FILE ]; then
+    >&2 echo ERROR: Parameter file  not defined \(-p\)
     exit 1
 fi
-if [ ! -e $REF ]; then
-    >&2 echo "ERROR: $REF does not exist"
-    exit 1
-fi
+confirm $PARAM_FILE 
 
 if [ "$#" -lt 1 ]; then
     >&2 echo ERROR: Wrong number of arguments
@@ -98,16 +130,6 @@ else
     CASES="$@"
 fi
 
-function test_exit_status {
-    # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
-    rcs=${PIPESTATUS[*]};
-    for rc in ${rcs}; do
-        if [[ $rc != 0 ]]; then
-            >&2 echo $SCRIPT: Fatal ERROR.  Exiting.
-            exit $rc;
-        fi;
-    done
-}
 
 # searches for entries with
 #   ref = hg38
@@ -160,18 +182,6 @@ function get_YAML {
     NORMAL=$2
     REF=$3
 
-    cat <<EOF
-tumor:
-  class: File
-  path: $TUMOR
-normal:
-  class: File
-  path: $NORMAL
-reference:
-  class: File
-  path: $REF
-EOF
-
 }
 
 # Write analysis pre-summary header 
@@ -187,19 +197,44 @@ if [ ! -z $PRE_SUMMARY ]; then
     test_exit_status
 fi
 
+source $PARAM_FILE
+# Not all of these really need to be defined
+if [ -z $REF ]; then
+    >&2 echo ERROR: REF not defined in $PARAM_FILE
+    exit 1
+fi
+if [ -z $TD_ROOT ]; then
+    >&2 echo ERROR: TD_ROOT not defined in $PARAM_FILE
+    exit 1
+fi
+if [ -z $DBSNP_DB ]; then
+    >&2 echo ERROR: DBSNP_DB not defined in $PARAM_FILE
+    exit 1
+fi
+if [ -z $VEP_CACHE_GZ ]; then
+    >&2 echo ERROR: VEP_CACHE_GZ not defined in $PARAM_FILE
+    exit 1
+fi
+
+# envsubst requires variables to be exported
+export $REF
+export $TD_ROOT
+export $DBSNP_DB
+export $VEP_CACHE_GZ
 
 for CASE in $CASES
 do
 
     TUMOR=$(get_BAM $CASE "tumor")
     test_exit_status
-    TUMOR_BAM=$(echo "$TUMOR" | cut -f 1)
+    export TUMOR_BAM=$(echo "$TUMOR" | cut -f 1)
 
     NORMAL=$(get_BAM $CASE "blood_normal")
     test_exit_status
-    NORMAL_BAM=$(echo "$NORMAL" | cut -f 1)
+    export NORMAL_BAM=$(echo "$NORMAL" | cut -f 1)
 
-    YAML=$(get_YAML $TUMOR_BAM $NORMAL_BAM $REF)
+# envsubst: https://stackoverflow.com/a/11050943
+    YAML=$(envsubst < YAML_TEMPLATE)
     if [ $YAMLD == "-" ]; then
         echo "$YAML"
     else

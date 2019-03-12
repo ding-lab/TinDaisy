@@ -5,7 +5,7 @@
 # Contains only definitions, no execution code
 
 # Root directory of SomaticSV
-SSV_ROOT="/home/mwyczalk_test/Projects/SomaticSV/somatic_sv_workflow"
+TD_ROOT="/Users/mwyczalk/Projects/TinDaisy/TinDaisy"
 
 # List of cases to analyze
 CASES="dat/cases.dat"
@@ -25,8 +25,17 @@ REF="/diskmnt/Datasets/Reference/GRCh38.d1.vd1/GRCh38.d1.vd1.fa"
 
 YAMLD="./yaml"
 
-CWL="$SSV_ROOT/cwl/SomaticSV.cwl"
+CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
 
 PRE_SUMMARY="dat/analysis_pre-summary.dat"
 SUMMARY="dat/analysis_summary.dat"
+
+# See README.md for discussion of dbSnP references
+DBSNP_DB="/diskmnt/Datasets/dbSNP/SomaticWrapper/B_Filter/dbsnp.noCOSMIC.GRCh38.vcf.gz"
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+VEP_CACHE_GZ="/diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz"
+
 
