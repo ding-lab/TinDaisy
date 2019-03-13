@@ -15,22 +15,13 @@ The goal of TinDaisy is to
 
 # Getting Started
 
-** New ** Require mutect-tool to be installed in same directory as TinDaisy.  Required by
-relative path to mutect-tool in tindaisy.cwl
 
 ## Installation
 TinDaisy requires several packages to run.
 
-**[Install Docker](https://www.docker.com/community-edition)**
-Be sure it is running before running `rabix`.
+### [Docker](https://www.docker.com/community-edition)
 
-**Install [TinDaisy](https://github.com/ding-lab/tin-daisy)**
-```
-git clone https://github.com/ding-lab/tin-daisy
-cd tin-daisy
-```
-
-**[Install Rabix Executor](https://github.com/rabix/bunny)**
+### [Rabix Executor](https://github.com/rabix/bunny)
 ```
 wget https://github.com/rabix/bunny/releases/download/v1.0.5-1/rabix-1.0.5.tar.gz -O rabix-1.0.5.tar.gz && tar -xvf rabix-1.0.5.tar.gz
 ```
@@ -62,19 +53,77 @@ This should run for a few seconds and then produce output like,
 }
 ```
 
-Optionally install [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core). Note
-that this project is distributed within the Docker image `cgc-images.sbgenomics.com/m_wyczalkowski/tindaisy-core`.
+### [TinDaisy](https://github.com/ding-lab/tin-daisy)**
+```
+git clone https://github.com/ding-lab/tin-daisy
+```
+
+### [Mutect CWL Tool](https://github.com/mwyczalkowski/mutect-tool) 
+At this time, one of the CWL steps in TinDaisy requires the external package Mutect Tool to be
+installed in the same directory as tin-daisy, i.e.,
+```
+git clone https://github.com/mwyczalkowski/mutect-tool
+```
+
+The relative path to this project is hard-coded in `cwl\tindaisy.cwl`
+**TODO** simplify this dependency, possibly installing mutect-tool as a submodule
+
+
+### Other
+
+The following packages are also required for the simple task manager:
+* [`jq`](https://stedolan.github.io/jq/download/)
+* [`GNU Parallel`](https://www.gnu.org/software/parallel/)
+
+Optionally [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core). This contains the 
+algorithmic contents of the somaitic caller workflow, but is generally distributed
+as a docker image, `mwyczalkowski/tindaisy-core:mutect` 
+
+**TODO** check / fix this - is it :mutect?
+
 ``` 
 git clone https://github.com/ding-lab/TinDaisy-Core
 ```
 
-## Log into CGC
+## Running CPTAC3 analyses
 
-In some cases (all?) it is necessary to log into CGC to pull latest TinDaisy-Core image.  To do this,
-`docker login cgc-images.sbgenomics.com`
-Username is normal, password is token string obtained from CGC: https://cgc.sbgenomics.com
+Example of CPTAC3 analyses is in `demo/task_call/katmai.C3`.  Scripts in this directory can be modified in place, or copied and modified in another directory.
 
-## Running TinDaisy
+### 1. Edit `project_config.sh`
+The `project_config.sh` file has all paths and other definitions specific to a given system (e.g., katmai) and project (e.g., GRCh38 CPTAC3 data).  In particular,
+need to specify path to BamMap file and other details described there.
+
+### 2. Create `dat/cases.dat` file
+This file has list of all case names which will be analyzed as part of this project.  Case names (e.g., C3L-00001) must be unique in this file, and must
+match the case names in the BamMap file.
+
+### 3. Run `1_make_yaml.sh`
+This generates a series of YAML files, which provide inputs to Rabix (and Cromwell) CWL workflow managers, one per case.  This script also
+creates file `dat/analysis_pre-summary.dat`, which is used to report analysis results once they are complete.
+
+### 4. Run `2_run_tasks.sh`
+This launches the SomaticSV workflow using Rabix, either one at a time (default) or several at a time using `GNU parallel`.  For the latter,
+invoke as,
+```
+2_run_tasks.sh -J 4
+```
+if you wish to run four at a time.  The dry run flag (`-d`) is useful for testing of configuration.
+
+This step will write results to two places specified in `project_config.sh`: `LOGD` and `RABIXD`.  Watch `LOGD/CASE.err` for execution progress
+
+### 5. Run `3_make_analysis_summary.sh`
+When analysis completes, this step will create an analysis summary file which reports on the path to the output VCF file per case, and the
+input files which were used to generate it.
+
+
+# Development notes
+
+This needs to be updated.  Demo directory layout and logic are based on [SomaticSV](https://github.com/mwyczalkowski/somatic_sv_workflow)
+and [BICSEQ2](https://github.com/mwyczalkowski/BICSEQ2)
+
+
+
+## Running StrelkaDemo data
 
 To run the entire TinDaisy workflow on a test dataset (named "StrelkaDemo"),
 ```
@@ -105,8 +154,8 @@ There are four levels of code development.
 
 1. Direct command line invocation of TinDaisy-Core
 2. Executing TinDaisy-Core from within a docker container
-3. Executing CWL-wrapped TinDaisy tool using Rabix Executor
-4. Executing a CWL workflow containing 1 or more TinDaisy tools
+3. Executing CWL-wrapped TinDaisy tool using Rabix Executor (or Cromwell)
+4. Executing a number of TinDaisy tasks using Rabix Executor and a simple task manager
 
 For development and debugging, make sure all prior steps work.  Note that can also run workflows
 directly from Rabix Composer.
@@ -139,7 +188,7 @@ This will read configuration file in `testing/StrelkaDemo.dat/project_config.Str
 ## Beyond StrelkaDemo
 
 Use `testing/run_workflow.StrelkaDemo.sh` and `testing/test.C3N-01649/project_config.C3N-01649.yaml` as basis for 
-additional work.  Note that production runs require somewhat different parameters, including an installed VEP cache 
+additional work.  Note that production runs are best with a somewhat different parameters, including an installed VEP cache 
 and deletion of intermediate files.
 
 # Development details
@@ -160,38 +209,3 @@ Strelka](https://github.com/Illumina/strelka/tree/master/src/demo/data) (hence t
 in the `./StrelkaDemo.dat` directory.
 
 
-### Details about centromere BED files distributed in StrelkaDemo.dat
-
-*Create BED files defining centromeres and other featues*
-
-A centromere BED file is used for Pindel to define regions to be excluded
-from analysis.  While optional, it is used for performance purposes.
-
-Three such files are distributed:
-* pindel-centromere-exclude.bed  -  this file is for GRCh37, and was used for internal development purposes.  It has an unknown provenance.
-* ucsc-centromere.GRCh37.bed - Data generated from UCSC Table Browser for GRCh37 assembly as described below
-* ucsc-centromere.GRCh38.bed - Data generated from UCSC Table Browser for GRCh38 assembly as described below
-
-There is no reason in most cases to do anything in this directory, but instructions of how to manually obtain UCSC data are below.
-
-#### ucsc-centromere.GRCh37.bed
-
-Table is obtained manually from [UCSC Table Browser](http://genome.ucsc.edu/cgi-bin/hgTables)
-* *Assembly:* GRCh37
-* *Group:* All Tables
-* *Table:* Gap
-* *Filter:* Type matches "centromere"
-* *Output format:* BED
-* *Output File:* ucsc-centromere.GRCh37.bed
-* Defaults for *Output gap as BED*
-
-
-#### ucsc-centromere.GRCh38.bed
-
-Table is obtained manually from [UCSC Table Browser](http://genome.ucsc.edu/cgi-bin/hgTables).  Note that GRCh38 treats centromeres differently than GRCh37, as described [here](https://groups.google.com/a/soe.ucsc.edu/forum/#!topic/genome/SaR2y4UNrWg).
-* *Assembly:* GRCh38
-* *Group:* All Tables
-* *Table:* Centromeres
-* *Output format:* BED
-* *Output File:* ucsc-centromere.GRCh38.bed
-* Defaults for *Output gap as BED*

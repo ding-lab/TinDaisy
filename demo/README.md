@@ -13,4 +13,5 @@ Contents of demo directory
 * test.varscan-only - example of running alternate workflow using Rabix with YAML 
     * this is old
 * katmai.C3L - development and examples of CPTAC3 real data pipelines 
+* task_call - running multiple samples at once with Rabix
     * currently under active development
