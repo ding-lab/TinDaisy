@@ -4,6 +4,7 @@ This is a demonstration project for running TinDaisy on katmai
 Initial development of YAML creation and simple task manager implementation,
 based on somatic_sv_workflow/demo/task_call/Demo
 
+Current run is on kobuk
 
 
 TODO: add flags

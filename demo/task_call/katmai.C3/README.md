@@ -17,3 +17,7 @@ The values of these specitric parameters are obtained from `project_config.sh`
 
 Step 1 will write one YAML file per case to ./yaml directory.  It will also generate
 a pre-summary file which lists inputs for each step
+
+Run: bash 2_run_tasks.sh -J4
+
+Might add -e flag to watch on stderr what is happening
