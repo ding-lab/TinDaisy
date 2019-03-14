@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 id: vep_annotate
 baseCommand:
   - /usr/bin/perl
@@ -57,7 +59,7 @@ arguments:
     valueFrom: results
   - position: 0
     prefix: '--vep_opts'
-    valueFrom: '--pick_order tsl'
+    valueFrom: '--pick_order tsl --hgvs --tsl --canonical'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement

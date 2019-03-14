@@ -4,13 +4,14 @@
 # Production runs should be based on example in test.C3N-01649, which 
 # uses VEP cache and deletes intermediate files
 
-cd ..
-CWL="cwl/tindaisy.cwl"
+cd ../..
+
+CWL="cwl/workflows/tindaisy.cwl"
 #YAML="project_config.yaml"
-YAML="testing/StrelkaDemo.dat/project_config.StrelkaDemo.yaml"
+YAML="demo/StrelkaDemo/project_config.StrelkaDemo.yaml"
 
 mkdir -p results
 RABIX_ARGS="--basedir results"
 
-rabix $RABIX_ARGS $CWL $YAML
+echo rabix $RABIX_ARGS $CWL $YAML
 
