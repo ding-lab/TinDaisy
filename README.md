@@ -53,21 +53,13 @@ This should run for a few seconds and then produce output like,
 }
 ```
 
-### [TinDaisy](https://github.com/ding-lab/tin-daisy)**
+### [TinDaisy](https://github.com/ding-lab/tin-daisy)
 ```
-git clone https://github.com/ding-lab/tin-daisy
-```
-
-### [Mutect CWL Tool](https://github.com/mwyczalkowski/mutect-tool) 
-At this time, one of the CWL steps in TinDaisy requires the external package Mutect Tool to be
-installed in the same directory as tin-daisy, i.e.,
-```
-git clone https://github.com/mwyczalkowski/mutect-tool
+git clone --recurse-submodules https://github.com/ding-lab/tin-daisy
 ```
 
-The relative path to this project is hard-coded in `cwl\tindaisy.cwl`
-**TODO** simplify this dependency, possibly installing mutect-tool as a submodule
-
+Note that TinDaisy has [Mutect CWL Tool](https://github.com/mwyczalkowski/mutect-tool) as a submodule, 
+which requires the `--recurse-submodules` flag during cloning
 
 ### Other
 
@@ -78,8 +70,6 @@ The following packages are also required for the simple task manager:
 Optionally [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core). This contains the 
 algorithmic contents of the somaitic caller workflow, but is generally distributed
 as a docker image, `mwyczalkowski/tindaisy-core:mutect` 
-
-**TODO** check / fix this - is it :mutect?
 
 ``` 
 git clone https://github.com/ding-lab/TinDaisy-Core
