@@ -2,7 +2,7 @@
 
 source project_config.sh
 
-bash $SSV_ROOT/src/run_rabix_tasks.sh $@ -y $YAMLD -r $RABIXD -c $CWL - < $CASES
+bash $TD_ROOT/src/run_rabix_tasks.sh $@ -y $YAMLD -r $RABIXD -c $CWL - < $CASES_LIST
 
 rc=$?
 if [[ $rc != 0 ]]; then

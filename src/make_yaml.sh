@@ -127,9 +127,9 @@ fi
 if [ $1 == "-" ]; then
     CASES=$(cat - )
 else
+    >&2 echo REading command line
     CASES="$@"
 fi
-
 
 # searches for entries with
 #   ref = hg38
@@ -177,13 +177,6 @@ function get_BAM {
     printf "$BAM\t$SN\t$UUID"
 }
 
-function get_YAML {
-    TUMOR=$1
-    NORMAL=$2
-    REF=$3
-
-}
-
 # Write analysis pre-summary header 
 if [ ! -z $PRE_SUMMARY ]; then
     PSD=$(dirname $PRE_SUMMARY)
@@ -217,13 +210,12 @@ if [ -z $VEP_CACHE_GZ ]; then
 fi
 
 # envsubst requires variables to be exported
-export $REF
-export $TD_ROOT
-export $DBSNP_DB
-export $VEP_CACHE_GZ
+export REF
+export TD_ROOT
+export DBSNP_DB
+export VEP_CACHE_GZ
 
-for CASE in $CASES
-do
+for CASE in $CASES; do
 
     TUMOR=$(get_BAM $CASE "tumor")
     test_exit_status
@@ -234,7 +226,7 @@ do
     export NORMAL_BAM=$(echo "$NORMAL" | cut -f 1)
 
 # envsubst: https://stackoverflow.com/a/11050943
-    YAML=$(envsubst < YAML_TEMPLATE)
+    YAML=$(envsubst < $YAML_TEMPLATE)
     if [ $YAMLD == "-" ]; then
         echo "$YAML"
     else

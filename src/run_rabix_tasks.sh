@@ -15,11 +15,11 @@ Required options:
 -r RABIXD: RABIX output base directory
 
 Optional options
--y YAMLD: directory with YAML input files (named CASE.yaml).  Default "."
--l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -h: print usage information
 -d: dry run: print commands but do not run
 -1 : stop after one case processed.
+-y YAMLD: directory with YAML input files (named CASE.yaml).  Default "."
+-l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -J N: run N tasks in parallel.  If 0, disable parallel mode. Default 0
 -e: write STDERR output of Rabix to terminal rather than LOGD/CASE.err
 
@@ -40,14 +40,14 @@ NJOBS=0
 YAMLD="."
 LOGD="./logs"
 
-while getopts ":y:c:r:hd1J:l:e" opt; do
+while getopts ":c:r:y:hd1J:l:e" opt; do
   case $opt in
     h) 
       echo "$USAGE"
       exit 0
       ;;
-    d)  # -d is a stack of parameters, each script popping one off until get to -d
-      DRYRUN="d$DRYRUN"
+    d)  # echo work command instead of evaluating it
+      DRYRUN="d"
       ;;
     1) 
       JUSTONE=1

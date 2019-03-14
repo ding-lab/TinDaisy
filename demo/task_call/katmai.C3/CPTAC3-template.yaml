@@ -7,7 +7,6 @@
 # * DBSNP_DB
 # * VEP_CACHE_GZ
 
-
 normal_bam:
   class: File
   path: ${NORMAL_BAM}
@@ -64,11 +63,6 @@ dbsnp_db:
 # VEP Cache is used for VEP annotation and vcf_2_maf.
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
 # For performance reasons, defining vep_cache_gz is suggested for production systems
-
-# Created on denali:/home/mwyczalk_test/src/SomaticWrapper/somaticwrapper/image.setup/D_VEP
-# Copied from denali:/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
-# MGI: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh37.tar.gz
-# katmai: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
 
 vep_cache_gz:
   class: File
