@@ -6,6 +6,8 @@ based on somatic_sv_workflow/demo/task_call/Demo
 
 Current run is on kobuk
 
+NOTE: Something is creating TinDaisy/demo_data directory repeatedly, as root.  Investigate why
+
 
 TODO: add flags
     --hgvs
