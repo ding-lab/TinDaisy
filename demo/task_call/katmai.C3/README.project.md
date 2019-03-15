@@ -19,3 +19,4 @@ as arguments to vep
 grep Y2.b1 ~/Projects/CPTAC3/CPTAC3.catalog/CPTAC3.cases.dat | grep GBM | cut -f 1 > dat/Y2.b1.GBM.cases.dat
 
 
+Note: C3L-01834 has no WGS tumor

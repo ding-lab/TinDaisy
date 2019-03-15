@@ -1,3 +1,0 @@
-[submodule "cwl/mutect-tool"]
-	path = cwl/mutect-tool
-	url = https://github.com/mwyczalkowski/mutect-tool
