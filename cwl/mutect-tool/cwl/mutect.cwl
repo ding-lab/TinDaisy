@@ -4,7 +4,7 @@ label: MuTect
 baseCommand: ["python", "/opt/mutect-tool/src/mutect-tool.py", "--workdir", "."]
 requirements:
   - class: DockerRequirement
-    dockerPull: dinglab2/mutect-tool:20190313
+    dockerPull: dinglab2/mutect-tool:20190317
   - class: EnvVarRequirement
     envDef:
       - envName: JAVA_OPTS
