@@ -60,5 +60,5 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
+    dockerPull: 'mwyczalkowski/tindaisy-core:pindel-chrom'
   - class: InlineJavascriptRequirement
