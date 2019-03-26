@@ -84,5 +84,5 @@ requirements:
   - class: ResourceRequirement
     ramMin: 8000
   - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/tindaisy-core:mutect'
+    dockerPull: 'mwyczalkowski/tindaisy-core:pindel-chrom'
   - class: InlineJavascriptRequirement
