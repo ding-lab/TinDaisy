@@ -121,6 +121,10 @@ inputs:
     type: File
     'sbg:x': -7.595465660095215
     'sbg:y': -84.29430389404297
+  - id: chrlist
+    type: File?
+    'sbg:x': -53.45024871826172
+    'sbg:y': 664.668701171875
 outputs:
   - id: output_maf
     outputSource:
@@ -149,6 +153,8 @@ steps:
         source: no_delete_temp
       - id: pindel_config
         source: pindel_config
+      - id: chrlist
+        source: chrlist
     out:
       - id: pindel_raw
     run: ../tools/run_pindel.cwl

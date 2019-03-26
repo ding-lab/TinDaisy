@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 id: run_pindel
 baseCommand:
   - /usr/bin/perl
@@ -45,6 +47,19 @@ inputs:
       position: 0
       prefix: '--pindel_config'
     label: pindel.ini
+  - id: chrlist
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--chrlist'
+    label: chrom list
+    doc: List of chromosomes for parallel processing
+  - id: num_parallel
+    type: int?
+    inputBinding:
+      position: 0
+      prefix: '--num_parallel'
+    label: Number chromosomes run in parallel
 outputs:
   - id: pindel_raw
     type: File
