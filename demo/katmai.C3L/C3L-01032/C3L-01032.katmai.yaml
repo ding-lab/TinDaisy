@@ -88,6 +88,8 @@ bypass_vcf2maf: true
 # Also, another katmai version:
 #   katmai: - From VCF: "reference=GRCh37.p13"
 #   d98b7d382f98b0e53aabb316962fae69  /diskmnt/Datasets/COSMIC/gc3027/dinglab/medseq/cosmic/00-All.brief.pass.cosmic.vcf.gz
+#
+**ERROR**: this does not exist
 dbsnp_db:
   class: File
   path: /diskmnt/Datasets/VEP/dbsnp.noCOSMIC.GRCh37.vcf.gz
