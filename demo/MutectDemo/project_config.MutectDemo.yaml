@@ -58,6 +58,10 @@ dbsnp_db: # this is not correct for MutectDemo, but allows the pipeline to proce
   class: File
   path: ../demo_data/StrelkaDemo-data/dbsnp-StrelkaDemo.noCOSMIC.vcf.gz
 
+chrlist: # Defining this turns on pindel parallel
+  class: File
+  path: ../demo_data/MutectDemo-data/chrlist.txt
+
 # Reference and other options
 vep_cache_version: "90"
 assembly: "GRCh37"
