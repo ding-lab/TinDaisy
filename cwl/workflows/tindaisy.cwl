@@ -125,6 +125,12 @@ inputs:
     type: File?
     'sbg:x': -53.45024871826172
     'sbg:y': 664.668701171875
+  - id: num_parallel_pindel
+    type: int?
+    'sbg:exposed': true
+  - id: num_parallel_strelka2
+    type: int?
+    'sbg:exposed': true
 outputs:
   - id: output_maf
     outputSource:
@@ -155,6 +161,8 @@ steps:
         source: pindel_config
       - id: chrlist
         source: chrlist
+      - id: num_parallel_pindel
+        source: num_parallel_pindel
     out:
       - id: pindel_raw
     run: ../tools/run_pindel.cwl
@@ -432,6 +440,8 @@ steps:
         source: reference_fasta
       - id: strelka_config
         source: strelka_config
+      - id: num_parallel_strelka2
+        source: num_parallel_strelka2
     out:
       - id: strelka2_snv_vcf
       - id: strelka2_indel_vcf

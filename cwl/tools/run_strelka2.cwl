@@ -41,6 +41,12 @@ inputs:
       prefix: '--manta_vcf'
     label: Output from Manta
     doc: Optional file for use with strelka2 processing
+  - id: num_parallel_strelka2
+    type: int?
+    inputBinding:
+      position: 0
+      prefix: '--num_parallel_strelka2'
+    label: Number of jobs to run in parallel
 outputs:
   - id: strelka2_snv_vcf
     type: File
