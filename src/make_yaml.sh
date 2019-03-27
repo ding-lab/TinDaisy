@@ -171,10 +171,11 @@ function get_BAM {
 
     # Sample Name and UUID will be needed for analysis summary
     SN=$(echo "$LINE_A" | cut -f 1)
+    DIS=$(echo "$LINE_A" | cut -f 3)
     BAM=$(echo "$LINE_A" | cut -f 6)
     UUID=$(echo "$LINE_A" | cut -f 10)
 
-    printf "$BAM\t$SN\t$UUID"
+    printf "$BAM\t$SN\t$UUID\t$DIS"
 }
 
 # Write analysis pre-summary header 
@@ -186,7 +187,7 @@ if [ ! -z $PRE_SUMMARY ]; then
         test_exit_status
     fi
 
-    printf "# case\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\n" > $PRE_SUMMARY
+    printf "# case\tdisease\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\n" > $PRE_SUMMARY
     test_exit_status
 fi
 
@@ -240,7 +241,8 @@ for CASE in $CASES; do
         TUMOR_UUID=$(echo "$TUMOR" | cut -f 3)
         NORMAL_SN=$(echo "$NORMAL" | cut -f 2)
         NORMAL_UUID=$(echo "$NORMAL" | cut -f 3)
-        printf "$CASE\t$TUMOR_SN\t$TUMOR_UUID\t$NORMAL_SN\t$NORMAL_UUID\n" >> $PRE_SUMMARY
+        DIS=$(echo "$TUMOR" | cut -f 4)
+        printf "$CASE\t$DIS\t$TUMOR_SN\t$TUMOR_UUID\t$NORMAL_SN\t$NORMAL_UUID\n" >> $PRE_SUMMARY
     fi
 
     if [ $JUSTONE ]; then

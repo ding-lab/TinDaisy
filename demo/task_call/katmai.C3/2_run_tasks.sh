@@ -2,6 +2,7 @@
 
 source project_config.sh
 
+# -J N - specify number of jobs to run at once
 bash $TD_ROOT/src/run_rabix_tasks.sh $@ -y $YAMLD -r $RABIXD -c $CWL - < $CASES_LIST
 
 rc=$?
