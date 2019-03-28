@@ -75,7 +75,7 @@ assembly: "GRCh38"
 # no_delete_temp: false
 
 no_delete_temp: false
-bypass_vcf2maf: true
+bypass_vcf2maf: false
 
 
 # Number of parallel jobs to run.  Goal is to balance run times to have a uniform CPU load
