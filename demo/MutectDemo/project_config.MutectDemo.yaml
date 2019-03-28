@@ -49,7 +49,6 @@ af_filter_config:
   class: File
   path: ../../params/af_filter_config.ini
 
-
 # Data files
 centromere_bed: 
   class: File
@@ -61,6 +60,10 @@ dbsnp_db: # this is not correct for MutectDemo, but allows the pipeline to proce
 chrlist: # Defining this turns on pindel parallel
   class: File
   path: ../demo_data/MutectDemo-data/chrlist.txt
+
+# Number of parallel jobs to run
+num_parallel_strelka2: 4
+num_parallel_pindel: 6
 
 # Reference and other options
 vep_cache_version: "90"

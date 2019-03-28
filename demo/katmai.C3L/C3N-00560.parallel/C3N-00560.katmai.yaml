@@ -1,4 +1,4 @@
-# Relative paths are with respect to location of this YAML file.
+# TinDaisy run of GRCh38 dataset
 #
 # Assume the following paths:
 #     Current dir: TinDaisy/demo/katmai.C3L/C3N-00560
@@ -58,10 +58,14 @@ centromere_bed:
   class: File
   path: ../../../params/centromere/ucsc-centromere.GRCh38.bed
 
+chrlist: # Defining this turns on pindel parallel
+  class: File
+  path: ../../../params/GRCh38.d1.vd1.chrlist.txt
+
 # See README.md for discussion of dbSnP references
 dbsnp_db:
   class: File
-  path: /diskmnt/Datasets/dbSNP/SomaticWrapper/B_Filter/dbsnp.noCOSMIC.GRCh38.vcf.gz
+  path: /diskmnt/Datasets/COSMIC/GRCh38.d1.vd1/dbSnP-COSMIC.GRCh38.d1.vd1.vcf.gz
 
 # VEP Cache is used for VEP annotation and vcf_2_maf.
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
@@ -74,7 +78,7 @@ dbsnp_db:
 
 vep_cache_gz:
   class: File
-  path: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
+  path: /diskmnt/Datasets/VEP/vep-cache.90_GRCh38.tar.gz
 
 vep_cache_version: "90"
 assembly: "GRCh38"

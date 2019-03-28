@@ -54,11 +54,11 @@ inputs:
       prefix: '--chrlist'
     label: chrom list
     doc: List of chromosomes for parallel processing
-  - id: num_parallel
+  - id: num_parallel_pindel
     type: int?
     inputBinding:
       position: 0
-      prefix: '--num_parallel'
+      prefix: '--num_parallel_pindel'
     label: Number chromosomes run in parallel
 outputs:
   - id: pindel_raw

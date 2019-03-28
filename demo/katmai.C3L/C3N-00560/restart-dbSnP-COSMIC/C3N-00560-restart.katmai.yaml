@@ -1,0 +1,51 @@
+# Relative paths are with respect to location of this YAML file.
+#
+# Assume the following paths:
+#     Current dir: TinDaisy/demo/katmai.C3L/C3N-00560
+#      Params dir: TinDaisy/params
+#      Centromere: TinDaisy/params/centromere
+
+input_vcf:
+  class: File
+  path: /diskmnt/Projects/cptac_downloads_4/TinDaisy/tindaisy-2019-02-18-212809.259/root/merge_vcf/results/merged/merged.filtered.vcf
+
+reference_fasta:
+  class: File
+  path: /diskmnt/Datasets/Reference/GRCh38.d1.vd1/GRCh38.d1.vd1.fa
+
+# Other filter config
+classification_filter_config:
+  class: File
+  path: ../../../../params/classification_filter_config.ini
+af_filter_config:
+  class: File
+  path: ../../../../params/af_filter_config.ini
+
+# See README.md for discussion of dbSnP references
+# Here we are using updated dbSnP-COSMIC generated specifically for GRCh38.d1.vd1
+dbsnp_db:
+  class: File
+  path: /diskmnt/Datasets/COSMIC/GRCh38.d1.vd1/dbSnP-COSMIC.GRCh38.d1.vd1.vcf.gz
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+# Created on denali:/home/mwyczalk_test/src/SomaticWrapper/somaticwrapper/image.setup/D_VEP
+# Copied from denali:/diskmnt/Projects/Users/mwyczalk/data/docker/data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# MGI: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh37.tar.gz
+# katmai: /diskmnt/Datasets/VEP/vep-cache.90_GRCh37.tar.gz
+
+vep_cache_gz:
+  class: File
+  path: /diskmnt/Datasets/VEP/vep-cache.90_GRCh38.tar.gz
+
+vep_cache_version: "90"
+assembly: "GRCh38"
+
+# no_delete_temp = true preserves intermediate files from pindel run and parse
+# no_delete_temp: false
+
+no_delete_temp: false
+bypass_vcf2maf: true
+

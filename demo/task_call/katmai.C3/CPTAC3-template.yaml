@@ -75,5 +75,14 @@ assembly: "GRCh38"
 # no_delete_temp: false
 
 no_delete_temp: false
-bypass_vcf2maf: true
+bypass_vcf2maf: false
+
+
+# Number of parallel jobs to run.  Goal is to balance run times to have a uniform CPU load
+num_parallel_strelka2: 4
+num_parallel_pindel: 6
+
+chrlist: # Defining this turns on pindel parallel
+  class: File
+  path: ${TD_ROOT}/params/GRCh38.d1.vd1.chrlist.txt
 

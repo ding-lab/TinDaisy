@@ -1,5 +1,0 @@
-Testing parallel pindel implementation
-
-Mainly this involves changing the image used to mwyczalkowski/tindaisy-core:pindel-chrom and adding 
-parameters for chrlist and num_parallel to run_pindel CWL
-

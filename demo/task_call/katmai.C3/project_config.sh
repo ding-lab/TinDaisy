@@ -23,7 +23,7 @@ RABIXD="/diskmnt/Projects/cptac_scratch/Rabix"
 REF="/diskmnt/Datasets/Reference/GRCh38.d1.vd1/GRCh38.d1.vd1.fa"
 
 # See README.md for discussion of dbSnP references
-DBSNP_DB="/diskmnt/Datasets/dbSNP/SomaticWrapper/B_Filter/dbsnp.noCOSMIC.GRCh38.vcf.gz"
+DBSNP_DB="/diskmnt/Datasets/COSMIC/GRCh38.d1.vd1/dbSnP-COSMIC.GRCh38.d1.vd1.vcf.gz"
 
 # VEP Cache is used for VEP annotation and vcf_2_maf.
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
