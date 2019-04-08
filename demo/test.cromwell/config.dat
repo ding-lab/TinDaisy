@@ -1,10 +1,10 @@
 # From https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell
-# Approximate locations of things to edit
-# Lines 19, 31- location to write error output logs from individual tools
-# Line 43- location for Cromwell's main working directory (temp, intermediate, and final files will all be stored here)
-# Line 49- location to write Cromwell's workflow logs
+# Edit the following:
+# Lines 27, 39- location to write error output logs from individual tools
+# Line 51- location for Cromwell's main working directory (temp, intermediate, and final files will all be stored here)
+# Line 57- location to write Cromwell's workflow logs
 
-# The above does not allow for hardlinks to data in gc2741. Instead, use this as root: /gscmnt/gc2741/ding/cptac/cromwell-workdir
+# Selecting same filesystem as where BAMs are stored allows for hard links and is much faster.  Using this as root: /gscmnt/gc2741/ding/cptac/cromwell-workdir
 
 include required(classpath("application"))
 backend {
