@@ -17,6 +17,7 @@ Options:
 -y YAMLD: output directory of YAML files.  If "-", write YAML to stdout.  Default: .
 -p PRE_SUMMARY: analysis pre-summary filename
 -1 : Quit after evaluating one case
+-e ES : experimental strategy - WGS, WXS, etc.  Default is WXS
 
 If CASE is - then read CASEs from STDIN
 
@@ -39,7 +40,8 @@ EOF
 SCRIPT=$(basename $0)
 
 YAMLD="."
-while getopts ":hb:Y:P:p:y:1" opt; do
+ES="WXS"
+while getopts ":hb:Y:P:p:y:1e:" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -63,6 +65,9 @@ while getopts ":hb:Y:P:p:y:1" opt; do
     p)  
       PRE_SUMMARY="$OPTARG"
       >&2 echo "Writing analysis pre-summary file to $PRE_SUMMARY"
+      ;;
+    e)  
+      ES="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -133,15 +138,15 @@ fi
 
 # searches for entries with
 #   ref = hg38
-#   experimental strategy = WGS
+#   experimental strategy = WGS, WXS, RNA-Seq, etc
 #   sample type = as given
 #   case = as given
 # Returns BAM, sample name, UUID 
 function get_BAM {
     CASE=$1
     ST=$2
+    ES=$3
     REF="hg38"
-    ES="WGS"
     # BAMMAP as global
 
     # BamMap columns
@@ -218,11 +223,11 @@ export VEP_CACHE_GZ
 
 for CASE in $CASES; do
 
-    TUMOR=$(get_BAM $CASE "tumor")
+    TUMOR=$(get_BAM $CASE "tumor" $ES)
     test_exit_status
     export TUMOR_BAM=$(echo "$TUMOR" | cut -f 1)
 
-    NORMAL=$(get_BAM $CASE "blood_normal")
+    NORMAL=$(get_BAM $CASE "blood_normal" $ES)
     test_exit_status
     export NORMAL_BAM=$(echo "$NORMAL" | cut -f 1)
 
