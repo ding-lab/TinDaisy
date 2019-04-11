@@ -16,6 +16,20 @@ MGI.BamMap.dat:C3L-00104.WXS.N.hg38 C3L-00104   GBM WXS blood_normal    /gscmnt/
 MGI.BamMap.dat:C3L-00104.WXS.T.hg38 C3L-00104   GBM WXS tumor   /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/fc6acfc5-97f2-405f-9fb7-7f1b6c1dce00/d36cf415-f716-4e50-a949-a06459cd5277_wxs_gdc_realn.bam 56263243160 BAM hg38    fc6acfc5-97f2-405f-9fb7-7f1b6c1dce00    MGI
 ```
 
+### Errors
+
+/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/245a2fa1-99b9-4acc-b54b-9b4dca5bde56/call-mutect/execution/stderr.submit
+```
+-n: MEMLIMT value should be a positive integer. Job not submitted.
+```
+This requires addition of `ramMin` to CWL.  For instance,
+```
+requirements:
+    - class: ResourceRequirement
+      ramMin: 2000
+```
+See MGI Slack #analysis-workflow 4/10/19 for discussion
+
 ## MGI definitions
 
 The following parameters must be defined to generate the YAML file:

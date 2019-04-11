@@ -9,7 +9,8 @@ requirements:
     envDef:
       - envName: JAVA_OPTS
         envValue: -Xmx1g
-
+  - class: ResourceRequirement
+    ramMin: 8000
 inputs:
   tumor:
     type: File
