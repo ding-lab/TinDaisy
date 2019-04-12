@@ -66,5 +66,6 @@ database {
     password = "kc11-18da-L18K"
     connectionTimeout = 5000
     maxConnections = 10
+    numThreads = 10
   }
 }
