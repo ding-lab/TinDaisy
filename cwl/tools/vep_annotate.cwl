@@ -59,7 +59,7 @@ arguments:
     valueFrom: results
   - position: 0
     prefix: '--vep_opts'
-    valueFrom: '--pick_order tsl --hgvs --tsl --canonical'
+    valueFrom: '--hgvs --shift_hgvs 1 --no_escape --symbol --numbers --ccds --uniprot --xref_refseq --sift b --tsl --canonical --total_length --allele_number --variant_class --biotype --flag_pick_allele --pick_order tsl,biotype,rank,canonical,ccds,length'
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
@@ -67,4 +67,6 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ResourceRequirement
     ramMin: 2000
+
+
 
