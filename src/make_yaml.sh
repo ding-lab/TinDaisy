@@ -17,7 +17,7 @@ Options:
 -y YAMLD: output directory of YAML files.  If "-", write YAML to stdout.  Default: .
 -p PRE_SUMMARY: analysis pre-summary filename
 -1 : Quit after evaluating one case
--e ES : experimental strategy - WGS, WXS, etc.  Default is WXS
+-e ES : experimental strategy - WGS, WXS, etc.  This is required
 
 If CASE is - then read CASEs from STDIN
 
@@ -40,7 +40,6 @@ EOF
 SCRIPT=$(basename $0)
 
 YAMLD="."
-ES="WXS"
 while getopts ":hb:Y:P:p:y:1e:" opt; do
   case $opt in
     h)  # Required
@@ -66,7 +65,7 @@ while getopts ":hb:Y:P:p:y:1e:" opt; do
       PRE_SUMMARY="$OPTARG"
       >&2 echo "Writing analysis pre-summary file to $PRE_SUMMARY"
       ;;
-    e)  
+    e) # Required
       ES="$OPTARG"
       ;;
     \?)
@@ -104,25 +103,35 @@ function test_exit_status {
 
 if [ -z $BAMMAP ]; then
     >&2 echo ERROR: BamMap file not defined \(-b\)
+    >&2 echo "$USAGE"
     exit 1
 fi
 confirm $BAMMAP 
 
 if [ -z $YAML_TEMPLATE ]; then
     >&2 echo ERROR: YAML template not defined \(-Y\)
+    >&2 echo "$USAGE"
     exit 1
 fi
 confirm $YAML_TEMPLATE 
 
 if [ -z $PARAM_FILE ]; then
     >&2 echo ERROR: Parameter file  not defined \(-p\)
+    >&2 echo "$USAGE"
     exit 1
 fi
 confirm $PARAM_FILE 
 
+if [ -z $ES ]; then
+    >&2 echo ERROR: Experimental strategy not defined \(-e\)
+    >&2 echo "$USAGE"
+    exit 1
+fi
+
 if [ "$#" -lt 1 ]; then
     >&2 echo ERROR: Wrong number of arguments
     >&2 echo Usage: make_docker_map.sh \[options\] CASE \[CASE2 ...\]
+    >&2 echo "$USAGE"
     exit 1
 fi
 
@@ -132,7 +141,7 @@ fi
 if [ $1 == "-" ]; then
     CASES=$(cat - )
 else
-    >&2 echo REading command line
+    >&2 echo Reading command line
     CASES="$@"
 fi
 
