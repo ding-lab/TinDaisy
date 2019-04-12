@@ -50,6 +50,8 @@ Check the content of stderr for potential additional information: /gscmnt/gc2741
 Error parsing command line args.
 ```
 
+Output of this run: /gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/9184d53d-2231-41fb-8bb9-e086e4c58490
+
 ## MGI definitions
 
 The following parameters must be defined to generate the YAML file:
