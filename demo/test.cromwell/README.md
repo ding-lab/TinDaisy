@@ -5,7 +5,29 @@ Start docker with,
 `~/0_start_docker.sh`
 This sets up the appropriate JAVA environment necessary to run Cromwell.  
 
-**TODO** Add Bobo VCF parameters
+## TODO
+
+### Add Bobo VCF parameters
+
+We wish to have the following flags for vcf invocation, per Bobo:
+```
+vep \
+    --hgvs --shift_hgvs 1 --no_escape \
+    --symbol --numbers --ccds --uniprot --xref_refseq --sift b \
+    --tsl --canonical --total_length --allele_number \
+    --variant_class --biotype       \
+    --flag_pick_allele              \
+    --pick_order tsl,biotype,rank,canonical,ccds,length
+```
+
+### Connect to db
+Also test interaction with database
+https://genome-cromwell.gsc.wustl.edu/
+
+See description here of connection to Cromwell:
+https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell#Cromwell-ConnectingtotheDatabase
+
+
 
 # Testing C3L-00104
 
@@ -18,17 +40,15 @@ MGI.BamMap.dat:C3L-00104.WXS.T.hg38 C3L-00104   GBM WXS tumor   /gscmnt/gc2741/d
 
 ### Errors
 
-/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/245a2fa1-99b9-4acc-b54b-9b4dca5bde56/call-mutect/execution/stderr.submit
+C3L-00104 fails with the following:
 ```
--n: MEMLIMT value should be a positive integer. Job not submitted.
+[2019-04-12 00:56:12,59] [error] WorkflowManagerActor Workflow 9184d53d-2231-41fb-8bb9-e086e4c58490 failed (during ExecutingWorkflowState): Job vcf_2_maf:NA:1 exited with return
+code 255 which has not been declared as a valid return code. See 'continueOnReturnCode' runtime attribute for more details.
+Check the content of stderr for potential additional information: /gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/9184d53d-2231-41fb-8bb9-e086e4c58490
+/call-vcf_2_maf/execution/stderr.
+ Unknown option: skip bypass_vcf2maf
+Error parsing command line args.
 ```
-This requires addition of `ramMin` to CWL.  For instance,
-```
-requirements:
-    - class: ResourceRequirement
-      ramMin: 2000
-```
-See MGI Slack #analysis-workflow 4/10/19 for discussion
 
 ## MGI definitions
 
