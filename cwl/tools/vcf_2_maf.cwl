@@ -1,5 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.0
+$namespaces:
+  sbg: 'https://www.sevenbridges.com/'
 id: vcf_2_maf
 baseCommand:
   - /usr/bin/perl
@@ -51,7 +53,8 @@ inputs:
     type: boolean?
     inputBinding:
       position: 0
-      prefix: '--skip bypass_vcf2maf'
+      prefix: '--skip'
+      valueFrom: bypass_vcf2maf
     label: Do not perform vcf2maf conversion
     doc: Necessary if vep_cache_gz not defined
 outputs:
@@ -71,9 +74,8 @@ arguments:
     valueFrom: results
 requirements:
   - class: ShellCommandRequirement
+  - class: ResourceRequirement
+    ramMin: 2000
   - class: DockerRequirement
     dockerPull: 'mwyczalkowski/tindaisy-core:20190328'
   - class: InlineJavascriptRequirement
-  - class: ResourceRequirement
-    ramMin: 2000
-
