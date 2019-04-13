@@ -13,6 +13,16 @@ Testing of cromwell CWL engine for TinDaisy at MGI
 8. Run `3_make_analysis_summary.sh` to collect all results
 9. Clean run directories **TODO**
 
+## `jq` and `parallel`
+
+The packages jq and parallel need to be installed.  Conda is good for this.  Prior to starting, do
+```
+conda activate jq
+```
+
+This is best run in tmux container
+may need to run `parallel --citation`
+
 # Testing runs
 
 ## MGI definitions

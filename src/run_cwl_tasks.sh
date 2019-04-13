@@ -29,7 +29,8 @@ Optional options
 -j JAVA: path to java.  Default: /usr/bin/java
 
 RUND contains data generated during CWL execution.  This is relevant only for Rabix, since in Cromwell it is defined in CROMWELL_CONFIG file
-STDERR and STDOUT of rabix, as well as tmp dir and log of parallel, written to LOGD
+STDERR and STDOUT of workflow runs, as well as tmp dir and log of parallel, written to LOGD
+YAML files for a given CASE are assumed to be $YAMLD/$CASE.yaml
 
 Cromwell configuration is described https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell
 We will incorporate saving to database as described there too
@@ -184,6 +185,7 @@ function get_cromwell_cmd {
 
 if [ -z $CWL ]; then
     >&2 echo $SCRIPT: ERROR: CWL file not defined \(-c\)
+    echo "$USAGE"
     exit 1
 fi
 confirm $CWL
@@ -194,7 +196,8 @@ if [ -z $CROMWELL_CONFIG ]; then
     RUN_RABIX=1
 
     if [ -z $RUND ]; then
-        >&2 echo $SCRIPT: ERROR: Output directory not defined \(-o\)
+        >&2 echo $SCRIPT: ERROR: Output directory not defined \(-r\)
+        echo "$USAGE"
         exit 1
     fi
     >&2 echo Creating output directory $RUND
@@ -223,6 +226,7 @@ fi
 
 if [ -z "$CASES" ]; then
     >&2 echo ERROR: no case names specified
+    echo "$USAGE"
     exit 1
 fi
 

@@ -34,7 +34,6 @@ Analysis pre-summary is an optional output file which contains the UUID and samp
   combined with run results at the conclusion of analysis to generate analysis summary file.  Columns: case, tumor name, tumor uuid, normal name, normal uuid
 Format of BamMap is defined here: https://github.com/ding-lab/importGDC/blob/master/make_bam_map.sh
     
-
 EOF
 
 SCRIPT=$(basename $0)
@@ -194,6 +193,11 @@ function get_BAM {
 
 # Write analysis pre-summary header 
 if [ ! -z $PRE_SUMMARY ]; then
+    # To avoid data loss, return with error if PRE_SUMMARY exists
+    if [ -f $PRE_SUMMARY ]; then
+        >&2 echo ERROR: File $PRE_SUMMARY exists.  Please delete / rename before continuing
+        exit 1
+    fi
     PSD=$(dirname $PRE_SUMMARY)
     if [ ! -d $PSD ]; then
         >&2 echo Making output directory for analysis pre-summary: $PSD
