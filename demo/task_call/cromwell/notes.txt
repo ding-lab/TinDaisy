@@ -4,14 +4,6 @@ To obtain Workflow ID from log of CASE,
 To get status of a workflow,
     url -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WD/status" -H "accept: application/json"
 
-Mutect stderr has:
-```
-Traceback (most recent call last):
-  File "/opt/mutect-tool/src/mutect-tool.py", line 16, in <module>
-    import vcf
-ModuleNotFoundError: No module named 'vcf'
-```
-
 
 Current runs started 13:00 4/13/19, mutect died early on these but they continue on.  Running using parallel.  How to kill?
 C3L-00365 : 076b9ae7-aa74-4fc0-aa0e-91bfa849795e 
@@ -28,9 +20,6 @@ C3L-00677 : 9ce8cead-6592-471b-827b-3d280f3d4f0e  -> this was later killed as we
 First two both have the following as last line in log.out:
 [2019-04-13 18:12:21,54] [warn] DispatchedConfigAsyncJobExecutionActor [076b9ae7run_strelka2:NA:1]: DispatchedConfigAsyncJobExecutionActor [076b9ae7:run_strelka2:NA:1] Failed to abort StandardAsyncJob(7411737): Unable to find task kill_docker
 
-Goal is to isolate error with mutect returning early 
-  -> does mutect-tool docker have vcf python package installed?  Is there some conflict with MGI python paths?
-
 Status using https://genome-cromwell.gsc.wustl.edu/swagger/index.html?url=/swagger/cromwell.yaml#/Workflows/status
 C3L-00365 : 076b9ae7-aa74-4fc0-aa0e-91bfa849795e - running
 C3L-00674 : 835026a1-9f36-4c05-96fb-092e73174afb - running
@@ -46,6 +35,5 @@ Exiting (34560).
 ```
 
 Summary and next steps:
--> the issue with mutect dying early has to be debugged in MutectDemo
 -> I don't know how to effectively stop jobs which are started with `parallel`
 -> output files of these files moved to directory named after the workflow ID
