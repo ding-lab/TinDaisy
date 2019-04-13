@@ -1,18 +1,19 @@
+Testing of cromwell CWL engine for TinDaisy at MGI
 
-Testing of cromwell CWL engine for TinDaisy at MGI.  Additions from `task_call/katmai.C3`
+# Getting started
 
-Start docker with,
-`~/0_start_docker.sh`
-This sets up the appropriate JAVA environment necessary to run Cromwell.  
+1. edit `dat/cromwell-config-db.dat`
+   -> this will define where the output of Cromwell goes, which can be large
+2. edit `dat/project_config.dat`.  This has per-system definitions
+3. Create file `dat/cases.dat`, which lists all cases we'll be processing
+4. Start docker with `~/0_start_docker.sh`.  This sets up the appropriate JAVA environment necessary to run Cromwell at MGI.  
+5. run `1_make_yaml.sh` to construct YAML files which define inputs for each run
+6. Launch jobs with `2_run_tasks.sh`.
+7. Describe how to check status
+8. Run `3_make_analysis_summary.sh` to collect all results
+9. Clean run directories **TODO**
 
-# Testing C3L-00104
-
-This is a GBM hg38 case which is available on both MGI and katmai
-
-```
-MGI.BamMap.dat:C3L-00104.WXS.N.hg38 C3L-00104   GBM WXS blood_normal    /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/cd8ff448-91ea-44b2-9293-0c89f3b6c7a3/27b12d40-946d-4fc4-b336-b0edd9bcaa3c_wxs_gdc_realn.bam 42838462277 BAM hg38    cd8ff448-91ea-44b2-9293-0c89f3b6c7a3    MGI
-MGI.BamMap.dat:C3L-00104.WXS.T.hg38 C3L-00104   GBM WXS tumor   /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/fc6acfc5-97f2-405f-9fb7-7f1b6c1dce00/d36cf415-f716-4e50-a949-a06459cd5277_wxs_gdc_realn.bam 56263243160 BAM hg38    fc6acfc5-97f2-405f-9fb7-7f1b6c1dce00    MGI
-```
+# Testing runs
 
 ## MGI definitions
 
@@ -51,7 +52,14 @@ https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwel
 
 # Results of C3L-00104 run `6abf1c89-aac2-4b40-8ff4-8616fa728853`
 
-VCF: `/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/6abf1c89-aac2-4b40-8ff4-8616fa728853/call-vep_filter/execution/results/vep_filter/vep_filtered.vcf`
+This is a GBM hg38 case which is available on both MGI and katmai.  The run was a single case (not parallelized)
+
+```
+MGI.BamMap.dat:C3L-00104.WXS.N.hg38 C3L-00104   GBM WXS blood_normal    /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/cd8ff448-91ea-44b2-9293-0c89f3b6c7a3/27b12d40-946d-4fc4-b336-b0edd9bcaa3c_wxs_gdc_realn.bam 42838462277 BAM hg38    cd8ff448-91ea-44b2-9293-0c89f3b6c7a3    MGI
+MGI.BamMap.dat:C3L-00104.WXS.T.hg38 C3L-00104   GBM WXS tumor   /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/fc6acfc5-97f2-405f-9fb7-7f1b6c1dce00/d36cf415-f716-4e50-a949-a06459cd5277_wxs_gdc_realn.bam 56263243160 BAM hg38    fc6acfc5-97f2-405f-9fb7-7f1b6c1dce00    MGI
+```
+
+Result VCF: `/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/6abf1c89-aac2-4b40-8ff4-8616fa728853/call-vep_filter/execution/results/vep_filter/vep_filtered.vcf`
 
 ## Timing
 

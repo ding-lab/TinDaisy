@@ -9,7 +9,6 @@
 source /opt/lsf9/conf/lsf.conf
 source project_config.sh
 
-
 CONFIG="cromwell-config-db.dat"
 CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
 
@@ -26,9 +25,18 @@ CMD="/usr/bin/java -Dconfig.file=$CONFIG $DB_ARGS -jar $CROMWELL run -t cwl -i $
 echo Running: $CMD
 eval $CMD
 
+#### new ####
+# Run Demo project 
+
+source project_config.sh
+
+# -J N - specify number of jobs to run at once
+bash $TD_ROOT/src/run_rabix_tasks.sh $@ -y $YAMLD -r $RABIXD -c $CWL - < $CASES_LIST
+
 rc=$?
 if [[ $rc != 0 ]]; then
     >&2 echo Fatal error $rc: $!.  Exiting.
     exit $rc;
 fi
+
 

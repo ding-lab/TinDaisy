@@ -5,26 +5,34 @@
 
 read -r -d '' USAGE <<'EOF'
 
-Launch Rabix workflow tasks for multiple cases
+Launch Rabix or Cromwell workflow tasks for multiple cases
 
 Usage:
-  bash run_rabix_tasks.sh [options] CASE [CASE2 ...]
+  bash run_cwl_tasks.sh [options] CASE [CASE2 ...]
 
 Required options:
 -c CWL: CWL file which defines workflow
--r RABIXD: RABIX output base directory
 
 Optional options
 -h: print usage information
 -d: dry run: print commands but do not run
 -1 : stop after one case processed.
+-r RUND: principal output base directory.  Required for Rabix run
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "."
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -J N: run N tasks in parallel.  If 0, disable parallel mode. Default 0
--e: write STDERR output of Rabix to terminal rather than LOGD/CASE.err
+-e: write STDERR output of workflow to terminal rather than LOGD/CASE.err
+-C CROMWELL_CONFIG: Cromwell config file.  If specified, we are submitting to Cromwell, otherwise to Rabix
+-D DB_ARGS: arguments for connecting to Cromwell DB.  Default as specified in Cromwell configuration page below.  If value is "none",
+   will not save to database
+-R CROMWELL_JAR: Cromwell JAR file.  Default: /opt/cromwell.jar
+-j JAVA: path to java.  Default: /usr/bin/java
 
-RABIXD contains data generated during CWL execution
+RUND contains data generated during CWL execution.  This is relevant only for Rabix, since in Cromwell it is defined in CROMWELL_CONFIG file
 STDERR and STDOUT of rabix, as well as tmp dir and log of parallel, written to LOGD
+
+Cromwell configuration is described https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell
+We will incorporate saving to database as described there too
 
 EOF
 
@@ -39,8 +47,12 @@ SCRIPT_PATH=$(dirname $0)
 NJOBS=0
 YAMLD="."
 LOGD="./logs"
+# Cromwell default DB Args 
+DB_ARGS="-Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStore=/gscmnt/gc2560/core/genome/cromwell/cromwell.truststore"
+CROMWELL_JAR="/opt/cromwell.jar"
+JAVA="/usr/bin/java"
 
-while getopts ":c:r:y:hd1J:l:e" opt; do
+while getopts ":c:r:y:hd1J:l:eC:D:R:j:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -62,13 +74,25 @@ while getopts ":c:r:y:hd1J:l:e" opt; do
       CWL=$OPTARG
       ;;
     r) 
-      RABIXD="$OPTARG"
+      RUND="$OPTARG"
       ;;
     J) 
       NJOBS="$OPTARG"
       ;;
     e) 
       STDERR_OUT=1
+      ;;
+    C) 
+      CROMWELL_CONFIG="$OPTARG"
+      ;;
+    D) 
+      DB_ARGS="$OPTARG"
+      ;;
+    R) 
+      CROMWELL_JAR="$OPTARG"
+      ;;
+    j) 
+      JAVA="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -120,7 +144,7 @@ function test_exit_status {
 function get_rabix_cmd {
     CWL="$1"
     CASE="$2"
-    RABIXD="$3"
+    RUND="$3"
     STDOUT_FN="$4"
     STDERR_FN="$5"
 
@@ -132,7 +156,28 @@ function get_rabix_cmd {
         STDERR_REDIRECT="2> $STDERR_FN"
     fi
     
-    CMD="rabix --basedir $RABIXD $CWL $YAML > $STDOUT_FN $STDERR_REDIRECT"
+    CMD="rabix --basedir $RUND $CWL $YAML > $STDOUT_FN $STDERR_REDIRECT"
+
+    echo "$CMD"
+}
+
+function get_cromwell_cmd {
+    CWL="$1"
+    CASE="$2"
+    CROMWELL_CONFIG="$3"
+    STDOUT_FN="$4"
+    STDERR_FN="$5"
+
+    YAML="$YAMLD/$CASE.yaml"  
+    confirm "$YAML"  # this must exist
+    confirm "$JAVA"
+    
+    # if -e is not set, write STDERR to file, otherwise no redirect (i.e., send to terminal)
+    if [ -z "$STDERR_OUT" ]; then
+        STDERR_REDIRECT="2> $STDERR_FN"
+    fi
+    
+    CMD="$JAVA -Dconfig.file=$CROMWELL_CONFIG $DB_ARGS -jar $CROMWELL_JAR run -t cwl -i $YAML $CWL > $STDOUT_FN $STDERR_REDIRECT"
 
     echo "$CMD"
 }
@@ -143,13 +188,22 @@ if [ -z $CWL ]; then
 fi
 confirm $CWL
 
-if [ -z $RABIXD ]; then
-    >&2 echo $SCRIPT: ERROR: RABIX output directory not defined \(-o\)
-    exit 1
+# If CROMWELL_CONFIG is specified, this is a Cromwell run, and this file must exist
+# If not specified, this is a Rabix run, and RUND must exist
+if [ -z $CROMWELL_CONFIG ]; then
+    RUN_RABIX=1
+
+    if [ -z $RUND ]; then
+        >&2 echo $SCRIPT: ERROR: Output directory not defined \(-o\)
+        exit 1
+    fi
+    >&2 echo Creating output directory $RUND
+    mkdir -p $RUND
+    test_exit_status
+else
+    RUN_RABIX=0
+    confirm $CROMWELL_CONFIG
 fi
->&2 echo Creating output directory $RABIXD
-mkdir -p $RABIXD
-test_exit_status
 
 mkdir -p $LOGD
 test_exit_status
@@ -184,8 +238,13 @@ for CASE in $CASES; do
     STDOUT_FN="$LOGD/$CASE.out"
     STDERR_FN="$LOGD/$CASE.err"
 
-    CMD=$(get_rabix_cmd $CWL $CASE $RABIXD $STDOUT_FN $STDERR_FN)
-    test_exit_status
+    if [ $RUN_RABIX == 1 ]; then
+        CMD=$(get_rabix_cmd $CWL $CASE $RUND $STDOUT_FN $STDERR_FN)
+        test_exit_status
+    else
+        CMD=$(get_cromwell_cmd $CWL $CASE $CROMWELL_CONFIG $STDOUT_FN $STDERR_FN)
+        test_exit_status
+    fi
 
     if [ $NJOBS != 0 ]; then
         JOBLOG="$LOGD/$CASE.log"
