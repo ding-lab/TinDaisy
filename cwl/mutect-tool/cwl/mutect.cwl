@@ -1,7 +1,7 @@
 cwlVersion: v1.0
 class: CommandLineTool
 label: MuTect
-baseCommand: ["python", "/opt/mutect-tool/src/mutect-tool.py", "--workdir", "."]
+baseCommand: ["/usr/bin/python", "/opt/mutect-tool/src/mutect-tool.py", "--workdir", "."]
 requirements:
   - class: DockerRequirement
     dockerPull: dinglab2/mutect-tool:20190317
