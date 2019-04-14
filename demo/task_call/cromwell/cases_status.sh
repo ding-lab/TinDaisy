@@ -14,6 +14,7 @@ Options:
 -h: Print this help message
 -1: Stop after one
 -c CASES_FN: file with list of all cases, used when CASE1 not defined
+-L: print log files instead of status
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES file
 
@@ -55,7 +56,7 @@ function confirm {
 CASES_FN="dat/cases.dat"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1c:" opt; do
+while getopts ":h1c:L" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -66,6 +67,9 @@ while getopts ":h1c:" opt; do
       ;;
     c) 
       CASES_FN="$OPTARG"
+      ;;
+    L) 
+      WRITE_LOG=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -100,6 +104,18 @@ function get_status {
     echo $S
 }
 
+function get_logs {
+    WID=$1
+    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/logs" -H "accept: application/json" )
+    test_exit_status
+    # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
+    # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
+#    TEST=$( echo "$R" | jq -r '.calls.run_pindel[0].stderr' )
+    TEST=$( echo "$R" | jq -r '.calls' )
+    test_exit_status
+    echo "$TEST"
+}
+
 # this allows us to get case names in one of three ways:
 # 1: cases_status.sh CASE1 CASE2 ...
 # 2: cat cases.dat | cases_status.sh -
@@ -126,7 +142,12 @@ for CASE in $CASES; do
         WID=$( getWID $LOG )
         test_exit_status
 
-        STATUS=$(get_status $WID)
+        if [ "$WRITE_LOG" == 1 ]; then
+            STATUS=$(get_logs $WID)
+            STATUS=$(printf "\n$STATUS")
+        else 
+            STATUS=$(get_status $WID)
+        fi
     else
         WID="Unknown"
         STATUS="Not Started"
