@@ -80,7 +80,7 @@ bypass_vcf2maf: true
 
 # Number of parallel jobs to run.  Goal is to balance run times to have a uniform CPU load
 num_parallel_strelka2: 4
-num_parallel_pindel: 2
+num_parallel_pindel: 4
 
 chrlist: # Defining this turns on pindel parallel
   class: File

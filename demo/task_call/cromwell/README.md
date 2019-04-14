@@ -20,8 +20,10 @@ The packages jq and parallel need to be installed.  Conda is good for this.  Pri
 conda activate jq
 ```
 
-This is best run in tmux container
-may need to run `parallel --citation`
+This is best run in tmux container.  tmux should probably be started before running `0_start_docker.sh` so that can
+return to right remote server.
+
+may need to run `parallel --citation` once
 
 # Testing runs
 
@@ -93,12 +95,22 @@ four times for four callers, would expect 200+Gb for that file alone.
 Running `rm -rf */inputs` reduces disk use to 663M
 Compressing `call-mutect/execution/mutect_call_stats.txt` reduces file size from 435M to 95M
 
-call-parse_varscan_snv/execution/results/varscan/filter_snv_out/varscan.out.som_snv.Germline*.vcf are two files which take up 27M and 29M, and
+`call-parse_varscan_snv/execution/results/varscan/filter_snv_out/varscan.out.som_snv.Germline*.vcf` are two files which take up 27M and 29M, and
 are not used
 
-call-run_strelka2/execution/results/strelka2/strelka_out/workspace is a temp directory which is 97M in size, can be compressed or deleted
+`call-run_strelka2/execution/results/strelka2/strelka_out/workspace` is a temp directory which is 97M in size, can be compressed or deleted
 
 -> It is possible to reduce size of completed job significantly with a cleanup script
+
+# Testing multiple runs
+
+Testing these three cases in a parallel run (-J 4): `C3L-00365 C3L-00674 C3L-00677`
+
+All start OK, but Cromwell does not seem to capture any errors or job completed signals - it
+still thinks they're running when the individual jobs are done.
+
+It seems that `parallel` might not be an appropriate wrapper for Cromwell jobs.  Will test with non-parallel mode
+
 
 # Lessons learned
 

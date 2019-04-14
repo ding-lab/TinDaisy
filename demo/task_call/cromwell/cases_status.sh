@@ -8,13 +8,16 @@ Print out per-case run statistics
 Specific to cromwell
 
 Usage:
-  cases_status.sh [options] CASE [CASE1 CASE2 ...]
+  cases_status.sh [options] [ CASE1 [CASE2 ...] ]
 
 Options:
 -h: Print this help message
 -1: Stop after one
+-c CASES_FN: file with list of all cases, used when CASE1 not defined
 
-If CASE is - then read CASE from STDIN
+If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES file
+
+CASES_FN file has one case name per line
 
 Evaluates the following information for each case
 * The workflow ID of the cromwell job
@@ -49,7 +52,7 @@ function confirm {
 }
 
 # Defaults
-CASES="dat/cases.dat"
+CASES_FN="dat/cases.dat"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
 while getopts ":h1c:" opt; do
@@ -61,8 +64,8 @@ while getopts ":h1c:" opt; do
     1) # Stop after 1
       JUST_ONCE=1
       ;;
-    c) # Stop after 1
-      CASES="$OPTARG"
+    c) 
+      CASES_FN="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -97,28 +100,37 @@ function get_status {
     echo $S
 }
 
-# this allows us to get case names in one of two ways:
+# this allows us to get case names in one of three ways:
 # 1: cases_status.sh CASE1 CASE2 ...
 # 2: cat cases.dat | cases_status.sh -
-if [ "$1" == "-" ]; then
+# 3: read from CASES file
+# Note that if no cases defined, assume CASE='-'
+if [ "$#" == 0 ]; then
+    confirm $CASES_FN
+    CASES=$(cat $CASES_FN)
+elif [ "$1" == "-" ] ; then
     CASES=$(cat - )
 else
     CASES="$@"
 fi
 
 # loop over all cases, obtain WID and database status
+# If log file does not exist, assume that the run has not started
 for CASE in $CASES; do
 
     # Skip comments
     [[ $CASE = \#* ]] && continue
 
     LOG="logs/$CASE.out"
-    confirm $LOG
+    if [ -f $LOG ]; then
+        WID=$( getWID $LOG )
+        test_exit_status
 
-    WID=$( getWID $LOG )
-    test_exit_status
-
-    STATUS=$(get_status $WID)
+        STATUS=$(get_status $WID)
+    else
+        WID="Unknown"
+        STATUS="Not Started"
+    fi
 
     printf "$CASE\t$WID\t$STATUS\n" 
 
