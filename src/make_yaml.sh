@@ -17,6 +17,7 @@ Options:
 -y YAMLD: output directory of YAML files.  If "-", write YAML to stdout.  Default: .
 -p PRE_SUMMARY: analysis pre-summary filename
 -1 : Quit after evaluating one case
+-e ES : experimental strategy - WGS, WXS, etc.  This is required
 
 If CASE is - then read CASEs from STDIN
 
@@ -33,13 +34,12 @@ Analysis pre-summary is an optional output file which contains the UUID and samp
   combined with run results at the conclusion of analysis to generate analysis summary file.  Columns: case, tumor name, tumor uuid, normal name, normal uuid
 Format of BamMap is defined here: https://github.com/ding-lab/importGDC/blob/master/make_bam_map.sh
     
-
 EOF
 
 SCRIPT=$(basename $0)
 
 YAMLD="."
-while getopts ":hb:Y:P:p:y:1" opt; do
+while getopts ":hb:Y:P:p:y:1e:" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -63,6 +63,9 @@ while getopts ":hb:Y:P:p:y:1" opt; do
     p)  
       PRE_SUMMARY="$OPTARG"
       >&2 echo "Writing analysis pre-summary file to $PRE_SUMMARY"
+      ;;
+    e) # Required
+      ES="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -99,25 +102,35 @@ function test_exit_status {
 
 if [ -z $BAMMAP ]; then
     >&2 echo ERROR: BamMap file not defined \(-b\)
+    >&2 echo "$USAGE"
     exit 1
 fi
 confirm $BAMMAP 
 
 if [ -z $YAML_TEMPLATE ]; then
     >&2 echo ERROR: YAML template not defined \(-Y\)
+    >&2 echo "$USAGE"
     exit 1
 fi
 confirm $YAML_TEMPLATE 
 
 if [ -z $PARAM_FILE ]; then
     >&2 echo ERROR: Parameter file  not defined \(-p\)
+    >&2 echo "$USAGE"
     exit 1
 fi
 confirm $PARAM_FILE 
 
+if [ -z $ES ]; then
+    >&2 echo ERROR: Experimental strategy not defined \(-e\)
+    >&2 echo "$USAGE"
+    exit 1
+fi
+
 if [ "$#" -lt 1 ]; then
     >&2 echo ERROR: Wrong number of arguments
     >&2 echo Usage: make_docker_map.sh \[options\] CASE \[CASE2 ...\]
+    >&2 echo "$USAGE"
     exit 1
 fi
 
@@ -127,21 +140,21 @@ fi
 if [ $1 == "-" ]; then
     CASES=$(cat - )
 else
-    >&2 echo REading command line
+    >&2 echo Reading command line
     CASES="$@"
 fi
 
 # searches for entries with
 #   ref = hg38
-#   experimental strategy = WGS
+#   experimental strategy = WGS, WXS, RNA-Seq, etc
 #   sample type = as given
 #   case = as given
 # Returns BAM, sample name, UUID 
 function get_BAM {
     CASE=$1
     ST=$2
+    ES=$3
     REF="hg38"
-    ES="WGS"
     # BAMMAP as global
 
     # BamMap columns
@@ -180,6 +193,11 @@ function get_BAM {
 
 # Write analysis pre-summary header 
 if [ ! -z $PRE_SUMMARY ]; then
+    # To avoid data loss, return with error if PRE_SUMMARY exists
+    if [ -f $PRE_SUMMARY ]; then
+        >&2 echo ERROR: File $PRE_SUMMARY exists.  Please delete / rename before continuing
+        exit 1
+    fi
     PSD=$(dirname $PRE_SUMMARY)
     if [ ! -d $PSD ]; then
         >&2 echo Making output directory for analysis pre-summary: $PSD
@@ -218,11 +236,11 @@ export VEP_CACHE_GZ
 
 for CASE in $CASES; do
 
-    TUMOR=$(get_BAM $CASE "tumor")
+    TUMOR=$(get_BAM $CASE "tumor" $ES)
     test_exit_status
     export TUMOR_BAM=$(echo "$TUMOR" | cut -f 1)
 
-    NORMAL=$(get_BAM $CASE "blood_normal")
+    NORMAL=$(get_BAM $CASE "blood_normal" $ES)
     test_exit_status
     export NORMAL_BAM=$(echo "$NORMAL" | cut -f 1)
 

@@ -1,24 +1,16 @@
 Contents of demo directory
 
+There are a number of projects created here during development and testing.
+
 * StrelkaDemo - test run of complete workflow with small test dataset (StrelkaDemo)
     * this will not run with Mutect, so is here for historical reasons 
 * MutectDemo - test run of complete workflow with small test dataset (MutectDemo)
     * This runs to completion, but does not yield any variants
-* ./C3L-01032-katmai-demo - Run of real tumor / normal PDA hg19 dataset on katmai with YAML
-* test.C3N-01649 - demonstration of running real dataset using rabix with command line arguments
-    * this is old
-* C3L-01032-katmai-demo - Run of real tumor / normal PDA hg19 dataset on katmai with YAML
-* C3L-00004-katmai-demo - run of real tumor / normal CCRCC hg38 dataset on katmai with YAML
-* test.C3N-01649 - demonstration of running real dataset using rabix with command line arguments
-    * this is old
-* test.rabix - Run individual steps of workflow using rabix with command line args
-    * this is old
-* test.cromwell - Example runs of StrelkaDemo, real dataset, and restart using Cromwell on MGI.  Uses YAML
-    * this is old
+    * Currently has errors on Cromwell
 * test.cwltool - Using cwltool to test validity of CWL code before using on Cromwell
-    * this is old
-* test.varscan-only - example of running alternate workflow using Rabix with YAML 
-    * this is old
-* katmai.C3L - development and examples of CPTAC3 real data pipelines 
-* task_call - running multiple samples at once with Rabix
+* katmai.C3L - development and examples of CPTAC3 real data pipelines. Called individually using Rabix
+* task_call - running multiple samples at once with Rabix and Cromwell
     * currently under active development
+    * katmai.C3 and kenai.C3.B - two directories demonstrating multiple runs in parallel using Rabix
+      These serve as models for production runs.  Note that these were mistakenly run using WGS data but WXS parameters
+    * test.cromwell - Example runs of CPTAC3 data using Cromwell on MGI.  

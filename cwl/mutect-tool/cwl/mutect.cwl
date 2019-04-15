@@ -1,7 +1,7 @@
 cwlVersion: v1.0
 class: CommandLineTool
 label: MuTect
-baseCommand: ["python", "/opt/mutect-tool/src/mutect-tool.py", "--workdir", "."]
+baseCommand: ["/usr/bin/python", "/opt/mutect-tool/src/mutect-tool.py", "--workdir", "."]
 requirements:
   - class: DockerRequirement
     dockerPull: dinglab2/mutect-tool:20190317
@@ -9,7 +9,8 @@ requirements:
     envDef:
       - envName: JAVA_OPTS
         envValue: -Xmx1g
-
+  - class: ResourceRequirement
+    ramMin: 8000
 inputs:
   tumor:
     type: File

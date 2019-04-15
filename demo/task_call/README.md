@@ -3,7 +3,7 @@ Task call is based on that developed here:
 
 It consists of a simple workflow manager which uses GNU Parallel to run N tasks at a time
 
-Currently running two batches of cases:
+Currently running two batches of cases using Rabix:
 * katmai.C3 - ran cases.A.dat and running cases.B.dat on kobuk
     * these fail at merge step.  Is it kobuk-specific?
     * yes, this is kobuk-specific.  Runs with no error like this on kenai
@@ -12,3 +12,6 @@ Currently running two batches of cases:
 
 NOTE: because of an error generating YAML, this was run on WGS data (not WXS as expected)
 * Its suggested this data is kept for future testing
+
+cromwell directory contains tests and development of runs using Cromwell
+cromwell.B is an alternate run while cromwell is running.  Will be deleted after testing
