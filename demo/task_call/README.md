@@ -12,4 +12,5 @@ Currently running two batches of cases using Rabix:
 Note that runs katmai.C3 kenai.C3.B were accidentally run with WGS data and WXS parameters.  As a result, their results are
 probably not useful.
 
-Cromwell directory contains tests and development of runs using Cromwell
+cromwell directory contains tests and development of runs using Cromwell
+cromwell.B is an alternate run while cromwell is running.  Will be deleted after testing

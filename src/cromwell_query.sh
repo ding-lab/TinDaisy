@@ -7,21 +7,29 @@ read -r -d '' USAGE <<'EOF'
 Print out per-case run statistics.Specific to cromwell
 
 Usage:
-  cases_status.sh [options] [ CASE1 [CASE2 ...] ]
+  cromwell_query.sh [options] [ CASE1 [CASE2 ...] ]
 
 Options:
 -h: Print this help message
 -1: Stop after one
--c CASES_FN: file with list of all cases, used when CASE1 not defined. Default: dat/cases.dat
--q QUERY: type of query, one of 'status', 'logs', 'workflowRoot'.  Default is `status`
+-c CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
+-q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing'.  Default is `status`
+-s STEP: define step of interest for use with 'logs' query
 
-If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file,
-which has one case name per line
+Simplest usage:
+    cromwell_query.sh
+will return status for all cases
+
+If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
+If CASE is a UUID, treat it as the workflow ID, and don't parse any output files
 
 Evaluates the following information for each case
 * The workflow ID of the cromwell job
-* Status as queried from https://genome-cromwell.gsc.wustl.edu/
-  Alternatively, may obtain log details from same source
+* Various queries from https://genome-cromwell.gsc.wustl.edu/  Supported queries:
+    * status - Status of run
+    * logs - List of stderr/stdout for each run.  All steps shown unless -s STEP is defined
+    * workflowRoot - Path to root of cromwell output
+    * timing - URL to visualize timing and progress of workflow
 
 Workflow ID associated with given cromwell output file is obtaining by grepping for output line like,
 [2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
@@ -58,7 +66,7 @@ CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1c:q:" opt; do
+while getopts ":h1c:q:s:" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -72,6 +80,9 @@ while getopts ":h1c:q:" opt; do
       ;;
     q) 
       QUERY="$OPTARG"
+      ;;
+    s) 
+      STEP="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -112,7 +123,12 @@ function get_logs {
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
-    S=$( echo "$R" | jq -r '.calls' )
+    if [ -z $STEP ]; then
+        FILTER=".calls"
+    else
+        FILTER=".calls.${STEP}[0]"
+    fi
+    S=$( echo "$R" | jq -r "$FILTER" )
     test_exit_status
     echo "$S"
 }
@@ -129,8 +145,8 @@ function get_workflowRoot {
 
 
 # this allows us to get case names in one of three ways:
-# 1: cases_status.sh CASE1 CASE2 ...
-# 2: cat cases.dat | cases_status.sh -
+# 1: cromwell_query.sh CASE1 CASE2 ...
+# 2: cat cases.dat | cromwell_query.sh -
 # 3: read from CASES file
 # Note that if no cases defined, assume CASE='-'
 if [ "$#" == 0 ]; then
@@ -149,11 +165,23 @@ for CASE in $CASES; do
     # Skip comments
     [[ $CASE = \#* ]] && continue
 
-    LOG="logs/$CASE.out"
-    if [ -f $LOG ]; then
-        WID=$( getWID $LOG )
-        test_exit_status
+    # Evaluate if CASE is actually a UUID.  If so, assume it is the WID and proceed
+    # From https://stackoverflow.com/questions/38416602/check-if-string-is-uuid
+    if [[ $CASE =~ ^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$ ]]; then
+        WID=$CASE
+        CASE="Unknown"
+    else
+        LOG="logs/$CASE.out"
+        if [ -f $LOG ]; then
+            WID=$( getWID $LOG )
+            test_exit_status
+        else
+            WID="Unknown"
+            STATUS="Unknown"
+        fi
+    fi
 
+    if [[ $WID != "Unknown" ]]; then
         if [ "$QUERY" == 'logs' ]; then
             STATUS=$(get_logs $WID)
             STATUS=$(printf "\n$STATUS")
@@ -161,14 +189,14 @@ for CASE in $CASES; do
             STATUS=$(get_status $WID)
         elif [ "$QUERY" == 'workflowRoot' ]; then
             STATUS=$(get_workflowRoot $WID)
+        elif [ "$QUERY" == 'timing' ]; then
+            # URL as provided by tmooney on slack 
+            STATUS="https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/timing"
         else 
             >&2 echo ERROR: Unknown query $QUERY
             >&2 echo "$USAGE"
             exit 1
         fi
-    else
-        WID="Unknown"
-        STATUS="Unknown"
     fi
 
     printf "$CASE\t$WID\t$STATUS\n" 
