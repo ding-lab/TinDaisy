@@ -1,0 +1,11 @@
+Step 4 should be cleaning of output directory per workflow ID.  There are several levels associated with this.
+1. delete all staged data (inputs directory)
+2. Delete staged and compress all step intermediate data
+3. Delete all staged and step intermediate data
+4. Delete all staged data, step intermediate data, and step final data (leave only final step as is)
+5. Remove entire output directory
+
+Cromwell output directory will be obtained from querying database
+
+
+

@@ -4,8 +4,7 @@
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
-Print out per-case run statistics 
-Specific to cromwell
+Print out per-case run statistics.Specific to cromwell
 
 Usage:
   cases_status.sh [options] [ CASE1 [CASE2 ...] ]
@@ -13,18 +12,20 @@ Usage:
 Options:
 -h: Print this help message
 -1: Stop after one
--c CASES_FN: file with list of all cases, used when CASE1 not defined
--L: print log files instead of status
+-c CASES_FN: file with list of all cases, used when CASE1 not defined. Default: dat/cases.dat
+-q QUERY: type of query, one of 'status', 'logs', 'workflowRoot'.  Default is `status`
 
-If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES file
-
-CASES_FN file has one case name per line
+If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file,
+which has one case name per line
 
 Evaluates the following information for each case
 * The workflow ID of the cromwell job
 * Status as queried from https://genome-cromwell.gsc.wustl.edu/
+  Alternatively, may obtain log details from same source
 
-Extract and print Workflow ID associated with given cromwell output file
+Workflow ID associated with given cromwell output file is obtaining by grepping for output line like,
+[2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
+
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
 
@@ -54,9 +55,10 @@ function confirm {
 
 # Defaults
 CASES_FN="dat/cases.dat"
+QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1c:L" opt; do
+while getopts ":h1c:q:" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -68,8 +70,8 @@ while getopts ":h1c:L" opt; do
     c) 
       CASES_FN="$OPTARG"
       ;;
-    L) 
-      WRITE_LOG=1
+    q) 
+      QUERY="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -110,11 +112,21 @@ function get_logs {
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
-#    TEST=$( echo "$R" | jq -r '.calls.run_pindel[0].stderr' )
-    TEST=$( echo "$R" | jq -r '.calls' )
+    S=$( echo "$R" | jq -r '.calls' )
     test_exit_status
-    echo "$TEST"
+    echo "$S"
 }
+
+function get_workflowRoot {
+    WID=$1
+    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/metadata" -H "accept: application/json" )
+    test_exit_status
+    S=$( echo "$R" | jq -r '.workflowRoot' )
+    test_exit_status
+    echo "$S"
+}
+
+
 
 # this allows us to get case names in one of three ways:
 # 1: cases_status.sh CASE1 CASE2 ...
@@ -142,15 +154,21 @@ for CASE in $CASES; do
         WID=$( getWID $LOG )
         test_exit_status
 
-        if [ "$WRITE_LOG" == 1 ]; then
+        if [ "$QUERY" == 'logs' ]; then
             STATUS=$(get_logs $WID)
             STATUS=$(printf "\n$STATUS")
-        else 
+        elif [ "$QUERY" == 'status' ]; then
             STATUS=$(get_status $WID)
+        elif [ "$QUERY" == 'workflowRoot' ]; then
+            STATUS=$(get_workflowRoot $WID)
+        else 
+            >&2 echo ERROR: Unknown query $QUERY
+            >&2 echo "$USAGE"
+            exit 1
         fi
     else
         WID="Unknown"
-        STATUS="Not Started"
+        STATUS="Unknown"
     fi
 
     printf "$CASE\t$WID\t$STATUS\n" 
