@@ -22,4 +22,7 @@ To test:
 -> curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/9b018827-12df-477d-ac6d-d5d6a410db75/metadata?includeKey=&includeKey=&expandSubWorkflows=false" -H "accept: application/json" | jq -r '.calls.run_pindel[0].executionStatus'
   How to get status for all steps?
 
+---
+Other tasks
 
+Note that $CWL is specified twice, in project_config and 2_
