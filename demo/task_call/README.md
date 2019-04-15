@@ -9,3 +9,6 @@ Currently running two batches of cases:
     * yes, this is kobuk-specific.  Runs with no error like this on kenai
 * kenai.C3.B - running cases.C.dat on kenai
     * Dies at vcf_2_maf step, error reported to Cyriac
+
+NOTE: because of an error generating YAML, this was run on WGS data (not WXS as expected)
+* Its suggested this data is kept for future testing

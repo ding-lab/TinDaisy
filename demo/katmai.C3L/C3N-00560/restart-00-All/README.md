@@ -5,3 +5,5 @@ Analysis of runs here: /home/mwyczalk_test/Projects/TinDaisy/sw1.3-compare/C3N-0
 
 Input VCF is output of merge_vcf step from run1: /diskmnt/Projects/cptac_downloads_4/TinDaisy/tindaisy-2019-02-18-212809.259/root/merge_vcf/results/merged/merged.filtered.vcf
 See also desription of testing / comparison here: /home/mwyczalk_test/Projects/TinDaisy/sw1.3-compare/C3N-00560/01_run1/README.md 
+
+Output directory: /diskmnt/Projects/cptac_downloads_4/TinDaisy/tindaisy-vep_annotate-2019-02-19-172011.356/root
