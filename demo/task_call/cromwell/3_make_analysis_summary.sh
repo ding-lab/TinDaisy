@@ -1,8 +1,10 @@
 # Run Demo project 
 
-source project_config.sh
+source config/project_config.sh
 
-bash $TD_ROOT/src/make_analysis_summary.sh $@ -p $PRE_SUMMARY -s $SUMMARY - < $CASES_LIST
+CROMWELL_QUERY="$TD_ROOT/src/cromwell_query.sh"
+
+bash $TD_ROOT/src/make_analysis_summary.sh $@ -c $CROMWELL_QUERY -C -p $PRE_SUMMARY -s $SUMMARY - < $CASES_LIST
 
 rc=$?
 if [[ $rc != 0 ]]; then

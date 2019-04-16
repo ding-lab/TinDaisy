@@ -1,5 +1,12 @@
 Testing of cromwell CWL engine for TinDaisy at MGI
 
+TODO:
+* update this document with notes from ../cromwell.B and ../cromwell.C
+* ../cromwell.C is a production run
+* Tracking runs here: https://docs.google.com/spreadsheets/d/12ANLh3H1dgZcGFwmCjL3i-XZHtukeicw6DtboAjMT7E/edit#gid=0
+* When GBM is done, clean up cromwell directories into one clean directory, describe clean setup for production
+* Add discussion about MutectDemo, whose YAML file is in ./config
+
 # Getting started
 
 1. edit `dat/cromwell-config-db.dat`

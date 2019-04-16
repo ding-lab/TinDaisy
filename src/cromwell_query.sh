@@ -13,8 +13,9 @@ Options:
 -h: Print this help message
 -1: Stop after one
 -c CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing'.  Default is `status`
+-q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
+-V: output status only (i.e., squelch case and workflow ID output)
 
 Simplest usage:
     cromwell_query.sh
@@ -27,9 +28,11 @@ Evaluates the following information for each case
 * The workflow ID of the cromwell job
 * Various queries from https://genome-cromwell.gsc.wustl.edu/  Supported queries:
     * status - Status of run
+    * wid - Workflow ID
     * logs - List of stderr/stdout for each run.  All steps shown unless -s STEP is defined
     * workflowRoot - Path to root of cromwell output
     * timing - URL to visualize timing and progress of workflow
+    * output - Output VCF of TinDaisy run
 
 Workflow ID associated with given cromwell output file is obtaining by grepping for output line like,
 [2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
@@ -66,7 +69,7 @@ CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1c:q:s:" opt; do
+while getopts ":h1c:q:s:V" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -83,6 +86,9 @@ while getopts ":h1c:q:s:" opt; do
       ;;
     s) 
       STEP="$OPTARG"
+      ;;
+    V) # Stop after 1
+      STATUS_ONLY=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -142,7 +148,14 @@ function get_workflowRoot {
     echo "$S"
 }
 
-
+function get_output {
+    WID=$1
+    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
+    test_exit_status
+    S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
+    test_exit_status
+    echo "$S"
+}
 
 # this allows us to get case names in one of three ways:
 # 1: cromwell_query.sh CASE1 CASE2 ...
@@ -187,11 +200,15 @@ for CASE in $CASES; do
             STATUS=$(printf "\n$STATUS")
         elif [ "$QUERY" == 'status' ]; then
             STATUS=$(get_status $WID)
+        elif [ "$QUERY" == 'wid' ]; then
+            STATUS=$WID
         elif [ "$QUERY" == 'workflowRoot' ]; then
             STATUS=$(get_workflowRoot $WID)
         elif [ "$QUERY" == 'timing' ]; then
             # URL as provided by tmooney on slack 
             STATUS="https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/timing"
+        elif [ "$QUERY" == 'output' ]; then
+            STATUS=$(get_output $WID)
         else 
             >&2 echo ERROR: Unknown query $QUERY
             >&2 echo "$USAGE"
@@ -199,7 +216,11 @@ for CASE in $CASES; do
         fi
     fi
 
-    printf "$CASE\t$WID\t$STATUS\n" 
+    if [ -z $STATUS_ONLY ]; then
+        printf "$CASE\t$WID\t$STATUS\n" 
+    else
+        printf "$STATUS\n" 
+    fi
 
     if [ $JUST_ONCE ]; then
         >&2 echo Stopping after one

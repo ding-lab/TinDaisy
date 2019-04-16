@@ -1,3 +1,10 @@
+Immediate TODO:
+
+Continue working on step 3.  Get order of disease and header correct
+
+Consider about serial runs.  If analysis summary exists, do not overwrite - either append, or generate new one.
+
+
 Step 4 should be cleaning of output directory per workflow ID.  There are several levels associated with this.
 1. delete all staged data (inputs directory)
 2. Delete staged and compress all step intermediate data

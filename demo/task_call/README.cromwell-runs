@@ -1,8 +1,54 @@
+NOTE: this document has been superceded by this: 
+    https://docs.google.com/spreadsheets/d/12ANLh3H1dgZcGFwmCjL3i-XZHtukeicw6DtboAjMT7E/edit#gid=0
+
 Premier run:
 C3L-00104 6abf1c89-aac2-4b40-8ff4-8616fa728853
-The .out file for this run was lost
+The .out file for this run was lost.  Directories were cleaned manually
 
 Subsequent run, cases.B.dat:
 C3L-00365   d6c83416-af3f-46f3-a892-ff1e9074fe74    Succeeded
 C3L-00674   7ab678ee-bd59-4d14-b722-a49d196f52ce    Succeeded
 C3L-00677   0e6e3d6b-a0f0-4454-a2bd-2373ea2ca06f    Succeeded
+-> output directories have not been cleaned
+
+subsequent run of cases.C.dat, in cromwell.B
+C3L-01040   a5541a11-9dab-4c1a-ba69-e0260284acab    Succeeded
+C3L-01043   f51320b6-6740-48d4-8d78-b729ce6d72e7    Succeeded
+
+Current run of cases.D.dat, remaining GBM cases, in cromwell.C
+C3L-01045   8ee4dd81-900d-45d5-b5fc-5438a9913c56    Running
+C3L-01046   ee9580ce-6bff-433d-9399-3b2971ccc8ef    Running
+C3L-01327   5ede5cc1-e9e8-4805-8479-e1fd86d3e044    Running
+C3L-01887   0aa822fc-1000-4fa7-8fc5-d41cf00e8715    Running
+C3L-02041   Unknown Unknown
+C3L-02465   Unknown Unknown
+C3L-02504   Unknown Unknown
+C3L-02542   Unknown Unknown
+C3N-00661   Unknown Unknown
+C3N-00662   Unknown Unknown
+C3N-00663   Unknown Unknown
+C3N-00665   Unknown Unknown
+C3N-01192   Unknown Unknown
+C3N-01196   Unknown Unknown
+C3N-01334   Unknown Unknown
+C3N-01364   Unknown Unknown
+C3N-01366   Unknown Unknown
+C3N-01367   Unknown Unknown
+C3N-01368   Unknown Unknown
+C3N-01369   Unknown Unknown
+C3N-01505   Unknown Unknown
+C3N-01515   Unknown Unknown
+C3N-01517   Unknown Unknown
+C3N-01518   Unknown Unknown
+C3N-01798   Unknown Unknown
+C3N-01814   Unknown Unknown
+C3N-01815   Unknown Unknown
+C3N-01816   Unknown Unknown
+C3N-01818   Unknown Unknown
+C3N-01856   Unknown Unknown
+C3N-01857   Unknown Unknown
+C3N-02181   Unknown Unknown
+C3N-02183   Unknown Unknown
+C3N-02185   Unknown Unknown
+C3N-02186   Unknown Unknown
+C3N-02188   Unknown Unknown

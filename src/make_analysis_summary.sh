@@ -16,10 +16,15 @@ Options:
 -1: Quit after evaluating one case
 -l LOGD: directory where runtime output written.  Default "./logs"
 -w: Issue warning instead of error if output file does not exist
+-C: This is a Cromwell run.  analysis_summary will have cromwell workflow ID as last column
+-c CROMWELL_QUERY: explicit path to cromwell_query.sh.  Default "cromwell_query.sh" 
+
+Analysis summary file is defined here: https://docs.google.com/document/d/1Ho5cygpxd8sB_45nJ90d15DcdaGCiDqF0_jzIcc-9B4/edit
 
 If CASE is - then read CASEs from STDIN
-Processes rabix run output in LOGD/CASE.out to obtain path to SomaticSV output data
-Reads analysis pre-summary file (created during YAML file generation) and adds SomaticSV output data 
+For Rabix runs, process run output in LOGD/CASE.out to obtain path to TinDaisy output data
+For Cromwell runs, we rely on database calls performed by cromwell_query.sh to obtain output data.
+Reads analysis pre-summary file (created during YAML file generation) and adds TinDaisy output data 
     as second column to generate an analysis summary file
 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
@@ -29,7 +34,8 @@ EOF
 SCRIPT=$(basename $0)
 
 LOGD="./logs"
-while getopts ":hs:p:1l:w" opt; do
+CROMWELL_QUERY="cromwell_query.sh"
+while getopts ":hs:p:1l:wCc:" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -49,6 +55,12 @@ while getopts ":hs:p:1l:w" opt; do
       ;;
     w) 
       ONLYWARN=1
+      ;;
+    C) 
+      IS_CROMWELL=1
+      ;;
+    c) 
+      CROMWELL_QUERY="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -109,7 +121,7 @@ function get_case_pre_summary {
     CASE=$1
     PRE_SUMMARY=$2
 
-    LINE_A=$(awk -v c=$CASE 'BEGIN{FS="\t";OFS="\t"}{if ($1 == c) print}' $PRE_SUMMARY)
+    LINE_A=$(awk -v c=$CASE 'BEGIN{FS="\t";OFS="\t"}{if ($1 == c) print $0 }' $PRE_SUMMARY)
 
     if [ -z "$LINE_A" ]; then
         >&2 echo ERROR: Case $CASE not found in $PRE_SUMMARY
@@ -129,7 +141,12 @@ fi
 confirm $PRE_SUMMARY
 
 # Write analysis summary header.  If SUMMARY not defined, write to STDOUT
-HEADER=$(printf "# case\tdata\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\n") 
+if [ -z $IS_CROMWELL ]; then
+    HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\n") 
+else
+    HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\tcromwell_wid\n") 
+fi
+
 if [ ! -z $SUMMARY ]; then
     SD=$(dirname $SUMMARY)
     if [ ! -d $SD ]; then
@@ -143,23 +160,33 @@ else
     echo "$HEADER"
 fi
 
+FILE_FORMAT="VCF"
 for CASE in $CASES
 do
     # analysis pre-summary
     PS_DATA=$(get_case_pre_summary $CASE $PRE_SUMMARY)
     test_exit_status
+    PS_DATA_TAIL=$(echo "$PS_DATA" | cut -f 3-6) 
+    DIS=$(echo "$PS_DATA" | cut -f 2) 
 
-    # analysis results data (output of rabix run).  Assume written in YAML format to stdout log file
-    RES_DATA="$LOGD/$CASE.out"
-    confirm $RES_DATA
+    if [ -z $IS_CROMWELL ]; then
+        # analysis results data (output of rabix run).  Assume written in YAML format to stdout log file
+        RES_DATA="$LOGD/$CASE.out"
+        confirm $RES_DATA
+        # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
+        OUTPUT_PATH=$(cat $RES_DATA | jq -r '.output.path')
+        test_exit_status
+    else
+        OUTPUT_PATH=` $CROMWELL_QUERY -V -q output $CASE `
+        test_exit_status
+        WID=` $CROMWELL_QUERY -V -q wid $CASE `
+        test_exit_status
+        PS_DATA_TAIL=$(printf "$PS_DATA_TAIL\t$WID")
+    fi
+    DATA=$(printf "$CASE\t$DIS\t$OUTPUT_PATH\t$FILE_FORMAT\t$PS_DATA_TAIL\n")
 
-    # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
-    OUTPUT_PATH=$(cat $RES_DATA | jq -r '.output.path')
-    test_exit_status
     confirm $OUTPUT_PATH $ONLYWARN
     
-    PS_DATA_TAIL=$(echo "$PS_DATA" | cut -f 2-5) # 
-    DATA=$(printf "$CASE\t$OUTPUT_PATH\t$PS_DATA_TAIL\n")
 
     if [ ! -z $SUMMARY ]; then
         echo "$DATA" >> $SUMMARY
