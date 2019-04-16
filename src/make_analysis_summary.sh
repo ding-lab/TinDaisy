@@ -12,7 +12,9 @@ Required arguments:
 
 Options:
 -h: print usage information
--s SUMMARY: output analysis results file.  If not defined, written to STDOUT
+-s SUMMARY_OUT: output analysis results file.  If not defined, written to STDOUT
+-a: If SUMMARY_OUT is defined and that file exists, append to it
+-f: If SUMMARY_OUT is defined and that file exists, overwrite it
 -1: Quit after evaluating one case
 -l LOGD: directory where runtime output written.  Default "./logs"
 -w: Issue warning instead of error if output file does not exist
@@ -26,6 +28,8 @@ For Rabix runs, process run output in LOGD/CASE.out to obtain path to TinDaisy o
 For Cromwell runs, we rely on database calls performed by cromwell_query.sh to obtain output data.
 Reads analysis pre-summary file (created during YAML file generation) and adds TinDaisy output data 
     as second column to generate an analysis summary file
+If SUMMARY_OUT file is defined and exists, exit with an error.  This behavior can be modifed with -f and -a flags.
+    Defining both -f and -a is an error
 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 
@@ -35,14 +39,14 @@ SCRIPT=$(basename $0)
 
 LOGD="./logs"
 CROMWELL_QUERY="cromwell_query.sh"
-while getopts ":hs:p:1l:wCc:" opt; do
+while getopts ":hs:p:1l:wCc:fa" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
       exit 0
       ;;
     s)  
-      SUMMARY="$OPTARG"
+      SUMMARY_OUT="$OPTARG"
       ;;
     p)  
       PRE_SUMMARY="$OPTARG"
@@ -58,6 +62,12 @@ while getopts ":hs:p:1l:wCc:" opt; do
       ;;
     C) 
       IS_CROMWELL=1
+      ;;
+    f) 
+      SUMMARY_OVERWRITE=1
+      ;;
+    a) 
+      SUMMARY_APPEND=1
       ;;
     c) 
       CROMWELL_QUERY="$OPTARG"
@@ -78,7 +88,13 @@ shift $((OPTIND-1))
 
 if [ "$#" -lt 1 ]; then
     >&2 echo ERROR: Wrong number of arguments
-    >&2 echo Usage: make_docker_map.sh \[options\] CASE \[CASE2 ...\]
+    >&2 echo "$USAGE"
+    exit 1
+fi
+
+if [ "$SUMMARY_OVERWRITE" ] && [ "$SUMMARY_APPEND" ]; then
+    >&2 echo ERROR: Cannot define both -f and -a
+    >&2 echo "$USAGE"
     exit 1
 fi
 
@@ -140,21 +156,34 @@ if [ -z $PRE_SUMMARY ]; then
 fi
 confirm $PRE_SUMMARY
 
-# Write analysis summary header.  If SUMMARY not defined, write to STDOUT
+# Write analysis summary header.  If SUMMARY_OUT not defined, write to STDOUT
 if [ -z $IS_CROMWELL ]; then
     HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\n") 
 else
     HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\tcromwell_wid\n") 
 fi
 
-if [ ! -z $SUMMARY ]; then
-    SD=$(dirname $SUMMARY)
+if [ ! -z $SUMMARY_OUT ]; then
+    SD=$(dirname $SUMMARY_OUT)
     if [ ! -d $SD ]; then
         >&2 echo Making output directory for analysis summary: $SD
         mkdir -p $SD
         test_exit_status
     fi
-    echo "$HEADER" > $SUMMARY
+
+    # If SUMMARY_OUT exists, evaluate whether to append or overwrite
+    if [ -f $SUMMARY_OUT ]; then
+        if [ "$SUMMARY_OVERWRITE" ]; then
+            echo "$HEADER" > $SUMMARY_OUT
+        elif [ "$SUMMARY_APPEND" ]; then
+            :   # don't do anything; later on we'll append
+        else    # this is an error
+            >&2 echo ERROR: $SUMMARY_OUT exists 
+            >&2 echo Move / delete this file, append with -a, or overwrite with -f
+            exit 1
+        fi
+    fi 
+
     test_exit_status
 else
     echo "$HEADER"
@@ -188,8 +217,8 @@ do
     confirm $OUTPUT_PATH $ONLYWARN
     
 
-    if [ ! -z $SUMMARY ]; then
-        echo "$DATA" >> $SUMMARY
+    if [ ! -z $SUMMARY_OUT ]; then
+        echo "$DATA" >> $SUMMARY_OUT
     else
         echo "$DATA" 
     fi
@@ -200,7 +229,7 @@ do
     fi
 done
 
-if [ ! -z $SUMMARY ]; then
-    >&2 echo Analysis summary written to $SUMMARY
+if [ ! -z $SUMMARY_OUT ]; then
+    >&2 echo Analysis summary written to $SUMMARY_OUT
 fi
 
