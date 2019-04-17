@@ -33,12 +33,15 @@ Evaluates the following information for each case
     * workflowRoot - Path to root of cromwell output
     * timing - URL to visualize timing and progress of workflow
     * output - Output VCF of TinDaisy run
+    * runLog - Output status, start, end times
 
 Workflow ID associated with given cromwell output file is obtaining by grepping for output line like,
 [2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
+
+# **TODO** add ability to process RUNLOG=dat/runLog.dat to obtain CASE->WID mapping if logs/CASE.out files do not exist
 
 function test_exit_status {
     # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
