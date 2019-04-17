@@ -4,10 +4,9 @@ source config/project_config.sh
 CONFIG="config/cromwell-config-db.dat"
 CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
 
-# TODO: run with -J 4
-
 # -J N - specify number of jobs to run at once
-bash $TD_ROOT/src/run_cwl_tasks.sh $@ -y $YAMLD -c $CWL -C $CONFIG - < $CASES_LIST
+ARGS="-J 4"
+bash $TD_ROOT/src/run_cwl_tasks.sh $@ $ARGS -y $YAMLD -c $CWL -C $CONFIG - < $CASES_LIST
 
 rc=$?
 if [[ $rc != 0 ]]; then

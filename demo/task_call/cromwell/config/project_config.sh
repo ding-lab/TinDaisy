@@ -39,8 +39,6 @@ LOGD="./logs"
 
 YAMLD="./yaml"
 
-CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
-
 PRE_SUMMARY="dat/analysis_pre-summary.dat"
 SUMMARY="dat/analysis_summary.dat"
 

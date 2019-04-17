@@ -80,16 +80,6 @@ MGI.BamMap.dat:C3L-00104.WXS.T.hg38 C3L-00104   GBM WXS tumor   /gscmnt/gc2741/d
 
 Result VCF: `/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/6abf1c89-aac2-4b40-8ff4-8616fa728853/call-vep_filter/execution/results/vep_filter/vep_filtered.vcf`
 
-## Timing
-
-run_strelka 2 has 4 cpu, run_pindel has 4 cpu:
-
-run_varscan: start [2019-04-12 22:18:48,87], end [2019-04-13 02:50:38,10]  -> about 4.5 hrs
-mutect: start [2019-04-12 22:18:48,97]  end [2019-04-13 02:51:25,79]       -> about 4.5 hrs
-run_strelka2: [2019-04-12 22:18:49,18], end [2019-04-13 00:36:38,48]       -> about 2.3 hrs
-run_pindel: [2019-04-12 22:18:49,19],   [2019-04-12 22:44:48,40]           -> about 0.5 hrs
-Entire run: end [2019-04-13 03:03:57,04]                                   -> about 4.75 hrs
-
 ## disk space
 
 Complete directory size of `/gscmnt/gc2741/ding/cptac/cromwell-workdir/cromwell-executions/tindaisy.cwl/6abf1c89-aac2-4b40-8ff4-8616fa728853`
@@ -108,31 +98,5 @@ are not used
 `call-run_strelka2/execution/results/strelka2/strelka_out/workspace` is a temp directory which is 97M in size, can be compressed or deleted
 
 -> It is possible to reduce size of completed job significantly with a cleanup script
-
-# Testing multiple runs
-
-Testing these three cases in a parallel run (-J 4): `C3L-00365 C3L-00674 C3L-00677`
-
-All start OK, but Cromwell does not seem to capture any errors or job completed signals - it
-still thinks they're running when the individual jobs are done.
-
-It seems that `parallel` might not be an appropriate wrapper for Cromwell jobs.  Will test with non-parallel mode
-
-
-# Lessons learned
-
-## Hard links
-
-If cromwell-executions is on the same volume as the BAM files, cromwell will create hard links to the dat rather than
-try to copy it over.  This is much much faster, so for now, should have an Executions folder on each allocation
-
-This is specified in config.ini, and is currently set for /gscmnt/gc2741/ding/cptac/cromwell-workdir
-
-For preliminary testing this is unavoidable
-
-## tmux
-
-Use TMUX from virtual workstation to capture logs and disconnect / attach at will without killing
-job.  nohup will die when log out, bsub takes a long time
 
 

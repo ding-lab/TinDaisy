@@ -1,7 +1,5 @@
 Immediate TODO:
 
-Continue working on step 3.  Get order of disease and header correct
-
 Consider about serial runs.  If analysis summary exists, do not overwrite - either append, or generate new one.
 
 
