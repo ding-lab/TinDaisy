@@ -1,4 +1,10 @@
-NOTE: this document has been superceded by this: 
+
+Initial GBM runs circa 4/14-4/17 for development.  These were stopped even though a number
+succeeded because the wrong dbSnP-COSMIC database was used (20190416 is the corrected one).
+The runs were distributed among a number of running directories, as described below.
+
+These runs will be used for testing of cleanup before they are discarded entirely.
+Details about these runs:
     https://docs.google.com/spreadsheets/d/12ANLh3H1dgZcGFwmCjL3i-XZHtukeicw6DtboAjMT7E/edit#gid=0
 
 Premier run:
@@ -9,7 +15,6 @@ Subsequent run, cases.B.dat:
 C3L-00365   d6c83416-af3f-46f3-a892-ff1e9074fe74    Succeeded
 C3L-00674   7ab678ee-bd59-4d14-b722-a49d196f52ce    Succeeded
 C3L-00677   0e6e3d6b-a0f0-4454-a2bd-2373ea2ca06f    Succeeded
--> output directories have not been cleaned
 
 subsequent run of cases.C.dat, in cromwell.B
 C3L-01040   a5541a11-9dab-4c1a-ba69-e0260284acab    Succeeded
@@ -54,3 +59,4 @@ C3N-02185       Unknown Unknown
 C3N-02186       Unknown Unknown
 C3N-02188       Unknown Unknown
 
+-> Directories cromwell.B and cromwell.C deleted, with logs and yaml files and notes moved to cromwell

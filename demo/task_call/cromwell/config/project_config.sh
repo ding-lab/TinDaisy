@@ -22,8 +22,9 @@ WORKFLOWD="/gscmnt/gc2741/ding/cptac/cromwell-workdir"
 # This path below is for CPTAC3-standard GRCh38 reference
 REF="/gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/A_Reference/GRCh38.d1.vd1.fa"
 
-# See README.md for discussion of dbSnP references
-DBSNP_DB="/gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/B_Filter/dbSnP-COSMIC.GRCh38.d1.vd1.vcf.gz"
+# See katmai:/home/mwyczalk_test/Projects/TinDaisy/sw1.3-compare/README.dbsnp.md for discussion of dbSnP references
+# Updating to dbSnP-COSMIC version 20190416
+DBSNP_DB="/gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/B_Filter/dbSnP-COSMIC.GRCh38.d1.vd1.20190416.vcf.gz"
 
 # VEP Cache is used for VEP annotation and vcf_2_maf.
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
