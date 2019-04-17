@@ -13,7 +13,7 @@ Options:
 -h: Print this help message
 -1: Stop after one
 -c CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output'.  Default is `status`
+-q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runLog'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
 -V: output status only (i.e., squelch case and workflow ID output)
 
@@ -157,6 +157,20 @@ function get_output {
     echo "$S"
 }
 
+# runLog returns the fields,
+# status, start, end
+function get_runLog {
+    WID=$1
+    STATUS=$(get_status $WID)
+    test_exit_status
+
+    START=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.start')
+    test_exit_status
+    END=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.end')
+    test_exit_status
+    printf "$STATUS\t$START\t$END"
+}
+
 # this allows us to get case names in one of three ways:
 # 1: cromwell_query.sh CASE1 CASE2 ...
 # 2: cat cases.dat | cromwell_query.sh -
@@ -209,6 +223,8 @@ for CASE in $CASES; do
             STATUS="https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/timing"
         elif [ "$QUERY" == 'output' ]; then
             STATUS=$(get_output $WID)
+        elif [ "$QUERY" == 'runLog' ]; then
+            STATUS=$(get_runLog $WID)
         else 
             >&2 echo ERROR: Unknown query $QUERY
             >&2 echo "$USAGE"
