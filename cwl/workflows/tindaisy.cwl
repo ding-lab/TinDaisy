@@ -144,6 +144,12 @@ outputs:
     type: File
     'sbg:x': 3091.59423828125
     'sbg:y': 694.078125
+  - id: merged_vcf
+    outputSource:
+      merge_vcf/merged_vcf
+    type: File
+    'sbg:x': 1844.6331787109375
+    'sbg:y': 41.628971099853516
 steps:
   - id: run_pindel
     in:
