@@ -237,6 +237,7 @@ else
 fi
 
 for CASE in $CASES; do
+    [[ $CASE = \#* ]] && continue
     >&2 echo Processing case $CASE
 
     STDOUT_FN="$LOGD/$CASE.out"

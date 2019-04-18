@@ -5,8 +5,8 @@ CONFIG="config/cromwell-config-db.dat"
 CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
 
 # -J N - specify number of jobs to run at once
-ARGS="-J 4"
-bash $TD_ROOT/src/run_cwl_tasks.sh $@ $ARGS -y $YAMLD -c $CWL -C $CONFIG - < $CASES_LIST
+#ARGS="-J 6"
+bash $TD_ROOT/src/start_cromwell_runs.sh $ARGS -y $YAMLD -c $CWL -C $CONFIG $@
 
 rc=$?
 if [[ $rc != 0 ]]; then

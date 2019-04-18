@@ -60,7 +60,7 @@ At this time only `cq` fully implements this model.
 ## Logs
 Stashing of a log involves moving all output in `logs/` (CASE.out, CASE.err, CASE.log) and `yaml/CASE.yaml` to directory `logs/WID`
 
-### logs/RunLog.dat
+### logs/runlog.dat
 
 Keeps track of all runs which have been assigned a WorkflowID by cromwell. Consists of status entries, oldest on bottom,
 with the following fields:
@@ -69,7 +69,7 @@ with the following fields:
 * `Status`
 * `StartTime`
 * `EndTime`
-* `Comment` - optional, may indicate whether a restart, etc.
+* `Note` - optional, may indicate whether a restart, etc.
 
 Once logs are stashed, association between WorkflowID and CASE is made with the RunLog.  Note that can have
 mutiple entries per case and/or WorkflowID (possibly with different Status); the most recent one is the one

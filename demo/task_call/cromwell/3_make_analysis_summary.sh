@@ -2,9 +2,15 @@
 
 source config/project_config.sh
 
-CROMWELL_QUERY="$TD_ROOT/src/cromwell_query.sh"
+# How to pass NOTE to runlog?  
+NOTE="NA"
 
-bash $TD_ROOT/src/make_analysis_summary.sh $@ -c $CROMWELL_QUERY -C -p $PRE_SUMMARY -s $SUMMARY - < $CASES_LIST
+CROMWELL_QUERY="$TD_ROOT/src/cq"
+
+bash $TD_ROOT/src/summarize_cromwell_runs.sh -c $CROMWELL_QUERY -p $PRE_SUMMARY -s $SUMMARY $@
+bash $TD_ROOT/src/runLogger.sh -c $CROMWELL_QUERY -s $SUMMARY -m $NOTE $@
+
+# Add dataCleaner.sh
 
 rc=$?
 if [[ $rc != 0 ]]; then

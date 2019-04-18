@@ -157,7 +157,7 @@ MYID=$(date +%Y%m%d%H%M%S)
 # this allows us to get case names in one of three ways:
 # 1: cq CASE1 CASE2 ...
 # 2: cat cases.dat | cq -
-# 3: read from CASES file
+# 3: read from CASES_FN file
 # Note that if no cases defined, assume CASE='-'
 if [ "$#" == 0 ]; then
     confirm $CASES_FN

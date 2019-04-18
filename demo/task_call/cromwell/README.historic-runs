@@ -60,3 +60,22 @@ C3N-02186       Unknown Unknown
 C3N-02188       Unknown Unknown
 
 -> Directories cromwell.B and cromwell.C deleted, with logs and yaml files and notes moved to cromwell
+
+# Runs started 4/18/19
+These runs had the corrected dbSnP-COSMIC database, were writing to /gscmnt/gc2541, and ran -J6.  These died at intermediate
+state with error,
+    [2019-04-18 11:48:58,32] [^[[38;5;1merror^[[0m] Failed to summarize metadata
+    com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+Status of these:
+    C3L-00104       e0931d63-e72f-477f-8d38-57833adf0bc2    Running
+    C3L-00365       a3a2c3e5-9b75-4705-bc8b-493ab21a6160    Running
+    C3L-00674       9efb7a32-5255-4694-ae57-823cf93c2e06    Running
+    C3L-00677       bb6dc7f6-d94e-445c-9f76-23f58401c428    Running
+    C3L-01040       3149f867-a67f-4149-b8b6-efd2010b581f    Running
+    C3L-01043       105f6cd5-752e-4934-b070-ec824fdf637a    Running
+The rest never were issued a WID.  A discussion on Slack indicates that this may have something to do with timestamp issues
+
+We will delete these data directories by hand to get the runs restarted ASAP (before cleaning scripts implemented)
+
+
+

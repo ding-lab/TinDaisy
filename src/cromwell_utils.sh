@@ -30,11 +30,16 @@ function confirm {
 function run_cmd {
     CMD=$1
     DRYRUN=$2
+    QUIET=$3
 
     if [ "$DRYRUN" == "d" ]; then
-        >&2 echo Dryrun: $CMD
+        if [ -z $QUIET ]; then
+            >&2 echo Dryrun: $CMD
+        fi
     else
-        >&2 echo Running: $CMD
+        if [ -z $QUIET ]; then
+            >&2 echo Running: $CMD
+        fi
         eval $CMD
         test_exit_status
     fi
