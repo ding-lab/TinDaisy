@@ -11,7 +11,7 @@ Testing of cromwell CWL engine for TinDaisy at MGI
 Preparation:
 1. Possibly edit `config/cromwell-config-db.dat`
    -> this will define where the output of Cromwell goes, which can be large
-   Currently, output directory is DATAD=`/gscmnt/gc2741/ding/cptac/cromwell-workdir`
+   Currently, output directory is DATAD=`/gscmnt/gc2541/cptac3_analysis/cromwell-workdir`
    This file also defines hooks for connecting to MGI Cromwell DB, which a lot of workflow relies on (`cq` in particular)
 2. Possibly `config/project_config.dat`.  For MGI, it has the following definitions
 ```
@@ -25,6 +25,9 @@ Preparation:
 ```
 3. Create file `dat/cases.dat`, which lists all cases we'll be processing
    Note that entries here will be used to find BAMs in BamMap to populate YAML files
+4. Optionally, put the following in ~/.bashrc or execute each time:
+      `export PATH="$PATH:$TD_ROOT/src", with TD_ROOT as defined in `config/project_config.sh`
+    This lets `cq` be available for command line work
 
 Start runs.  Here, assuming that will use `parallel` to run N Cromwell instances on MGI at once. Note that order
 here is important so that processes are not stranded after you log out
@@ -48,7 +51,11 @@ When runs conclude  (this is undergoing revision)
 
 ## Cases vs. WorkflowID
 
-## Usage of `cq`
+## Usage of `cq` and other scripts
+
+The general model for command line scripts here is to allow various ways to specify the runs of interest.
+We want to make the default easy, while allowing for identifying one or more runs by CASE and/or WorkflowID.
+At this time only `cq` fully implements this model.
 
 ## Logs
 Stashing of a log involves moving all output in `logs/` (CASE.out, CASE.err, CASE.log) and `yaml/CASE.yaml` to directory `logs/WID`

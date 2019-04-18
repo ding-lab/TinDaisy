@@ -17,11 +17,14 @@ Options:
 -s STEP: define step of interest for use with 'logs' query
 -V: output status only (i.e., squelch case and workflow ID output)
 
-Simplest usage: `cq`
-will return status for all cases defined in `dat/cases.dat`
+Example usage - specifying cases:
+* `cq` - will return status for all cases defined in `dat/cases.dat`
+* `cq CASE1 CASE2 CASE3` - returns status of runs for three cases.  TODO: discuss how this looked up
+* `cq WID1 WID2` - returns status for two runs with given WorkflowIDs
+
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
-If CASE is a UUID, treat it as the workflow ID, and don't parse any output files
+If CASE is a WorkflowID, treat it as such, without relying on output files - TODO: discuss/implement runlog
 
 Evaluates the following information for each case
 * The workflow ID of the cromwell job
@@ -203,11 +206,11 @@ for CASE in $CASES; do
     # Skip comments
     [[ $CASE = \#* ]] && continue
 
-    # Evaluate if CASE is actually a UUID.  If so, assume it is the WID and proceed
+    # Evaluate if CASE is actually a WID.  If so, assume it is the WID and proceed
     # From https://stackoverflow.com/questions/38416602/check-if-string-is-uuid
     if [[ $CASE =~ ^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$ ]]; then
         WID=$CASE
-        CASE="Unknown"
+        CASE="Unknown"  # try harder to get CASE when WID specified
     else
         LOG="logs/$CASE.out"
         if [ -f $LOG ]; then
