@@ -12,7 +12,7 @@ Usage:
 Options:
 -h: Print this help message
 -1: Stop after one
--c CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
+-k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runlog', 'url'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
 -V: output status only (i.e., squelch case and workflow ID output)
@@ -44,39 +44,18 @@ Workflow ID associated with given cromwell output file is obtaining by grepping 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
 
+source cromwell_utils.sh
+
 # hardcoded for now
 CROMWELL_URL="https://genome-cromwell.gsc.wustl.edu"
 
-function test_exit_status {
-    # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
-    rcs=${PIPESTATUS[*]};
-    for rc in ${rcs}; do
-        if [[ $rc != 0 ]]; then
-            >&2 echo $SCRIPT Fatal ERROR.  Exiting.
-            exit $rc;
-        fi;
-    done
-}
-
-function confirm {
-    FN=$1
-    WARN=$2
-    if [ ! -s $FN ]; then
-        if [ -z $WARN ]; then
-            >&2 echo ERROR: $FN does not exist or is empty
-            exit 1
-        else
-            >&2 echo WARNING: $FN does not exist or is empty.  Continuing
-        fi
-    fi
-}
 
 # Defaults
 CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1c:q:s:V" opt; do
+while getopts ":h1k:q:s:V" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -85,7 +64,7 @@ while getopts ":h1c:q:s:V" opt; do
     1) # Stop after 1
       JUST_ONCE=1
       ;;
-    c) 
+    k) 
       CASES_FN="$OPTARG"
       ;;
     q) 
@@ -112,19 +91,6 @@ done
 
 shift $((OPTIND-1))
 
-# Get Workflow ID by parsing log file for specific entry
-# If WorkflowID not found, return value "Unassigned".  Such values should not be queried
-function getWID {
-    LOG=$1
-    SSTR="SingleWorkflowRunnerActor: Workflow submitted"  # this is what we're looking for
-    if grep -Fq "$SSTR" $LOG ; then   # String found
-        W=$(grep "$SSTR" $LOG | sed 's/\x1b\[[0-9;]*m//g' | sed -n -e 's/^.*submitted //p')
-        test_exit_status
-    else    # LOG does not have Workflow ID - may happen in early processing or in error states
-        W="Unassigned"
-    fi
-    echo $W
-}
 
 function get_status {
     WID=$1
@@ -206,27 +172,13 @@ for CASE in $CASES; do
     # Skip comments
     [[ $CASE = \#* ]] && continue
 
-    # Evaluate if CASE is actually a WID.  If so, assume it is the WID and proceed
-    # From https://stackoverflow.com/questions/38416602/check-if-string-is-uuid
-    if [[ $CASE =~ ^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$ ]]; then
-        WID=$CASE
-        CASE="Unknown"  # try harder to get CASE when WID specified
-    else
-        LOG="logs/$CASE.out"
-        if [ -f $LOG ]; then
-            WID=$( getWID $LOG )
-            test_exit_status
-            if [[ $WID = "Unassigned" ]]; then
-                STATUS="Unknown"
-            fi
-        else
-            WID="Unknown"
-            STATUS="Unknown"
-        fi
-    fi
+    WID=$( getWID $CASE )
+    test_exit_status
 
-    # Avoid queries to server if WID unknown
-    if [[ $WID != "Unknown" ]] && [[ $WID != "Unassigned" ]]; then
+    # Get status for various queries, but avoid db queries to server if WID unknown / unassigned
+    if [[ $WID == "Unknown" ]] || [[ $WID == "Unassigned" ]]; then
+        STATUS="Unknown"
+    else
         if [ "$QUERY" == 'logs' ]; then
             STATUS=$(get_logs $WID)
             STATUS=$(printf "\n$STATUS")

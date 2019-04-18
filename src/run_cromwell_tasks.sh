@@ -4,36 +4,36 @@
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
-
-Launch Rabix or Cromwell workflow tasks for multiple cases
+Launch Cromwell workflow tasks for multiple cases
 
 Usage:
-  bash run_cwl_tasks.sh [options] CASE [CASE2 ...]
+  bash run_cwl_tasks.sh [options] [ CASE1 [CASE2 ...]]
 
 Required options:
 -c CWL: CWL file which defines workflow
+-C CROMWELL_CONFIG: Cromwell config file. Required.
 
 Optional options
 -h: print usage information
 -d: dry run: print commands but do not run
 -1 : stop after one case processed.
--r RUND: principal output base directory.  Required for Rabix run
+-k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "."
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -J N: run N tasks in parallel.  If 0, disable parallel mode. Default 0
 -e: write STDERR output of workflow to terminal rather than LOGD/CASE.err
--C CROMWELL_CONFIG: Cromwell config file.  If specified, we are submitting to Cromwell, otherwise to Rabix
 -D DB_ARGS: arguments for connecting to Cromwell DB.  Default as specified in Cromwell configuration page below.  If value is "none",
    will not save to database
 -R CROMWELL_JAR: Cromwell JAR file.  Default: /opt/cromwell.jar
 -j JAVA: path to java.  Default: /usr/bin/java
 
-RUND contains data generated during CWL execution.  This is relevant only for Rabix, since in Cromwell it is defined in CROMWELL_CONFIG file
+If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
+
 STDERR and STDOUT of workflow runs, as well as tmp dir and log of parallel, written to LOGD
 YAML files for a given CASE are assumed to be $YAMLD/$CASE.yaml
 
-Cromwell configuration is described https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell
-We will incorporate saving to database as described there too
+Cromwell configuration, including database connection, is described 
+    https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell
 
 EOF
 
@@ -41,6 +41,8 @@ EOF
 #    O. Tange (2011): GNU Parallel - The Command-Line Power Tool,
 #    ;login: The USENIX Magazine, February 2011:42-47.
 # [ https://www.usenix.org/system/files/login/articles/105438-Tange.pdf ]
+
+source cromwell_utils.sh
 
 SCRIPT=$(basename $0)
 SCRIPT_PATH=$(dirname $0)
@@ -52,8 +54,9 @@ LOGD="./logs"
 DB_ARGS="-Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStore=/gscmnt/gc2560/core/genome/cromwell/cromwell.truststore"
 CROMWELL_JAR="/opt/cromwell.jar"
 JAVA="/usr/bin/java"
+CASES_FN="dat/cases.dat"
 
-while getopts ":c:r:y:hd1J:l:eC:D:R:j:" opt; do
+while getopts ":c:y:hd1J:l:eC:D:R:j:k:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -65,6 +68,9 @@ while getopts ":c:r:y:hd1J:l:eC:D:R:j:" opt; do
     1) 
       JUSTONE=1
       ;;
+    k) 
+      CASES_FN="$OPTARG"
+      ;;
     y) 
       YAMLD="$OPTARG"
       ;;
@@ -73,9 +79,6 @@ while getopts ":c:r:y:hd1J:l:eC:D:R:j:" opt; do
       ;;
     c) 
       CWL=$OPTARG
-      ;;
-    r) 
-      RUND="$OPTARG"
       ;;
     J) 
       NJOBS="$OPTARG"
@@ -109,59 +112,6 @@ while getopts ":c:r:y:hd1J:l:eC:D:R:j:" opt; do
 done
 shift $((OPTIND-1))
 
-# Evaluate given command CMD either as dry run or for real
-function run_cmd {
-    CMD=$1
-
-    if [ "$DRYRUN" == "d" ]; then
-        >&2 echo Dryrun: $CMD
-    else
-        >&2 echo Running: $CMD
-        eval $CMD
-        test_exit_status
-    fi
-}
-
-# test if file exists and is not empty, exit with error otherwise
-function confirm {
-    FN=$1
-    if [ ! -s $FN ]; then
-        >&2 echo ERROR: $FN does not exist or is empty
-        exit 1
-    fi
-}
-
-function test_exit_status {
-    # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
-    rcs=${PIPESTATUS[*]};
-    for rc in ${rcs}; do
-        if [[ $rc != 0 ]]; then
-            >&2 echo Fatal ERROR.  Exiting.
-            exit $rc;
-        fi;
-    done
-}
-
-function get_rabix_cmd {
-    CWL="$1"
-    CASE="$2"
-    RUND="$3"
-    STDOUT_FN="$4"
-    STDERR_FN="$5"
-
-    YAML="$YAMLD/$CASE.yaml"  
-    confirm "$YAML"  # this must exist
-    
-    # if -e is not set, write STDERR to file, otherwise no redirect (i.e., send to terminal)
-    if [ -z "$STDERR_OUT" ]; then
-        STDERR_REDIRECT="2> $STDERR_FN"
-    fi
-    
-    CMD="rabix --basedir $RUND $CWL $YAML > $STDOUT_FN $STDERR_REDIRECT"
-
-    echo "$CMD"
-}
-
 function get_cromwell_cmd {
     CWL="$1"
     CASE="$2"
@@ -190,23 +140,12 @@ if [ -z $CWL ]; then
 fi
 confirm $CWL
 
-# If CROMWELL_CONFIG is specified, this is a Cromwell run, and this file must exist
-# If not specified, this is a Rabix run, and RUND must exist
 if [ -z $CROMWELL_CONFIG ]; then
-    RUN_RABIX=1
-
-    if [ -z $RUND ]; then
-        >&2 echo $SCRIPT: ERROR: Output directory not defined \(-r\)
-        echo "$USAGE"
-        exit 1
-    fi
-    >&2 echo Creating output directory $RUND
-    mkdir -p $RUND
-    test_exit_status
-else
-    RUN_RABIX=0
-    confirm $CROMWELL_CONFIG
+    >&2 echo $SCRIPT: ERROR: Cromwell config file not defined \(-C\)
+    echo "$USAGE"
+    exit 1
 fi
+confirm $CROMWELL_CONFIG 
 
 mkdir -p $LOGD
 test_exit_status
@@ -215,19 +154,18 @@ test_exit_status
 NOW=$(date)
 MYID=$(date +%Y%m%d%H%M%S)
 
-# this allows us to get CASEs in one of two ways:
-# 1: process_cases.sh ... CASE1 CASE2 CASE3
-# 2: cat CASES.dat | process_cases.sh ... -
-if [ "$1" == "-" ]; then
+# this allows us to get case names in one of three ways:
+# 1: cq CASE1 CASE2 ...
+# 2: cat cases.dat | cq -
+# 3: read from CASES file
+# Note that if no cases defined, assume CASE='-'
+if [ "$#" == 0 ]; then
+    confirm $CASES_FN
+    CASES=$(cat $CASES_FN)
+elif [ "$1" == "-" ] ; then
     CASES=$(cat - )
 else
     CASES="$@"
-fi
-
-if [ -z "$CASES" ]; then
-    >&2 echo ERROR: no case names specified
-    echo "$USAGE"
-    exit 1
 fi
 
 if [ $NJOBS == 0 ] ; then
@@ -242,13 +180,8 @@ for CASE in $CASES; do
     STDOUT_FN="$LOGD/$CASE.out"
     STDERR_FN="$LOGD/$CASE.err"
 
-    if [ $RUN_RABIX == 1 ]; then
-        CMD=$(get_rabix_cmd $CWL $CASE $RUND $STDOUT_FN $STDERR_FN)
-        test_exit_status
-    else
-        CMD=$(get_cromwell_cmd $CWL $CASE $CROMWELL_CONFIG $STDOUT_FN $STDERR_FN)
-        test_exit_status
-    fi
+    CMD=$(get_cromwell_cmd $CWL $CASE $CROMWELL_CONFIG $STDOUT_FN $STDERR_FN)
+    test_exit_status
 
     if [ $NJOBS != 0 ]; then
         JOBLOG="$LOGD/$CASE.log"

@@ -1,1 +1,0 @@
-../../../src/cromwell_query.sh
