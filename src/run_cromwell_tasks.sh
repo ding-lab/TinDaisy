@@ -189,7 +189,7 @@ for CASE in $CASES; do
         CMD="parallel --semaphore -j$NJOBS --id $MYID --joblog $JOBLOG --tmpdir $LOGD \"$CMD\" "
     fi
 
-    run_cmd "$CMD"
+    run_cmd "$CMD" $DRYRUN
     >&2 echo Written to $STDOUT_FN
 
     if [ $JUSTONE ]; then
@@ -201,7 +201,7 @@ done
 if [ $NJOBS != 0 ]; then
     # this will wait until all jobs completed
     CMD="parallel --semaphore --wait --id $MYID"
-    run_cmd "$CMD"
+    run_cmd "$CMD" $DRYRUN
 fi
 
 

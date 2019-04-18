@@ -48,6 +48,7 @@ source cromwell_utils.sh
 
 # hardcoded for now
 CROMWELL_URL="https://genome-cromwell.gsc.wustl.edu"
+CURL_ARG="-k"   # arguments passed to all cromwell db calls 
 
 
 # Defaults
@@ -94,7 +95,8 @@ shift $((OPTIND-1))
 
 function get_status {
     WID=$1
-    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/status" -H "accept: application/json" )
+    URL="$CROMWELL_URL/api/workflows/v1/$WID/status"
+    R=$( curl $CURL_ARG -s -X GET $URL -H "accept: application/json" )
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
@@ -105,7 +107,7 @@ function get_status {
 
 function get_logs {
     WID=$1
-    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/logs" -H "accept: application/json" )
+    R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/logs" -H "accept: application/json" )
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
@@ -121,7 +123,7 @@ function get_logs {
 
 function get_workflowRoot {
     WID=$1
-    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" )
+    R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" )
     test_exit_status
     S=$( echo "$R" | jq -r '.workflowRoot' )
     test_exit_status
@@ -130,7 +132,7 @@ function get_workflowRoot {
 
 function get_output {
     WID=$1
-    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
+    R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
     test_exit_status
     S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
     test_exit_status
@@ -144,9 +146,9 @@ function get_runlog {
     STATUS=$(get_status $WID)
     test_exit_status
 
-    START=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.start')
+    START=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.start')
     test_exit_status
-    END=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.end')
+    END=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.end')
     test_exit_status
     printf "$STATUS\t$START\t$END"
 }
