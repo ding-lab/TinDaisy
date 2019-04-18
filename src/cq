@@ -4,22 +4,21 @@
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
-Print out per-case run statistics.Specific to cromwell
+Cromwell Query: Print out per-case run statistics. Specific to cromwell runs registered with MGI Cromwell database
 
 Usage:
-  cromwell_query.sh [options] [ CASE1 [CASE2 ...] ]
+  cq [options] [ CASE1 [CASE2 ...] ]
 
 Options:
 -h: Print this help message
 -1: Stop after one
 -c CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runLog'.  Default is `status`
+-q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runlog', 'url'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
 -V: output status only (i.e., squelch case and workflow ID output)
 
-Simplest usage:
-    cromwell_query.sh
-will return status for all cases
+Simplest usage: `cq`
+will return status for all cases defined in `dat/cases.dat`
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 If CASE is a UUID, treat it as the workflow ID, and don't parse any output files
@@ -33,7 +32,8 @@ Evaluates the following information for each case
     * workflowRoot - Path to root of cromwell output
     * timing - URL to visualize timing and progress of workflow
     * output - Output VCF of TinDaisy run
-    * runLog - Output status, start, end times
+    * runlog - Output status, start, end times
+    * url - print URL of Cromwell server and quit.  This is a hardcoded value, but useful to know for manual queries
 
 Workflow ID associated with given cromwell output file is obtaining by grepping for output line like,
 [2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
@@ -41,7 +41,8 @@ Workflow ID associated with given cromwell output file is obtaining by grepping 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
 
-# **TODO** add ability to process RUNLOG=dat/runLog.dat to obtain CASE->WID mapping if logs/CASE.out files do not exist
+# hardcoded for now
+CROMWELL_URL="https://genome-cromwell.gsc.wustl.edu"
 
 function test_exit_status {
     # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
@@ -108,16 +109,23 @@ done
 
 shift $((OPTIND-1))
 
+# Get Workflow ID by parsing log file for specific entry
+# If WorkflowID not found, return value "Unassigned".  Such values should not be queried
 function getWID {
     LOG=$1
-    W=$(grep "SingleWorkflowRunnerActor: Workflow submitted" $LOG | sed 's/\x1b\[[0-9;]*m//g' | sed -n -e 's/^.*submitted //p')
-    test_exit_status
+    SSTR="SingleWorkflowRunnerActor: Workflow submitted"  # this is what we're looking for
+    if grep -Fq "$SSTR" $LOG ; then   # String found
+        W=$(grep "$SSTR" $LOG | sed 's/\x1b\[[0-9;]*m//g' | sed -n -e 's/^.*submitted //p')
+        test_exit_status
+    else    # LOG does not have Workflow ID - may happen in early processing or in error states
+        W="Unassigned"
+    fi
     echo $W
 }
 
 function get_status {
     WID=$1
-    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/status" -H "accept: application/json" )
+    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/status" -H "accept: application/json" )
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
@@ -128,7 +136,7 @@ function get_status {
 
 function get_logs {
     WID=$1
-    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/logs" -H "accept: application/json" )
+    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/logs" -H "accept: application/json" )
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
@@ -144,7 +152,7 @@ function get_logs {
 
 function get_workflowRoot {
     WID=$1
-    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/metadata" -H "accept: application/json" )
+    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" )
     test_exit_status
     S=$( echo "$R" | jq -r '.workflowRoot' )
     test_exit_status
@@ -153,30 +161,30 @@ function get_workflowRoot {
 
 function get_output {
     WID=$1
-    R=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
+    R=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
     test_exit_status
     S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
     test_exit_status
     echo "$S"
 }
 
-# runLog returns the fields,
+# runlog returns the fields,
 # status, start, end
-function get_runLog {
+function get_runlog {
     WID=$1
     STATUS=$(get_status $WID)
     test_exit_status
 
-    START=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.start')
+    START=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.start')
     test_exit_status
-    END=$( curl -s -X GET "https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.end')
+    END=$( curl -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.end')
     test_exit_status
     printf "$STATUS\t$START\t$END"
 }
 
 # this allows us to get case names in one of three ways:
-# 1: cromwell_query.sh CASE1 CASE2 ...
-# 2: cat cases.dat | cromwell_query.sh -
+# 1: cq CASE1 CASE2 ...
+# 2: cat cases.dat | cq -
 # 3: read from CASES file
 # Note that if no cases defined, assume CASE='-'
 if [ "$#" == 0 ]; then
@@ -205,13 +213,17 @@ for CASE in $CASES; do
         if [ -f $LOG ]; then
             WID=$( getWID $LOG )
             test_exit_status
+            if [[ $WID = "Unassigned" ]]; then
+                STATUS="Unknown"
+            fi
         else
             WID="Unknown"
             STATUS="Unknown"
         fi
     fi
 
-    if [[ $WID != "Unknown" ]]; then
+    # Avoid queries to server if WID unknown
+    if [[ $WID != "Unknown" ]] && [[ $WID != "Unassigned" ]]; then
         if [ "$QUERY" == 'logs' ]; then
             STATUS=$(get_logs $WID)
             STATUS=$(printf "\n$STATUS")
@@ -223,11 +235,14 @@ for CASE in $CASES; do
             STATUS=$(get_workflowRoot $WID)
         elif [ "$QUERY" == 'timing' ]; then
             # URL as provided by tmooney on slack 
-            STATUS="https://genome-cromwell.gsc.wustl.edu/api/workflows/v1/$WID/timing"
+            STATUS="$CROMWELL_URL/api/workflows/v1/$WID/timing"
         elif [ "$QUERY" == 'output' ]; then
             STATUS=$(get_output $WID)
-        elif [ "$QUERY" == 'runLog' ]; then
-            STATUS=$(get_runLog $WID)
+        elif [ "$QUERY" == 'runlog' ]; then
+            STATUS=$(get_runlog $WID)
+        elif [ "$QUERY" == 'url' ]; then
+            echo $CROMWELL_URL
+            exit 0
         else 
             >&2 echo ERROR: Unknown query $QUERY
             >&2 echo "$USAGE"
