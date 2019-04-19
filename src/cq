@@ -16,6 +16,7 @@ Options:
 -q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runlog', 'url'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
 -V: output status only (i.e., squelch case and workflow ID output)
+-Q: skip cases were WorkflowID is Unknown or Unassigned
 
 Example usage - specifying cases:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
@@ -56,7 +57,7 @@ CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1k:q:s:V" opt; do
+while getopts ":h1k:q:s:VU" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -74,8 +75,11 @@ while getopts ":h1k:q:s:V" opt; do
     s) 
       STEP="$OPTARG"
       ;;
-    V) # Stop after 1
+    V) 
       STATUS_ONLY=1
+      ;;
+    U) 
+      NO_UNKNOWN=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -179,6 +183,9 @@ for CASE in $CASES; do
 
     # Get status for various queries, but avoid db queries to server if WID unknown / unassigned
     if [[ $WID == "Unknown" ]] || [[ $WID == "Unassigned" ]]; then
+        if [ "$NO_UNKNOWN" ]; then
+            continue
+        fi
         STATUS="Unknown"
     else
         if [ "$QUERY" == 'logs' ]; then
