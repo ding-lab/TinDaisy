@@ -7,7 +7,7 @@ NOTE="NA"
 
 CROMWELL_QUERY="$TD_ROOT/src/cq"
 
-bash $TD_ROOT/src/summarize_cromwell_runs.sh -c $CROMWELL_QUERY -p $PRE_SUMMARY -s $SUMMARY $@
+bash $TD_ROOT/src/summarize_cromwell_runs.sh -c $CROMWELL_QUERY $@
 bash $TD_ROOT/src/runLogger.sh -c $CROMWELL_QUERY -s $SUMMARY -m $NOTE $@
 
 # Add dataCleaner.sh

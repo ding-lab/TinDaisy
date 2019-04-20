@@ -4,44 +4,46 @@
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
-Usage: make_analysis.sh [options] [ CASE1 [ CASE2 ... ]]
+Usage: summarize_cromwell_runs.sh [options] [ CASE1 [ CASE2 ... ]]
   Create analysis summary file reporting results for cromwell runs
-
-Required arguments:
--p: analysis pre-summary file.  Required, must exist
 
 Options:
 -h: print usage information
+-p PRE_SUMMARY: analysis pre-summary file.  Must exist, default is ./dat/analysis_pre-summary.dat
 -s SUMMARY_OUT: output analysis results file.  If not defined, written to STDOUT
--a: If SUMMARY_OUT is defined and that file exists, append to it
--f: If SUMMARY_OUT is defined and that file exists, overwrite it
+-a SUMMARY_POLICY: 'throw' (default), 'append', 'overwrite', 'stdout'
 -1: Quit after evaluating one case
 -l LOGD: directory where runtime output written.  Default "./logs"
 -w: Issue warning instead of error if output file does not exist
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 
+Read an "analysis pre-summary" file (created during YAML file generation), add result data to generate an analysis summary file
 Analysis summary file is defined here: https://docs.google.com/document/d/1Ho5cygpxd8sB_45nJ90d15DcdaGCiDqF0_jzIcc-9B4/edit
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
-We rely on database calls performed by `cq` to obtain output data.
-Reads analysis pre-summary file (created during YAML file generation) and adds result data
-    to generate an analysis summary file
-If SUMMARY_OUT file is defined and exists, exit with an error.  This behavior can be modifed with -f and -a flags.
-    Defining both -f and -a is an error
+We rely on cromwell database calls performed by `cq` to obtain output data.
+SUMMARY_POLICY allows summary output file to be directed to STDOUT, or defines what to do if existing file SUMMARY_OUT is 
+    encountered.  Values 'throw', 'append', and 'overwrite' will generate an error, append to the existing file,
+    or overwrite it, respectively.
 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 
 EOF
+
+source cromwell_utils.sh
 
 SCRIPT=$(basename $0)
 
 # Defaults
 LOGD="./logs"
 CROMWELL_QUERY="cq"
+SUMMARY_POLICY="throw"
+PRE_SUMMARY="./dat/analysis_pre-summary.dat"
+SUMMARY_OUT="./dat/analysis_summary.dat"
 CASES_FN="dat/cases.dat"
 
-while getopts ":hs:p:1l:wc:fak:" opt; do
+while getopts ":hs:p:1l:wc:a:k:" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -62,11 +64,8 @@ while getopts ":hs:p:1l:wc:fak:" opt; do
     w) 
       ONLYWARN=1
       ;;
-    f) 
-      SUMMARY_OVERWRITE=1
-      ;;
     a) 
-      SUMMARY_APPEND=1
+      SUMMARY_POLICY="$OPTARG"
       ;;
     c) 
       CROMWELL_QUERY="$OPTARG"
@@ -94,35 +93,6 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-if [ "$SUMMARY_OVERWRITE" ] && [ "$SUMMARY_APPEND" ]; then
-    >&2 echo ERROR: Cannot define both -f and -a
-    >&2 echo "$USAGE"
-    exit 1
-fi
-
-function confirm {
-    FN=$1
-    WARN=$2
-    if [ ! -s $FN ]; then
-        if [ -z $WARN ]; then
-            >&2 echo ERROR: $FN does not exist or is empty
-            exit 1
-        else
-            >&2 echo WARNING: $FN does not exist or is empty.  Continuing
-        fi
-    fi
-}
-
-function test_exit_status {
-    # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
-    rcs=${PIPESTATUS[*]};
-    for rc in ${rcs}; do
-        if [[ $rc != 0 ]]; then
-            >&2 echo $SCRIPT: Fatal ERROR.  Exiting.
-            exit $rc;
-        fi;
-    done
-}
 
 # searches analysis pre-summary file for given case
 # Requires that case names are unique
@@ -163,31 +133,36 @@ if [ -z $PRE_SUMMARY ]; then
 fi
 confirm $PRE_SUMMARY
 
-# Write analysis summary header.  If SUMMARY_OUT not defined, write to STDOUT
+# Write analysis summary header
 HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\tcromwell_wid\n") 
 
-if [ ! -z $SUMMARY_OUT ]; then
+if [ $SUMMARY_POLICY == "stdout" ]; then
+    echo "$HEADER"
+else
     SD=$(dirname $SUMMARY_OUT)
     if [ ! -d $SD ]; then
         >&2 echo Making output directory for analysis summary: $SD
         mkdir -p $SD
         test_exit_status
     fi
+
     # If SUMMARY_OUT exists, evaluate whether to append or overwrite
     if [ -f $SUMMARY_OUT ]; then
-        if [ "$SUMMARY_OVERWRITE" ]; then
+        if [ "$SUMMARY_POLICY" == "overwrite" ]; then 
             echo "$HEADER" > $SUMMARY_OUT
-        elif [ "$SUMMARY_APPEND" ]; then
+        elif [ "$SUMMARY_POLICY" == "append" ]; then
             :   # don't do anything; later on we'll append
-        else    # this is an error
+        elif [ "$SUMMARY_POLICY" == "throw" ]; then # this is an error
             >&2 echo ERROR: $SUMMARY_OUT exists 
             >&2 echo Move / delete this file, append with -a, or overwrite with -f
+            exit 1
+        else
+            >&2 echo ERROR: Unknown SUMMARY_POLICY: $SUMMARY_POLICY
+            >&2 echo "$USAGE"
             exit 1
         fi
     fi 
     test_exit_status
-else
-    echo "$HEADER"
 fi
 
 
@@ -211,10 +186,10 @@ do
     confirm $OUTPUT_PATH $ONLYWARN
     
 
-    if [ ! -z $SUMMARY_OUT ]; then
-        echo "$DATA" >> $SUMMARY_OUT
-    else
+    if [ $SUMMARY_POLICY == "stdout" ]; then
         echo "$DATA" 
+    else
+        echo "$DATA" >> $SUMMARY_OUT
     fi
 
     if [ $JUSTONE ]; then

@@ -4,7 +4,7 @@
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
-Utility for logging Cromwell runs
+Utility for logging and cleaning Cromwell run data
 
 Usage:
   bash runLogger.sh [options] [ CASE1 [CASE2 ...]]
@@ -34,6 +34,7 @@ status over time, and multiple lines for same case and/or workflow ID is not an 
 specified, we write to log only if status is Success
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
+If CASE is a WorkflowID, treat it as such, without relying on output files - TODO: discuss/implement runlog
 
 This script relies on `cq` to get WorkflowID, status and timestamps associated with each case
 

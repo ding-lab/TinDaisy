@@ -1,24 +1,28 @@
 #!/bin/bash
 
+# NOTE: this was developed for Rabix.  For Cromwell runs see summarize_cromwell_runs.sh
+
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
 Usage: make_analysis.sh [options] CASE [ CASE2 ... ]
-  Create analysis summary file reporting results for all cases
+  Create analysis summary file reporting cromwell run results
 
 Required arguments:
--p: analysis pre-summary file.  Required, must exist
 
 Options:
 -h: print usage information
--s SUMMARY_OUT: output analysis results file.  If not defined, written to STDOUT
--a: If SUMMARY_OUT is defined and that file exists, append to it
--f: If SUMMARY_OUT is defined and that file exists, overwrite it
+-p: analysis pre-summary file.  Must exist.  Default: ./dat/analysis_pre-summary.dat
+-s SUMMARY_OUT: output analysis results file.  
+-a SUMMARY_POLICY: What to do if SUMMARY_FILE exists.  Values: 'throw' (default), 'append', 'overwrite', 'stdout'
+
+TODO: delete -a, -f, check SUMMARY_POLICY values OK, implement write to STDOUT
+Change name, this is specific to cromwell runs
+
 -1: Quit after evaluating one case
 -l LOGD: directory where runtime output written.  Default "./logs"
 -w: Issue warning instead of error if output file does not exist
--C: This is a Cromwell run.  analysis_summary will have cromwell workflow ID as last column
 -c CROMWELL_QUERY: explicit path to cromwell_query.sh.  Default "cromwell_query.sh" 
 
 Analysis summary file is defined here: https://docs.google.com/document/d/1Ho5cygpxd8sB_45nJ90d15DcdaGCiDqF0_jzIcc-9B4/edit
@@ -39,7 +43,10 @@ SCRIPT=$(basename $0)
 
 LOGD="./logs"
 CROMWELL_QUERY="cromwell_query.sh"
-while getopts ":hs:p:1l:wCc:fa" opt; do
+SUMMARY_POLICY="throw"
+PRE_SUMMARY="./dat/analysis_pre-summary.dat"
+SUMMARY_OUT="./dat/analysis_summary.dat"
+while getopts ":hs:p:1l:wCc:a:" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -63,11 +70,8 @@ while getopts ":hs:p:1l:wCc:fa" opt; do
     C) 
       IS_CROMWELL=1
       ;;
-    f) 
-      SUMMARY_OVERWRITE=1
-      ;;
     a) 
-      SUMMARY_APPEND=1
+      SUMMARY_POLICY="$OPTARG"
       ;;
     c) 
       CROMWELL_QUERY="$OPTARG"
@@ -156,14 +160,16 @@ if [ -z $PRE_SUMMARY ]; then
 fi
 confirm $PRE_SUMMARY
 
-# Write analysis summary header.  If SUMMARY_OUT not defined, write to STDOUT
+# Write analysis summary header.  
 if [ -z $IS_CROMWELL ]; then
     HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\n") 
 else
     HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\tcromwell_wid\n") 
 fi
 
-if [ ! -z $SUMMARY_OUT ]; then
+if [ $SUMMARY_OUT == "stdout" ]; then
+    echo "$HEADER"
+else
     SD=$(dirname $SUMMARY_OUT)
     if [ ! -d $SD ]; then
         >&2 echo Making output directory for analysis summary: $SD
@@ -173,20 +179,17 @@ if [ ! -z $SUMMARY_OUT ]; then
 
     # If SUMMARY_OUT exists, evaluate whether to append or overwrite
     if [ -f $SUMMARY_OUT ]; then
-        if [ "$SUMMARY_OVERWRITE" ]; then
+        if [ "$SUMMARY_POLICY" == "overwrite" ]; then 
             echo "$HEADER" > $SUMMARY_OUT
-        elif [ "$SUMMARY_APPEND" ]; then
+        elif [ "$SUMMARY_POLICY" == "append" ]; then
             :   # don't do anything; later on we'll append
-        else    # this is an error
+        elif [ "$SUMMARY_POLICY" == "throw" ]; then # this is an error
             >&2 echo ERROR: $SUMMARY_OUT exists 
             >&2 echo Move / delete this file, append with -a, or overwrite with -f
             exit 1
         fi
     fi 
-
     test_exit_status
-else
-    echo "$HEADER"
 fi
 
 FILE_FORMAT="VCF"

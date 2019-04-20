@@ -75,15 +75,16 @@ Once logs are stashed, association between WorkflowID and CASE is made with the 
 mutiple entries per case and/or WorkflowID (possibly with different Status); the most recent one is the one
 used for WorkflowID / Case association.
 
-### DATAD/DataLog.dat
+### DATAD/datalog.dat
 
 Keeps track of run data and any cleaning that may take place following run completion.  There is one DataLog
 per cromwell data directory, and is appended to 1) when a run is finalized and 2) when run data is cleaned.
 DataLog has the following fields
 * `CASE`
 * `WorkflowID`
-* `CleanLevel` - see below
 * `Date`
+* `CleanLevel` - see below
+* `Note` - optional, to indicate purpose of cleaning
 
 ## Cleaning
 

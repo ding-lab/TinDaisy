@@ -5,12 +5,15 @@
 
 read -r -d '' USAGE <<'EOF'
 Usage: make_yaml.sh [options] CASE [ CASE2 ... ]
-  Create YAML files for TinDaisy runs
+  Create YAML files and analysis pre-summary for TinDaisy runs
 
 Reqired Options:
 -b BAMMAP: path to BamMap data file.  Required, must exist
 -Y YAML_TEMPLATE: template YAML file upon which we'll do variable substitution
 -P PARAMS: parameters file which holds varibles for substution in template
+
+YAML files (./yaml/CASE.yaml) contain inputs for each run, including paths to BAMs.  Analysis pre-summary file 
+(typically ./logs/analysis-pre
 
 Options:
 -h: print usage information

@@ -15,5 +15,7 @@ Preliminary work focused on Rabix as a workflow manager:
 Subsequent runs in cromwell
 * significant development of `cromwell_query.sh` and associated workflows
 * Runs in directories cromwell, cromwell.B, and cromwell.C developed parallel runs tested on GBM cases
+    * these were deleted, details noted in cromwell/README.historic-runs
 * Preliminary runs were rerun because of problems detected with dbSnP database.  Continuing with updated dbSnP-COSMIC version 20190416
+* cromwell.LB is run of Bobo's homemade realigned GBM
 

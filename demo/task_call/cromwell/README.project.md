@@ -4,3 +4,11 @@ What's new:
 * Using 20190416 version of dbSnP-COSMIC
 * Writing to /gscmnt/gc2541/cptac3_analysis/cromwell-workdir
 * Running 6 runs at a time
+
+-> these failed because of database transfer issues
+
+Restarted 4/18 with 6, 3 failed to instantiate.  3 succeeded
+
+4/19/19: Restarting several runs, investigating whether parallel works as expected:
+
+bash 2_run_tasks.sh -J 5 C3L-00365 C3L-00674 C3L-01040 C3L-01045 C3L-01046 C3L-01327 C3L-01887 C3L-02041 C3L-02465 C3L-02504
