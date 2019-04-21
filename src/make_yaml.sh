@@ -4,7 +4,7 @@
 # https://dinglab.wustl.edu/
 
 read -r -d '' USAGE <<'EOF'
-Usage: make_yaml.sh [options] CASE [ CASE2 ... ]
+Usage: make_yaml.sh [options] [CASE1 [ CASE2 ... ]]
   Create YAML files and analysis pre-summary for TinDaisy runs
 
 Reqired Options:
@@ -12,17 +12,19 @@ Reqired Options:
 -Y YAML_TEMPLATE: template YAML file upon which we'll do variable substitution
 -P PARAMS: parameters file which holds varibles for substution in template
 
-YAML files (./yaml/CASE.yaml) contain inputs for each run, including paths to BAMs.  Analysis pre-summary file 
-(typically ./logs/analysis-pre
-
 Options:
 -h: print usage information
+-1 : Quit after evaluating one case
+-k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -y YAMLD: output directory of YAML files.  If "-", write YAML to stdout.  Default: .
 -p PRE_SUMMARY: analysis pre-summary filename
--1 : Quit after evaluating one case
 -e ES : experimental strategy - WGS, WXS, etc.  This is required
 
-If CASE is - then read CASEs from STDIN
+YAML files (./yaml/CASE.yaml) contain inputs for each run, including paths to BAMs.  Analysis pre-summary file 
+(typically ./logs/analysis_pre-summary.dat) contains inputs for each run, and will be the basis of the
+analysis_summary.dat file written when run is finalized
+
+If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
 Output YAML file filename is CASE.yaml.  It is based on YAML_TEMPLATE, with the following variables substituted:
     * NORMAL_BAM
@@ -39,10 +41,14 @@ Format of BamMap is defined here: https://github.com/ding-lab/importGDC/blob/mas
     
 EOF
 
+source cromwell_utils.sh
+
 SCRIPT=$(basename $0)
 
 YAMLD="."
-while getopts ":hb:Y:P:p:y:1e:" opt; do
+CASES_FN="dat/cases.dat"
+PRE_SUMMARY="dat/analysis_pre-summary.dat"
+while getopts ":hb:Y:P:p:y:1e:k:" opt; do
   case $opt in
     h)  # Required
       echo "$USAGE"
@@ -70,6 +76,9 @@ while getopts ":hb:Y:P:p:y:1e:" opt; do
     e) # Required
       ES="$OPTARG"
       ;;
+    k) 
+      CASES_FN="$OPTARG"
+      ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
       >&2 echo "$USAGE"
@@ -83,25 +92,6 @@ while getopts ":hb:Y:P:p:y:1e:" opt; do
   esac
 done
 shift $((OPTIND-1))
-
-function confirm {
-    FN=$1
-    if [ ! -s $FN ]; then
-        >&2 echo ERROR: $FN does not exist or is empty
-        exit 1
-    fi
-}
-
-function test_exit_status {
-    # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
-    rcs=${PIPESTATUS[*]};
-    for rc in ${rcs}; do
-        if [[ $rc != 0 ]]; then
-            >&2 echo $SCRIPT: Fatal ERROR.  Exiting.
-            exit $rc;
-        fi;
-    done
-}
 
 if [ -z $BAMMAP ]; then
     >&2 echo ERROR: BamMap file not defined \(-b\)
@@ -130,20 +120,17 @@ if [ -z $ES ]; then
     exit 1
 fi
 
-if [ "$#" -lt 1 ]; then
-    >&2 echo ERROR: Wrong number of arguments
-    >&2 echo Usage: make_docker_map.sh \[options\] CASE \[CASE2 ...\]
-    >&2 echo "$USAGE"
-    exit 1
-fi
-
-# this allows us to get CASEs in one of two ways:
-# 1: start_step.sh ... CASE1 CASE2 CASE3
-# 2: cat CASES.dat | start_step.sh ... -
-if [ $1 == "-" ]; then
+# this allows us to get case names in one of three ways:
+# 1: cq CASE1 CASE2 ...
+# 2: cat cases.dat | cq -
+# 3: read from CASES_FN file
+# Note that if no cases defined, assume CASE='-'
+if [ "$#" == 0 ]; then
+    confirm "$CASES_FN"
+    CASES=$(cat $CASES_FN)
+elif [ "$1" == "-" ] ; then
     CASES=$(cat - )
 else
-    >&2 echo Reading command line
     CASES="$@"
 fi
 
@@ -238,6 +225,7 @@ export DBSNP_DB
 export VEP_CACHE_GZ
 
 for CASE in $CASES; do
+    >&2 echo Processing $CASE
 
     TUMOR=$(get_BAM $CASE "tumor" $ES)
     test_exit_status

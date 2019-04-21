@@ -35,6 +35,9 @@ specified, we write to log only if status is Success
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
+Registration of runs in runlog allows mapping of CASE to WorkflowID of past runs even when logs are stashed (i.e., logs/CASE.out is
+no longer available).
+
 This script relies on `cq` to get WorkflowID, status and timestamps associated with each case
 
 EOF
