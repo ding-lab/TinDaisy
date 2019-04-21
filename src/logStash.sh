@@ -143,6 +143,13 @@ for CASE in $CASES; do
     WID=$( $CROMWELL_QUERY -V -q wid $CASE ) 
     test_exit_status
 
+    # WID may be unknown for various reasons, like error conditions.  Stashing requires that this
+    # value be known; if it is not, print a complaint and go on
+    if [ $WID == "Unknown" ]; then
+        >&2 echo Warning: WorkflowID for $CASE is $WID.  Not stashing these logs, continuing
+        continue
+    fi
+
     STATUS=$( $CROMWELL_QUERY -V -q status $CASE ) 
     test_exit_status
     if [ $STATUS != "Succeeded" ]; then

@@ -195,6 +195,8 @@ function register_original {
 
 }
 
+# Docket is a list of Workflow ID and Status pairs of proposed 
+# 
 function get_docket {
 
 
