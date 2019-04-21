@@ -45,8 +45,8 @@ function run_cmd {
     fi
 }
 
-# Get Workflow ID by parsing log file for specific entry
-# If WorkflowID not found, return value "Unassigned".  Such values should not be queried
+# Get Workflow ID by parsing log file (logs/CASE.dat) for specific entry
+# If WorkflowID not found, return value "Unassigned"
 function getLogWID {
     LOG=$1
     SSTR="SingleWorkflowRunnerActor: Workflow submitted"  # this is what we're looking for
@@ -59,24 +59,74 @@ function getLogWID {
     echo $W
 }
 
-# obtain WorkflowID based on parsing log file named logs/CASE.out
-# TODO: Add functionality here to parse runlogs
-# Return value "Unknown" or "Unassigned" if log file does not exist or does not contain WorkflowID, resp.
-function getWID {
+# Recall, runlog file has the following columns
+#    * `CASE`
+#    * `WorkflowID`
+#    * `Status`
+#    * `StartTime`
+#    * `EndTime`
+#    * `Note` 
+
+# get case from WorkflowID based on parsing of logs/runlog.dat
+# Only runs which have been registered will be findable
+# If not found, return "Unknown"
+function getRunLogCase {
+    WID=$1
+    RUNLOG="./logs/runlog.dat"
+    confirm $RUNLOG
+
+    # Search runlog from bottom, return column 1 of first matching line
+    RLCASE=$( tac $RUNLOG | grep -m 1 -F "$WID" | cut -f 1 )
+    test_exit_status
+    if [ -z $RLCASE ]; then
+        RLCASE="Unknown"
+    fi
+    echo "$RLCASE"
+}
+
+# get WorkflowID from Case based on parsing of logs/runlog.dat
+# Only runs which have been registered will be findable
+function getRunLogWID {
     CASE=$1
-    # Evaluate if CASE is actually a WID.  If so, assume it is the WID and proceed
+    RUNLOG="./logs/runlog.dat"
+    confirm $RUNLOG
+
+    # Search runlog from bottom, return column 2 of first matching case
+    # using awk to match just the case field
+    RLWID=$( tac $RUNLOG | awk -v c=$CASE '{if ($1 == c) print $2}' )
+    test_exit_status
+    if [ -z $RLWID ]; then
+        RLWID="Unknown"
+    fi
+    echo "$RLWID"
+}
+
+# obtain both Case and WorkflowID based on one of these values. RUNID passed can be either CASE or WorkflowID
+#   If it is a WorkflowID, get case by evaluating runlog
+#   If it is a case, get WorkflowID by
+#   1. parsing log file named logs/CASE.out
+#       Value "Unknown" or "Unassigned" is returned if log file does not exist or does not contain WorkflowID, resp.
+#   2. or, if log file does not exist, by parsing logs/runlog.dat
+function getCaseWID {
+    RUNID=$1
+    # Evaluate if RUNID is a WorkflowID.  
     # From https://stackoverflow.com/questions/38416602/check-if-string-is-uuid
-    if [[ $CASE =~ ^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$ ]]; then
-        WID=$CASE
-        CASE="Unknown"  # try harder to get CASE when WID specified
+    if [[ $RUNID =~ ^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$ ]]; then
+        WID=$RUNID
+        CASE=$( getRunLogCase $WID )
     else
+        CASE=$RUNID
         LOG="logs/$CASE.out"
         if [ -f $LOG ]; then
             WID=$( getLogWID $LOG )
             test_exit_status
         else
-            WID="Unknown"
+            WID=$( getRunLogWID $CASE )
         fi
     fi
-    echo $WID
+    echo "$CASE" "$WID"
+
+#    # To read:
+#    # https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
+#    read CASE WID < <( getCaseWID $CASE )
 }

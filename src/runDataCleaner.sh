@@ -3,38 +3,46 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
+# **TODO** continue implementation here
+# also implement lookup of WorkflowID from runlog 
+
 read -r -d '' USAGE <<'EOF'
-Utility for logging and cleaning Cromwell run data
+Utility for logging, reporting, and cleaning Cromwell run data
 
 Usage:
-  bash runLogger.sh [options] [ CASE1 [CASE2 ...]]
+  bash datatidy.sh [options] [ CASE1 [CASE2 ...]]
 
-Required options:
+Required:
+-l ROOTD: datalog root directory.  Data log is then "$ROOTD/DataLog.dat" 
 
 Optional options
 -h: print usage information
 -d: dry run: print commands but do not run
 -1: stop after one case processed.
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
--L LOG_OUT: Output log path.  Default: "./logs/runlog.dat"
--m NOTE: A note added to run log file for each case
--S: Write log only if run is successful
+-m NOTE: A note added to data log file for each case
+-x TASK: Execute given task.  Values: 'query' (default), 'original', 'inputs', 'compress', 'prune', 'final', 'wipe'
+-w: output additional detail for query task
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
-A runlog file has the following columns
-    * `CASE`
-    * `WorkflowID`
-    * `Status`
-    * `StartTime`
-    * `EndTime`
-    * `Note` - optional, may indicate whether a restart, etc.
-A line is added to runlog for every case every time this utility is run; this allows for runs to change 
-status over time, and multiple lines for same case and/or workflow ID is not an error.  If -S is 
-specified, we write to log only if status is Success
+Datatidy performs the following task:
+* `query` - Evaluate and print for each run data directory (values in brackets printed with -w)
+    - case, workflowId, tidyLevel, path [, datasize, date, note]
+* `original` - Marks jobs as "original" in run log
+* Delete and/or compress run data.  In all cases except wipe, CWL outputs will be retained in original path
+    * `inputs` - `inputs` subdirectories in all steps deleted.  This is assumed to occur for all tidy levels below
+    * `compress` - All data compressed 
+    * `prune` - Delete selected intermediate data, retaining compressed logs and key intermediate results
+    * `final` - Keep only final outputs of each run
+    * `wipe` - Delete everything
 
+All tasks other than `query` define changes to TidyLevel and are marked as such in the run log.
+The `original` task appends a line with tidy level `original` for all runs
+    which have status (as obtained from `cq`) of `Succeeded` or `Failed`.
+Destructive tasks require that all cases have the same status as reported by `cq`; this is to prevent 
+    wildcard queries from inadvertantly deleting data.
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
-If CASE is a WorkflowID, treat it as such, without relying on output files - TODO: discuss/implement runlog
+If CASE is a WorkflowID, use that instead of CASE name
 
 This script relies on `cq` to get WorkflowID, status and timestamps associated with each case
 
@@ -46,12 +54,11 @@ SCRIPT=$(basename $0)
 SCRIPT_PATH=$(dirname $0)
 
 CROMWELL_QUERY="cq"
-LOGD="./logs"
-LOG_OUT="./logs/runlog.dat"
-CASES_FN="dat/cases.dat"
+CASES_FN="./dat/cases.dat"
 NOTE=""
+TASK="query"
 
-while getopts ":hd1k:l:L:m:Sc:" opt; do
+while getopts ":hd1k:l:m:c:x:w" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -67,19 +74,19 @@ while getopts ":hd1k:l:L:m:Sc:" opt; do
       CASES_FN="$OPTARG"
       ;;
     l) 
-      LOGD="$OPTARG"
-      ;;
-    L) 
-      LOG_OUT="$OPTARG"
+      ROOTD="$OPTARG"
       ;;
     m)
       NOTE="$OPTARG"
       ;;
-    S)
-      ONLY_SUCCESS=1        # What we all hope for
-      ;;
     c) 
       CROMWELL_QUERY="$OPTARG"
+      ;;
+    x)
+      TASK="$OPTARG"
+      ;;
+    w) 
+      QUERY_DETAIL=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -95,8 +102,6 @@ while getopts ":hd1k:l:L:m:Sc:" opt; do
 done
 shift $((OPTIND-1))
 
-mkdir -p $LOGD
-test_exit_status
 
 # this allows us to get case names in one of three ways:
 # 1: cq CASE1 CASE2 ...
@@ -112,23 +117,62 @@ else
     CASES="$@"
 fi
 
-if [ ! -f $LOG_OUT ]; then
-    >&2 echo Creating new runlog $LOG_OUT
+mkdir -p $ROOTD
+test_exit_status
+
+DATALOG="$ROOTD/DataLog.dat"
+
+if [ ! -f $DATALOG ]; then
+    >&2 echo Creating new runlog $DATALOG
     # Write header
-    printf "Case\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $LOG_OUT
+    printf "Case\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $DATALOG
     test_exit_status
 fi
 
-for CASE in $CASES; do
-    >&2 echo Processing case $CASE
+# Proposed architecture:
+# if TASK = query: do query stuff
+# elif TASK = original: do original stuff
+# elif TASK = inputs ... wipe
+#    for c in case:
+#      push WID
+#      push STATUS
+#    Evaluate all status see if same
+#    for W in WID:
+#      clean W
 
-    if [ "$ONLY_SUCCESS" ]; then
-        S=$( $CROMWELL_QUERY -S -q status $CASE )
-        # blank S indicates no success
-        if [ -z $S ]; then
-            continue
-        fi
+for RID in $CASES; do
+    # RID (run ID) may be either CASE or WorkflowID
+    >&2 echo Processing $RID
+
+    # https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
+    read CASE WID < <( getCaseWID $CASE )
+    test_exit_status
+
+    if [ $TASK == 'query' ]; then
+
+# for cleaning tasks, need to build up query and then make sure there are no errors
+# and status is uniform
+
+    elif [ $TASK == 'original' ]; then
+
+    elif [ $TASK == 'inputs' ]; then
+
+    elif [ $TASK == 'compress' ]; then
+
+    elif [ $TASK == 'prune' ]; then
+
+    elif [ $TASK == 'final' ]; then
+
+    elif [ $TASK == 'wipe' ]; then
+
+    else
+        >&2 echo ERROR: Unknown task $TASK
+        >&2 echo "$USAGE"
+        exit 1
     fi
+
+
+
 
     # CQL has all columns except for the note
     CQL=$( $CROMWELL_QUERY -q runlog $CASE ) 
@@ -148,4 +192,4 @@ for CASE in $CASES; do
 
 done
 
->&2 echo Written to $LOG_OUT
+>&2 echo Written to $DATALOG

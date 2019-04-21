@@ -29,7 +29,7 @@ A runlog file has the following columns
     * `StartTime`
     * `EndTime`
     * `Note` - optional, may indicate whether a restart, etc.
-A line is added to runlog for every case every time this utility is run; this allows for runs to change 
+A line is added to runlog for every case with a known WorkflowID every time this utility is run; this allows for runs to change 
 status over time, and multiple lines for same case and/or workflow ID is not an error.  If -S is 
 specified, we write to log only if status is Success
 
@@ -114,7 +114,7 @@ fi
 if [ ! -f $LOG_OUT ]; then
     >&2 echo Creating new runlog $LOG_OUT
     # Write header
-    printf "Case\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $LOG_OUT
+    printf "# Case\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $LOG_OUT
     test_exit_status
 fi
 
@@ -132,6 +132,10 @@ for CASE in $CASES; do
     # CQL has all columns except for the note
     CQL=$( $CROMWELL_QUERY -q runlog $CASE ) 
     test_exit_status
+    WID=$( echo "$CQL" | cut -f 2 )
+    if [ $WID == "Unknown" ] || [ $WID == "Unassigned" ]; then
+        continue
+    fi
 
     RL=$( printf "$CQL\t$NOTE\n" )
 

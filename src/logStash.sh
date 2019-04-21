@@ -17,8 +17,10 @@ Optional options
 -1: stop after one case processed.
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
--L STASHD: root directory of archived logs.  Default "./logs"
+-T STASHD: root directory of archived logs.  Default "./logs"
+-L RUNLOG: Run log path.  Default: "./logs/runlog.dat"
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
+-F: Force stashing even if run not in runlog.dat
 -f: Force stashing even if run status is not Succeeded
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
@@ -26,6 +28,9 @@ Move run output and YAML files to a directory named after WorkflowID
 
 If files do not exist print a warning but proceed, so that running this utility twice does not yield
 an error
+
+If this WorkflowID does not exist in runlog file exit with an error, since not having this entry will make it hard
+to map CASE to WorkflowID in future.  Override this error with -F
 
 By default, runs which do not have status Succeeded will yield a warning and will not be moved; this
 can be overwritten with -f.
@@ -43,10 +48,11 @@ SCRIPT_PATH=$(dirname $0)
 CROMWELL_QUERY="cq"
 LOGD="./logs"
 STASHD="./logs"
+RUNLOG="./logs/runlog.dat"
 YAMLD="./yaml"
 CASES_FN="dat/cases.dat"
 
-while getopts ":hd1k:l:L:fc:" opt; do
+while getopts ":hd1k:l:T:fFc:L:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -64,14 +70,20 @@ while getopts ":hd1k:l:L:fc:" opt; do
     l) 
       LOGD="$OPTARG"
       ;;
-    L) 
+    T) 
       STASHD="$OPTARG"
       ;;
     f)
-      FORCE=1    # force stashing regardless of status
+      FORCE_STATUS=1    # force stashing regardless of status
+      ;;
+    F)
+      FORCE_RUNLOG=1    # force stashing regardless of runlog
       ;;
     c) 
       CROMWELL_QUERY="$OPTARG"
+      ;;
+    L) 
+      RUNLOG="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -108,30 +120,33 @@ fi
 #  * Test if CASE.err, CASE.out, and CASE.yaml files exist.  If any do not, print warning and continue to next case
 #  * Obtain WorkflowID of case based on CASE.out.
 #  * Obtain Status of WorkflowID based on call to `cq`
-#    * if Status is not "Succeeded" print warning and continue to next case, unless FORCE=1
+#    * if Status is not "Succeeded" print warning and continue to next case, unless FORCE_STATUS=1
 #  * Check if STASHD/WorkflowID directory exists.  If it does, exit with an error
+#  * Check if runlog has entry with WorkflowID.  If it does not, exit with an error, unless FORCE_RUNLOG=1
 #  * Move LOGD/CASE.* and YAMLD/CASE.yaml to STASHD/WorkflowID
+confirm $RUNLOG
 
 for CASE in $CASES; do
     [[ $CASE = \#* ]] && continue
-    >&2 echo Processing case $CASE
+    >&2 echo \*\* Processing case $CASE
 
+    # TODO: use runlog.dat to see if this case has already been staged
     OUTFN="$LOGD/$CASE.out"
     ERRFN="$LOGD/$CASE.err"
     YAMLFN="$YAMLD/$CASE.yaml"
     if [ ! -f $OUTFN ] || [ ! -f $ERRFN ] || [ ! -f $YAMLFN ]; then
         >&2 echo WARNING: One or more log/yaml files does not exist.  Skipping this case
-        >&2 echo -- $OUTFN  $ERRFN  $YAMLFN
+        >&2 echo $OUTFN  $ERRFN  $YAMLFN
         continue
     fi
 
-    WID=$( $CROMWELL_QUERY -v -q wid $CASE ) 
+    WID=$( $CROMWELL_QUERY -V -q wid $CASE ) 
     test_exit_status
 
-    STATUS=$( $CROMWELL_QUERY -v -q status $CASE ) 
+    STATUS=$( $CROMWELL_QUERY -V -q status $CASE ) 
     test_exit_status
     if [ $STATUS != "Succeeded" ]; then
-        if [ "$FORCE" ]; then
+        if [ "$FORCE_STATUS" ]; then
             >&2 echo NOTE: $CASE status is $STATUS.  Proceeding with stashing
         else
             >&2 echo WARNING: $CASE status is $STATUS.  Skipping this case
@@ -139,28 +154,28 @@ for CASE in $CASES; do
         fi
     fi
 
+    if ! grep -F -q $WID $RUNLOG ; then
+        if [ -z $FORCE_RUNLOG ]; then
+            >&2 echo ERROR: Case $CASE \( $WID \) not found in $RUNLOG
+            >&2 echo Register run with \`runLogger.sh\` or override with -F.  Exiting
+            exit 1
+        else 
+            >&2 echo Warning: Case $CASE \( $WID \) not found in $RUNLOG.  Continuing
+        fi
+    fi
+
     OUTD="$STASHD/$WID"
     if [ -d $OUTD ]; then
         >&2 echo WARNING: Stash directory exists: $OUTD
-        >&2 echo - Skipping this case
+        >&2 echo Skipping this case
         continue
     fi
 
     CMD="mkdir -p $OUTD"
-    if [ "$DRYRUN" ]; then
-        >&2 echo Dryrun: $CMD
-    else
-        eval $CMD
-        test_exit_status
-    fi
+    run_cmd "$CMD" "$DRYRUN"
 
-    CMD="mv -v $LOGD/$CASE.* $YAMLD/$CASE.yaml $OUTD"
-    if [ "$DRYRUN" ]; then
-        >&2 echo Dryrun: $CMD
-    else
-        eval $CMD
-        test_exit_status
-    fi
+    CMD="mv $LOGD/$CASE.* $YAMLD/$CASE.yaml $OUTD"
+    run_cmd "$CMD" "$DRYRUN"
 
     if [ $JUSTONE ]; then
         break
