@@ -196,8 +196,10 @@ function register_original {
 }
 
 # Docket is a list of Workflow ID and Status pairs of proposed 
+# Discussion about tuples: https://stackoverflow.com/questions/9713104/loop-over-tuples-in-bash
 # 
 function get_docket {
+
 
 
 }
@@ -218,6 +220,12 @@ function get_docket {
 
 
 #https://stackoverflow.com/questions/21157435/bash-string-compare-to-multiple-correct-values
+
+non-query tasks:
+* Function getWIDbyStatus "$RID" $EXPECTED_STATUS $THROW_DISAGREE
+    * iterate over RID, obtain WID of a given status
+      - gets flag whether error is thrown if status is unexpected
+    * Return list of "CASES"
 
 case "$TASK" in
   "query")

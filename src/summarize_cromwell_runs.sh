@@ -87,13 +87,6 @@ while getopts ":hs:p:1l:wc:a:k:" opt; do
 done
 shift $((OPTIND-1))
 
-if [ "$#" -lt 1 ]; then
-    >&2 echo ERROR: Wrong number of arguments
-    >&2 echo "$USAGE"
-    exit 1
-fi
-
-
 # searches analysis pre-summary file for given case
 # Requires that case names are unique
 function get_case_pre_summary {
@@ -161,8 +154,10 @@ else
             >&2 echo "$USAGE"
             exit 1
         fi
+        test_exit_status
+    else
+        echo "$HEADER" > $SUMMARY_OUT
     fi 
-    test_exit_status
 fi
 
 
@@ -170,6 +165,7 @@ FILE_FORMAT="VCF"
 for CASE in $CASES
 do
     [[ $CASE = \#* ]] && continue
+    >&2 echo Processing $CASE
     # analysis pre-summary
     PS_DATA=$(get_case_pre_summary $CASE $PRE_SUMMARY)
     test_exit_status
@@ -184,7 +180,6 @@ do
     DATA=$(printf "$CASE\t$DIS\t$OUTPUT_PATH\t$FILE_FORMAT\t$PS_DATA_TAIL\n")
 
     confirm $OUTPUT_PATH $ONLYWARN
-    
 
     if [ $SUMMARY_POLICY == "stdout" ]; then
         echo "$DATA" 
@@ -194,7 +189,7 @@ do
 
     if [ $JUSTONE ]; then
         >&2 echo Quitting after one
-        exit 0
+        break
     fi
 done
 

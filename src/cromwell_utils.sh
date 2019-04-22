@@ -32,12 +32,16 @@ function run_cmd {
     DRYRUN=$2
     QUIET=$3
 
+    if [ -z $QUIET ]; then
+        QUIET=0
+    fi
+
     if [ "$DRYRUN" == "d" ]; then
-        if [ -z $QUIET ]; then
+        if [ "$QUIET" == 0 ]; then
             >&2 echo Dryrun: $CMD
         fi
     else
-        if [ -z $QUIET ]; then
+        if [ "$QUIET" == 0 ]; then
             >&2 echo Running: $CMD
         fi
         eval $CMD
@@ -69,11 +73,14 @@ function getLogWID {
 
 # get case from WorkflowID based on parsing of logs/runlog.dat
 # Only runs which have been registered will be findable
-# If not found, return "Unknown"
+# If not found or runlog does not exit, return "Unknown"
 function getRunLogCase {
     WID=$1
     RUNLOG="./logs/runlog.dat"
-    confirm $RUNLOG
+    if [ ! -f $RUNLOG ]; then
+        echo "Unknown"
+        return 
+    fi
 
     # Search runlog from bottom, return column 1 of first matching line
     RLCASE=$( tac $RUNLOG | grep -m 1 -F "$WID" | cut -f 1 )
@@ -86,10 +93,14 @@ function getRunLogCase {
 
 # get WorkflowID from Case based on parsing of logs/runlog.dat
 # Only runs which have been registered will be findable
+# If not found or runlog does not exit, return "Unknown"
 function getRunLogWID {
     CASE=$1
     RUNLOG="./logs/runlog.dat"
-    confirm $RUNLOG
+    if [ ! -f $RUNLOG ]; then
+        echo "Unknown"
+        return 
+    fi
 
     # Search runlog from bottom, return column 2 of first matching case
     # using awk to match just the case field

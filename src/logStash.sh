@@ -14,17 +14,19 @@ Required options:
 Optional options
 -h: print usage information
 -d: dry run: print commands but do not run
+-v: verbose
 -1: stop after one case processed.
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -T STASHD: root directory of archived logs.  Default "./logs"
 -L RUNLOG: Run log path.  Default: "./logs/runlog.dat"
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
+-Y: move (not copy) YAML files
 -F: Force stashing even if run not in runlog.dat
 -f: Force stashing even if run status is not Succeeded
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
-Move run output and YAML files to a directory named after WorkflowID
+Move run output files and copy YAML files to a directory named after WorkflowID
 
 If files do not exist print a warning but proceed, so that running this utility twice does not yield
 an error
@@ -34,6 +36,9 @@ to map CASE to WorkflowID in future.  Override this error with -F
 
 By default, runs which do not have status Succeeded will yield a warning and will not be moved; this
 can be overwritten with -f.
+
+YAML files by default are copied while keeping the original, so that runs can be restarted more easily.
+  Such files can instead be moved with -Y flag, so that ./yaml directory gets cleaned up
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -51,8 +56,9 @@ STASHD="./logs"
 RUNLOG="./logs/runlog.dat"
 YAMLD="./yaml"
 CASES_FN="dat/cases.dat"
+QUIET=1
 
-while getopts ":hd1k:l:T:fFc:L:" opt; do
+while getopts ":hd1k:l:T:fFc:L:Yv" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -63,6 +69,9 @@ while getopts ":hd1k:l:T:fFc:L:" opt; do
       ;;
     1) 
       JUSTONE=1
+      ;;
+    v) 
+      QUIET=0
       ;;
     k) 
       CASES_FN="$OPTARG"
@@ -84,6 +93,9 @@ while getopts ":hd1k:l:T:fFc:L:" opt; do
       ;;
     L) 
       RUNLOG="$OPTARG"
+      ;;
+    Y) 
+      YAML_MV=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -128,7 +140,7 @@ confirm $RUNLOG
 
 for CASE in $CASES; do
     [[ $CASE = \#* ]] && continue
-    >&2 echo \*\* Processing case $CASE
+    >&2 echo Processing case $CASE
 
     # TODO: use runlog.dat to see if this case has already been staged
     OUTFN="$LOGD/$CASE.out"
@@ -179,10 +191,18 @@ for CASE in $CASES; do
     fi
 
     CMD="mkdir -p $OUTD"
-    run_cmd "$CMD" "$DRYRUN"
+    run_cmd "$CMD" "$DRYRUN" $QUIET
 
-    CMD="mv $LOGD/$CASE.* $YAMLD/$CASE.yaml $OUTD"
-    run_cmd "$CMD" "$DRYRUN"
+    CMD="mv $LOGD/$CASE.* $OUTD"
+    run_cmd "$CMD" "$DRYRUN" $QUIET
+
+    if [ "$YAML_MV" ]; then
+        CMD="mv $YAMLD/$CASE.yaml $OUTD"
+    else
+        CMD="cp $YAMLD/$CASE.yaml $OUTD"
+    fi
+    run_cmd "$CMD" "$DRYRUN" $QUIET
+
 
     if [ $JUSTONE ]; then
         break
