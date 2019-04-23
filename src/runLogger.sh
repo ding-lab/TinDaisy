@@ -19,7 +19,7 @@ Optional options
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -L LOG_OUT: Output log path.  Default: "./logs/runlog.dat"
 -m NOTE: A note added to run log file for each case
--S: Write log only if run is successful
+-f: Force logging even if run status is not Succeeded / Failed
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
 A runlog file has the following columns
@@ -30,8 +30,8 @@ A runlog file has the following columns
     * `EndTime`
     * `Note` - optional, may indicate whether a restart, etc.
 A line is added to runlog for every case with a known WorkflowID every time this utility is run; this allows for runs to change 
-status over time, and multiple lines for same case and/or workflow ID is not an error.  If -S is 
-specified, we write to log only if status is Success
+status over time, and multiple lines for same case and/or workflow ID is not an error.  By default, only runs with status of
+Succeeded or Failed will logged.  -f flag will make all runs be logged.
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -53,7 +53,7 @@ LOG_OUT="./logs/runlog.dat"
 CASES_FN="dat/cases.dat"
 NOTE=""
 
-while getopts ":hd1k:l:L:m:Sc:" opt; do
+while getopts ":hd1k:l:L:m:c:f" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -77,8 +77,8 @@ while getopts ":hd1k:l:L:m:Sc:" opt; do
     m)
       NOTE="$OPTARG"
       ;;
-    S)
-      ONLY_SUCCESS=1        # What we all hope for
+    f)
+      FORCE_STATUS=1        
       ;;
     c) 
       CROMWELL_QUERY="$OPTARG"
@@ -124,11 +124,12 @@ fi
 for CASE in $CASES; do
     >&2 echo Processing case $CASE
 
-    if [ "$ONLY_SUCCESS" ]; then
-        S=$( $CROMWELL_QUERY -S -q status $CASE )
-        # blank S indicates no success
-        if [ -z $S ]; then
-            continue
+    STATUS=$( $CROMWELL_QUERY -V -q status $CASE )
+    # Normally, write only entries with status Succeeded or Failed.  If -f flag (FORCE_STATUS) is set, write for all entries regardless of status
+    if [ "$STATUS" != "Succeeded" ] && [ "$STATUS" != "Failed" ]; then
+        if [ ! "$FORCE_STATUS" ]; then
+                >&2 echo Skipping because of status
+                continue
         fi
     fi
 

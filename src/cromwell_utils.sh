@@ -106,18 +106,37 @@ function getRunLogWID {
     # using awk to match just the case field
     RLWID=$( tac $RUNLOG | awk -v c=$CASE '{if ($1 == c) print $2}' )
     test_exit_status
-    if [ -z $RLWID ]; then
+    if [ -z "$RLWID" ]; then
         RLWID="Unknown"
     fi
     echo "$RLWID"
 }
 
+# Usage: isStashed CASE
+# Return 1 if logs/CASE.out does not exist and there is a logs/WorkflowID directory
+# Return 0 otherwise
+# CASE may also be a WorkflowID
+function isStashed {
+    RID=$1
+    LOG="logs/$RID.out"
+    if [ -e $LOG ]; then
+        echo 0
+        return
+    fi
+    read MYCASE MYWID < <( getCaseWID $RID )
+    if [ -d "logs/$MYWID" ]; then
+        echo 1
+        return 
+    fi
+    echo 0
+}
+
 # obtain both Case and WorkflowID based on one of these values. RUNID passed can be either CASE or WorkflowID
 #   If it is a WorkflowID, get case by evaluating runlog
 #   If it is a case, get WorkflowID by
-#   1. parsing log file named logs/CASE.out
+#   1. parsing output log file named logs/CASE.out
 #       Value "Unknown" or "Unassigned" is returned if log file does not exist or does not contain WorkflowID, resp.
-#   2. or, if log file does not exist, by parsing logs/runlog.dat
+#   2. or, if output log file does not exist, by parsing logs/runlog.dat
 function getCaseWID {
     RUNID=$1
     # Evaluate if RUNID is a WorkflowID.  
@@ -139,5 +158,5 @@ function getCaseWID {
 
 #    # To read:
 #    # https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
-#    read CASE WID < <( getCaseWID $CASE )
+#    read MYCASE MYWID < <( getCaseWID $CASE )
 }

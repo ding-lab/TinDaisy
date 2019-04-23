@@ -26,13 +26,11 @@ Ran the following:
     logStash.sh -f
 To log and stash runs.  
 
-1. Create YAML files.  These went away when did stashing (perhaps stashing should copy, not move YAML?)
-Note that redoing YAML files will overwrite pre-summary
-```
-cq | grep -v Succeeded | cut -f 1 | bash 1_make_yaml.sh  -
-```
 
 2. Run cromwell
 ```
 cq | grep -v Succeeded | cut -f 1 | bash 2_start_runs.sh -J 10  -
 ```
+
+3. Cleaning up and rerunning
+

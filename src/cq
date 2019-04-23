@@ -18,6 +18,7 @@ Options:
 -V: output status only (i.e., squelch case and workflow ID output)
 -U: skip cases were WorkflowID is Unknown or Unassigned
 -S: retain only cases where Status is Succeeded
+-T: Skip cases where logs are stashed 
 
 Example usage - specifying cases:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
@@ -57,7 +58,7 @@ CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1k:q:s:VUS" opt; do
+while getopts ":h1k:q:s:VUST" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -83,6 +84,9 @@ while getopts ":h1k:q:s:VUS" opt; do
       ;;
     S) 
       ONLY_SUCCESS=1      # What we all hope for
+      ;;
+    T) 
+      NO_STASH=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -190,6 +194,14 @@ for RID in $CASES; do
         STATUS=$( get_status $WID )
         test_exit_status
         if [ $STATUS != "Succeeded" ]; then
+            continue
+        fi
+    fi
+
+    # Skip runs which are stashed, i.e. those whose logs have been moved to directory logs/WorkflowID
+    if [ $NO_STASH ]; then
+        ISS=$(isStashed $RID)
+        if [ $ISS == 1 ]; then
             continue
         fi
     fi

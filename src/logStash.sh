@@ -23,7 +23,7 @@ Optional options
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
 -Y: move (not copy) YAML files
 -F: Force stashing even if run not in runlog.dat
--f: Force stashing even if run status is not Succeeded
+-f: Force stashing even if run status is not Succeeded/Failed
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
 Move run output files and copy YAML files to a directory named after WorkflowID
@@ -34,7 +34,7 @@ an error
 If this WorkflowID does not exist in runlog file exit with an error, since not having this entry will make it hard
 to map CASE to WorkflowID in future.  Override this error with -F
 
-By default, runs which do not have status Succeeded will yield a warning and will not be moved; this
+By default, runs which do not have status Succeeded or Failed will yield a warning and will not be moved; this
 can be overwritten with -f.
 
 YAML files by default are copied while keeping the original, so that runs can be restarted more easily.
@@ -129,7 +129,9 @@ else
 fi
 
 # Core algorithm. For each case:
-#  * Test if CASE.err, CASE.out, and CASE.yaml files exist.  If any do not, print warning and continue to next case
+#  * Test if CASE.err, CASE.out, and CASE.yaml files exist.  
+#    If any do not, test to see if stashed directory (based on WorkflowID) exists.
+#    If it does not, print warning and continue to next case
 #  * Obtain WorkflowID of case based on CASE.out.
 #  * Obtain Status of WorkflowID based on call to `cq`
 #    * if Status is not "Succeeded" print warning and continue to next case, unless FORCE_STATUS=1
@@ -140,20 +142,22 @@ confirm $RUNLOG
 
 for CASE in $CASES; do
     [[ $CASE = \#* ]] && continue
-    >&2 echo Processing case $CASE
+#    >&2 echo Processing case $CASE
 
-    # TODO: use runlog.dat to see if this case has already been staged
     OUTFN="$LOGD/$CASE.out"
     ERRFN="$LOGD/$CASE.err"
     YAMLFN="$YAMLD/$CASE.yaml"
+    WID=$( $CROMWELL_QUERY -V -q wid $CASE ) 
+
     if [ ! -f $OUTFN ] || [ ! -f $ERRFN ] || [ ! -f $YAMLFN ]; then
-        >&2 echo WARNING: One or more log/yaml files does not exist.  Skipping this case
-        >&2 echo $OUTFN  $ERRFN  $YAMLFN
+    # Log files missing.  See if they've already been stashed
+        if [ -d $LOGD/$WID ]; then
+            >&2 echo $CASE already stashed 
+        else
+            >&2 echo WARNING: $CASE: Log/yaml files does not exist, skipping this case 
+        fi
         continue
     fi
-
-    WID=$( $CROMWELL_QUERY -V -q wid $CASE ) 
-    test_exit_status
 
     # WID may be unknown for various reasons, like error conditions.  Stashing requires that this
     # value be known; if it is not, print a complaint and go on
@@ -164,7 +168,7 @@ for CASE in $CASES; do
 
     STATUS=$( $CROMWELL_QUERY -V -q status $CASE ) 
     test_exit_status
-    if [ $STATUS != "Succeeded" ]; then
+    if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
         if [ "$FORCE_STATUS" ]; then
             >&2 echo NOTE: $CASE status is $STATUS.  Proceeding with stashing
         else
@@ -175,8 +179,7 @@ for CASE in $CASES; do
 
     if ! grep -F -q $WID $RUNLOG ; then
         if [ -z $FORCE_RUNLOG ]; then
-            >&2 echo ERROR: Case $CASE \( $WID \) not found in $RUNLOG
-            >&2 echo Register run with \`runLogger.sh\` or override with -F.  Exiting
+            >&2 echo ERROR: $CASE \( $WID \) not found in $RUNLOG. Register run with \`runLogger.sh\` before stashing or override with -F.  Exiting.
             exit 1
         else 
             >&2 echo Warning: Case $CASE \( $WID \) not found in $RUNLOG.  Continuing
