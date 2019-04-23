@@ -9,7 +9,7 @@ YAML_TEMPLATE="config/CPTAC3-template.yaml"
 mkdir -p $YAMLD
 
 # Usage: make_yaml.sh [options] CASE [ CASE2 ... ]
-$TD_ROOT/src/make_yaml.sh -e WXS -b $BAMMAP -Y $YAML_TEMPLATE -P $PARAMS -y $YAMLD "$@" 
+$TD_ROOT/src/make_yaml.sh -e WXS -b $BAMMAP -Y $YAML_TEMPLATE -P $PARAMS "$@" 
 
 rc=$?
 if [[ $rc != 0 ]]; then

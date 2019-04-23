@@ -4,9 +4,6 @@
 # Contains all per-system configuration
 # Contains only definitions, no execution code
 
-# **TODO** Remove PRE_SUMMARY and SUMMARY filenames here, and make these be the defaults in the 
-#   respective processing scripts
-
 # System: MGI
 
 # Root directory.  Where TinDaisy is installed
@@ -31,16 +28,10 @@ DBSNP_DB="/gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/B_Filt
 # For performance reasons, defining vep_cache_gz is suggested for production systems
 VEP_CACHE_GZ="/gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh38.tar.gz"
 
-#
-# The following are not system-specific
-#
-
-# Output of task manager
-LOGD="./logs"
-
-YAMLD="./yaml"
-
-PRE_SUMMARY="dat/analysis_pre-summary.dat"
-SUMMARY="dat/analysis_summary.dat"
+# These parameters used when finding data in BamMap
+ES="WXS"                            # experimental strategy
+TUMOR_ST="tumor"                    # Sample type for tumor BAM, for BAMMAP matching
+NORMAL_ST='blood_normal'            # Sample type for normal BAM, for BAMMAP matching.  Default 'blood_normal'
+REF="hg38"                          # Reference, used when matching to BAMMAP
 
 

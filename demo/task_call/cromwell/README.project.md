@@ -34,3 +34,12 @@ cq | grep -v Succeeded | cut -f 1 | bash 2_start_runs.sh -J 10  -
 
 3. Cleaning up and rerunning
 
+All old runs were stashed.  We look at new batch of runs with, ` cq -T `
+
+This indicates which runs we should add to log and stash:
+    cq -T | grep Succeeded | cut -f 1 | runLogger.sh -
+    cq -T | grep Succeeded | cut -f 1 | logStash.sh -
+
+There were four runs which had status of Running but which were zombie based on analysis of logs.
+These four corresponded to errors issued by `parallel`.  We'll return these from scratch, and just delete
+their data directory and logs
