@@ -1,15 +1,12 @@
 # Generate YAML files
 
+# Note that running `runplan` will give back useful information about anticipated runs
+
 # This is sourced both here and in make_yaml.sh to fill out template parameters
 PARAMS="config/project_config.sh"
-source $PARAMS
+source $PARAMS  # we just care about TD_ROOT
 
-YAML_TEMPLATE="config/CPTAC3-template.yaml"
-
-mkdir -p $YAMLD
-
-# Usage: make_yaml.sh [options] CASE [ CASE2 ... ]
-$TD_ROOT/src/make_yaml.sh -e WXS -b $BAMMAP -Y $YAML_TEMPLATE -P $PARAMS "$@" 
+$TD_ROOT/src/runplan -x yaml "$@" 
 
 rc=$?
 if [[ $rc != 0 ]]; then

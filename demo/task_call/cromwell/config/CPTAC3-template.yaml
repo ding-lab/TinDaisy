@@ -2,7 +2,7 @@
 # The following arguments must be substituted:
 # * NORMAL_BAM
 # * TUMOR_BAM
-# * REF
+# * REF_PATH
 # * TD_ROOT
 # * DBSNP_DB
 # * VEP_CACHE_GZ
@@ -15,7 +15,7 @@ tumor_bam:
   path: ${TUMOR_BAM}
 reference_fasta:
   class: File
-  path: ${REF}
+  path: ${REF_PATH}
 
 # vcf (vaf length depth) filter config
 pindel_vcf_filter_config:

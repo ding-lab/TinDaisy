@@ -7,25 +7,22 @@ read -r -d '' USAGE <<'EOF'
 Usage: runplan [options] [CASE1 [ CASE2 ... ]]
   Review, initialize, and summarize runs
 
-Reqired Options:
--B BAMMAP: path to BamMap data file.  Required
-
 Options:
 -h: print usage information
 -1: Quit after evaluating one case
 -x TASK: Execute given task.  Values: 'query' (default), 'yaml', 'summary'
--Y YAML_TEMPLATE: template YAML file upon which we'll do variable substitution.  Required for `yaml` task
 -y YAMLD: output directory of YAML files.  If "-", write YAML to stdout.  Default: ./yaml
--k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--P PARAMS: parameters file which holds varibles for substution in template.  Required for `yaml` task and if -w defined
+-P PARAMS: parameters file which holds varibles for substution in template.  Default: config/project_config.sh
 -u: Print BAM UUIDs in query
 -p: Print BAM paths in query
 -n: Print BAM sample names in query
--w: Print additional details in query (REF, TD_ROOT, DBSNP_DB, VEP_CACHE_GZ).  Requires PARAMS 
+-w: Print additional details in query (REF_PATH, TD_ROOT, DBSNP_DB, VEP_CACHE_GZ).  Requires PARAMS 
 -g: For `summary` task, issue warning if result file does not exist.  Default is to quit with error
 -s SUMMARY_OUT: output analysis summary file for task `summary`.  If '-', write to STDOUT
+-c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
-runplan uses BamMap and parameters file to review, initialize, and summarize completed runs.
+runplan uses BamMap and parameters file to review, initialize, and summarize completed runs.  This
+script makes use of the PARAMS file (default config/project_config.sh) to get various parameters
 
 runplan performs the following tasks, specified with -x:
 * `query`: return information about inputs to be used for generating YAML file.  This is the default task
@@ -42,7 +39,7 @@ If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES
 Output YAML file filename is CASE.yaml.  It is based on YAML_TEMPLATE, with the following variables substituted:
     * NORMAL_BAM
     * TUMOR_BAM
-    * REF
+    * REF_PATH
     * TD_ROOT
     * DBSNP_DB
     * VEP_CACHE_GZ
@@ -57,14 +54,14 @@ SCRIPT=$(basename $0)
 
 TASK="query"
 YAMLD="./yaml"
-CASES_FN="dat/cases.dat"
 SUMMARY_OUT="./dat/analysis_summary.dat"
-REF="hg38"
+PARAM_FILE="./config/project_config.sh"
+CROMWELL_QUERY="cq"
 
 TUMOR_ST='tumor'
 NORMAL_ST='blood_normal'
 
-while getopts ":h1B:P:x:Y:y:k:upnwgs:" opt; do
+while getopts ":h1P:x:y:upnwgs:c:" opt; do
   case $opt in
     h)  
       echo "$USAGE"
@@ -73,23 +70,14 @@ while getopts ":h1B:P:x:Y:y:k:upnwgs:" opt; do
     1)  
       JUSTONE=1
       ;;
-    B)  
-      BAMMAP="$OPTARG"
-      ;;
     P)  
       PARAM_FILE="$OPTARG"
       ;;
     x)  
       TASK="$OPTARG"
       ;;
-    Y)  
-      YAML_TEMPLATE="$OPTARG"
-      ;;
     y)  
       YAMLD="$OPTARG"
-      ;;
-    k) 
-      CASES_FN="$OPTARG"
       ;;
     u) 
       BAM_UUID=1
@@ -109,6 +97,9 @@ while getopts ":h1B:P:x:Y:y:k:upnwgs:" opt; do
     s)  
       SUMMARY_OUT="$OPTARG"
       ;;
+    c) 
+      CROMWELL_QUERY="$OPTARG"
+      ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
       >&2 echo "$USAGE"
@@ -123,18 +114,77 @@ while getopts ":h1B:P:x:Y:y:k:upnwgs:" opt; do
 done
 shift $((OPTIND-1))
 
-if [ -z $BAMMAP ]; then
-    >&2 echo ERROR: BamMap file not defined \(-b\)
-    >&2 echo "$USAGE"
-    exit 1
-fi
-confirm $BAMMAP 
+# init_params reads PARAM_FILE and fills in several 
+# variables used for YAML file creation and query with details
+function init_params {
+    if [ -z $PARAM_FILE ]; then
+        >&2 echo ERROR: Parameter file  not defined \(-p\)
+        >&2 echo "$USAGE"
+        exit 1
+    fi
+    confirm $PARAM_FILE 
+
+    source $PARAM_FILE
+    if [ -z $REF_PATH ]; then
+        >&2 echo ERROR: REF_PATH not defined in $PARAM_FILE
+        exit 1
+    fi
+    if [ -z $TD_ROOT ]; then
+        >&2 echo ERROR: TD_ROOT not defined in $PARAM_FILE
+        exit 1
+    fi
+    if [ -z $DBSNP_DB ]; then
+        >&2 echo ERROR: DBSNP_DB not defined in $PARAM_FILE
+        exit 1
+    fi
+    if [ -z $VEP_CACHE_GZ ]; then
+        >&2 echo ERROR: VEP_CACHE_GZ not defined in $PARAM_FILE
+        exit 1
+    fi
+    # envsubst requires variables to be exported - these are the parameters used for yaml file
+    export REF_PATH
+    export TD_ROOT
+    export DBSNP_DB
+    export VEP_CACHE_GZ
+
+    # These parameters used to be passed as arguments, but are now in PARAMS
+    if [ -z $BAMMAP ]; then
+        >&2 echo ERROR: BAMMAP not defined in $PARAM_FILE
+        exit 1
+    fi
+    confirm $BAMMAP 
+    if [ -z $CASES_FN ]; then
+        >&2 echo ERROR: CASES_FN not defined in $PARAM_FILE
+        exit 1
+    fi
+    confirm $CASES_FN 
+    if [ -z $YAML_TEMPLATE ]; then
+        >&2 echo ERROR: YAML_TEMPLATE not defined in $PARAM_FILE
+        exit 1
+    fi
+    confirm $YAML_TEMPLATE 
 
 
-# Default query BAM output is sample name, if nothing else is defined
-if [ -z "$BAM_UUID" ] && [ -z "$BAM_PATH" ] && [ -z "$BAM_SN" ] ; then
-    BAM_SN=1
-fi
+    # the parameters below, also required, are used for matching BamMap
+    if [ -z $ES ]; then
+        >&2 echo ERROR: ES not defined in $PARAM_FILE
+        exit 1
+    fi
+    if [ -z $TUMOR_ST ]; then
+        >&2 echo ERROR: TUMOR_ST not defined in $PARAM_FILE
+        exit 1
+    fi
+    if [ -z $NORMAL_ST ]; then
+        >&2 echo ERROR: NORMAL_ST not defined in $PARAM_FILE
+        exit 1
+    fi
+    if [ -z $REF_NAME ]; then
+        >&2 echo ERROR: REF_NAME not defined in $PARAM_FILE
+        exit 1
+    fi
+}
+
+init_params
 
 # this allows us to get case names in one of three ways:
 # 1: cq CASE1 CASE2 ...
@@ -158,7 +208,7 @@ fi
 function get_BAM {
     CASE=$1
     ST=$2
-    # BAMMAP, ES, REF  as global
+    # BAMMAP, ES, REF_NAME  as global
 
     # BamMap columns
     #     1  sample_name
@@ -173,14 +223,14 @@ function get_BAM {
     #    10  UUID
     #    11  system
 
-    # REF is a global
-    LINE_A=$(awk -v c=$CASE -v ref=$REF -v es=$ES -v st=$ST 'BEGIN{FS="\t";OFS="\t"}{if ($2 == c && $4 == es && $5 == st && $9 == ref) print}' $BAMMAP)
+    # REF_NAME is a global
+    LINE_A=$(awk -v c=$CASE -v ref=$REF_NAME -v es=$ES -v st=$ST 'BEGIN{FS="\t";OFS="\t"}{if ($2 == c && $4 == es && $5 == st && $9 == ref) print}' $BAMMAP)
 
     if [ -z "$LINE_A" ]; then
-        >&2 echo ERROR: $REF $CASE $ES $ST sample not found in $BAMMAP
+        >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample not found in $BAMMAP
         exit 1
     elif [ $(echo "$LINE_A" | wc -l) != "1" ]; then
-        >&2 echo ERROR: $REF $CASE $ES $ST sample has multiple matches in $BAMMAP
+        >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample has multiple matches in $BAMMAP
         >&2 echo Not making assumptions about which to choose, YAML will need to be created manually
         #LINE_A=$(echo "$LINE_A" | head -n 1)
         exit 1
@@ -195,66 +245,19 @@ function get_BAM {
     printf "$BAM\t$SN\t$UUID\t$DIS"
 }
 
-# init_params reads PARAM_FILE and fills in several 
-# variables used for YAML file creation and query with details
-function init_params {
-    if [ -z $PARAM_FILE ]; then
-        >&2 echo ERROR: Parameter file  not defined \(-p\)
-        >&2 echo "$USAGE"
-        exit 1
-    fi
-    confirm $PARAM_FILE 
 
-    source $PARAM_FILE
-    if [ -z $REF ]; then
-        >&2 echo ERROR: REF not defined in $PARAM_FILE
-        exit 1
-    fi
-    if [ -z $TD_ROOT ]; then
-        >&2 echo ERROR: TD_ROOT not defined in $PARAM_FILE
-        exit 1
-    fi
-    if [ -z $DBSNP_DB ]; then
-        >&2 echo ERROR: DBSNP_DB not defined in $PARAM_FILE
-        exit 1
-    fi
-    if [ -z $VEP_CACHE_GZ ]; then
-        >&2 echo ERROR: VEP_CACHE_GZ not defined in $PARAM_FILE
-        exit 1
-    fi
-    # envsubst requires variables to be exported - these are the parameters used for yaml file
-    export REF
-    export TD_ROOT
-    export DBSNP_DB
-    export VEP_CACHE_GZ
-
-    # the parameters below, also required, are used for matching BamMap
-    if [ -z $ES ]; then
-        >&2 echo ERROR: ES not defined in $PARAM_FILE
-        exit 1
-    fi
-    if [ -z $TUMOR_ST ]; then
-        >&2 echo ERROR: TUMOR_ST not defined in $PARAM_FILE
-        exit 1
-    fi
-    if [ -z $NORMAL_ST ]; then
-        >&2 echo ERROR: NORMAL_ST not defined in $PARAM_FILE
-        exit 1
-    fi
-    if [ -z $REF ]; then
-        >&2 echo ERROR: REF not defined in $PARAM_FILE
-        exit 1
-    fi
-}
-
-init_yaml {
-    init_params
+function init_yaml {
     if [ -z $YAML_TEMPLATE ]; then
         >&2 echo ERROR: YAML template not defined \(-Y\)
         >&2 echo "$USAGE"
         exit 1
     fi
     confirm $YAML_TEMPLATE 
+
+    if [ $YAMLD != "-" ]; then
+        mkdir -p $YAMLD
+        test_exit_status
+    fi
 }
 
 function do_yaml {
@@ -262,7 +265,6 @@ function do_yaml {
     TUMOR="$2"
     NORMAL="$3"
     # TUMOR and NORMAL look like this: "BAM_path sample_name UUID Disease"
-
 
     export TUMOR_BAM=$(echo "$TUMOR" | cut -f 1)
     export NORMAL_BAM=$(echo "$NORMAL" | cut -f 1)
@@ -278,7 +280,7 @@ function do_yaml {
     fi
 }
 
-init_summary {
+function init_summary {
 # Summary prep and header written
     HEADER=$(printf "# case\tdisease\tresult_path\tresult_format\ttumor_name\ttumor_uuid\tnormal_name\tnormal_uuid\tcromwell_workflow_id\n") 
 
@@ -302,6 +304,13 @@ function do_summary {
     NORMAL="$3"
     # TUMOR and NORMAL look like this: "BAM_path sample_name UUID Disease"
 
+    # Evaluate only runs which have status Succeeded
+    STATUS=$( $CROMWELL_QUERY -V -q status $CASE )
+    if [ "$STATUS" != "Succeeded" ]; then
+        >&2 echo Skipping $CASE because status = $STATUS
+        return
+    fi
+
     TUMOR_SN=$(echo "$TUMOR" | cut -f 2)
     TUMOR_UUID=$(echo "$TUMOR" | cut -f 3)
     NORMAL_SN=$(echo "$NORMAL" | cut -f 2)
@@ -315,7 +324,21 @@ function do_summary {
     WID=` $CROMWELL_QUERY -V -q wid $CASE `
     test_exit_status
     FILE_FORMAT="VCF"
-    printf "$CASE\t$DIS\t$RESULT_FILE\t$FILE_FORMAT\t$TUMOR_SN\t$TUMOR_UUID\t$NORMAL_SN\t$NORMAL_UUID\t$WID\n" 
+    OUTLINE=$(printf "$CASE\t$DIS\t$RESULT_FILE\t$FILE_FORMAT\t$TUMOR_SN\t$TUMOR_UUID\t$NORMAL_SN\t$NORMAL_UUID\t$WID\n" )
+
+    if [ $SUMMARY_OUT == "-" ]; then
+        echo "$OUTLINE"
+    else
+        echo "$OUTLINE" >> $SUMMARY_OUT
+        test_exit_status
+    fi 
+}
+
+function init_query {
+    # Default query BAM output is sample name, if nothing else is defined
+    if [ -z "$BAM_UUID" ] && [ -z "$BAM_PATH" ] && [ -z "$BAM_SN" ] ; then
+        BAM_SN=1
+    fi
 }
 
 function do_query {
@@ -336,6 +359,8 @@ function do_query {
     NORMAL_SN=$(echo "$NORMAL" | cut -f 2)
     NORMAL_UUID=$(echo "$NORMAL" | cut -f 3)
 
+    TUMOR_INFO=""
+    NORMAL_INFO=""
     if [ "$BAM_SN" ]; then
         TUMOR_INFO="$TUMOR_SN"
         NORMAL_INFO="$NORMAL_SN"
@@ -346,7 +371,7 @@ function do_query {
             NORMAL_INFO="$NORMAL_UUID"
         else
             TUMOR_INFO="$TUMOR_INFO\t$TUMOR_UUID"
-            NORMAL_INFO="$TUMOR_INFO\t$NORMAL_UUID"
+            NORMAL_INFO="$NORMAL_INFO\t$NORMAL_UUID"
         fi
     fi
     if [ "$BAM_PATH" ]; then
@@ -355,23 +380,21 @@ function do_query {
             NORMAL_INFO="$NORMAL_BAM"
         else
             TUMOR_INFO="$TUMOR_INFO\t$TUMOR_BAM"
-            NORMAL_INFO="$TUMOR_INFO\t$NORMAL_BAM"
+            NORMAL_INFO="$NORMAL_INFO\t$NORMAL_BAM"
         fi
     fi
 
     # Spit out additional details if user requests
     if [ "$QUERY_DETAIL" ]; then
-        DATA=$(printf "$CASE\t$DIS\t$TUMOR_INFO\t$NORMAL_INFO\t$REF\t$TD_ROOT\t$DBSNP_DB\t$VEP_CACHE_GZ\n")
+        printf "$CASE\t$DIS\t$TUMOR_INFO\t$NORMAL_INFO\t$REF_PATH\t$TD_ROOT\t$DBSNP_DB\t$VEP_CACHE_GZ\n"
     else
-        DATA=$(printf "$CASE\t$DIS\t$TUMOR_INFO\t$NORMAL_INFO\n" 
+        printf "$CASE\t$DIS\t$TUMOR_INFO\t$NORMAL_INFO\n" 
     fi
 }
 
-# Initialize and check for legal task
+# Initialize and check for valid task name
 if [ $TASK == "query" ]; then
-    if [ $QUERY_DETAIL ]; then
-        init_params
-    fi
+    init_query 
 elif [ $TASK == "yaml" ]; then
     init_yaml
 elif [ $TASK == "summary" ]; then
@@ -383,7 +406,6 @@ else
 fi
 
 for CASE in $CASES; do
-    >&2 echo Processing $CASE
 
     # we get details about tumor, normal samples from BamMap for every case
     TUMOR=$(get_BAM $CASE $TUMOR_ST)
@@ -397,15 +419,17 @@ for CASE in $CASES; do
     elif [ $TASK == "yaml" ]; then
         do_yaml $CASE "$TUMOR" "$NORMAL"
     elif [ $TASK == "summary" ]; then
-        do_summary $CASE "$TUMOR" "$NORMAL" >> $SUMMARY_OUT
+        do_summary $CASE "$TUMOR" "$NORMAL" 
     fi
 
     if [ $JUSTONE ]; then
         >&2 echo Quitting after one
-        exit 0
+        break
     fi
 done
 
 if [ $TASK == "summary" ]; then
-    >&2 echo Written to $SUMMARY_OUT
+    if [ $SUMMARY_OUT != "-" ]; then
+        >&2 echo Written to $SUMMARY_OUT
+    fi
 fi

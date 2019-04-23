@@ -15,7 +15,7 @@ Options:
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runlog', 'url'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
--V: output status only (i.e., squelch case and workflow ID output)
+-V: output query result only only (i.e., don't write case and workflow ID)
 -U: skip cases were WorkflowID is Unknown or Unassigned
 -S: retain only cases where Status is Succeeded
 -T: Skip cases where logs are stashed 
