@@ -1,5 +1,8 @@
 Testing of cromwell CWL engine for TinDaisy at MGI
 
+**NOTE** work here is deprecated.  Use [CromwellRunner](https://github.com/ding-lab/CromwellRunner) to manage
+cromwell projects instead.
+
 * Tracking runs here: https://docs.google.com/spreadsheets/d/12ANLh3H1dgZcGFwmCjL3i-XZHtukeicw6DtboAjMT7E/edit#gid=0
 
 # TODO
