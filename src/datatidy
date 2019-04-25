@@ -3,11 +3,13 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
+# **TODO** add run status as part of entry
+
 read -r -d '' USAGE <<'EOF'
 Utility for logging, reporting, and cleaning Cromwell run data
 
 Usage:
-  bash datatidy.sh [options] [ CASE1 [CASE2 ...]]
+  datatidy [options] [ CASE1 [CASE2 ...]]
 
 Required:
 -l ROOTD: datalog root directory.  Data log is then "$ROOTD/DataLog.dat" 

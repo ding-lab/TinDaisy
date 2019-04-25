@@ -17,7 +17,7 @@ Options:
 -p: Print BAM paths in query
 -n: Print BAM sample names in query
 -w: Print additional details in query (REF_PATH, TD_ROOT, DBSNP_DB, VEP_CACHE_GZ).  Requires PARAMS 
--g: For `summary` task, issue warning if result file does not exist.  Default is to quit with error
+-g: Issue warnings rather than quitting. For `summary` task, if result file does not exist.  For `query`, if sample does not exist
 -s SUMMARY_OUT: output analysis summary file for task `summary`.  If '-', write to STDOUT
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
@@ -227,8 +227,12 @@ function get_BAM {
     LINE_A=$(awk -v c=$CASE -v ref=$REF_NAME -v es=$ES -v st=$ST 'BEGIN{FS="\t";OFS="\t"}{if ($2 == c && $4 == es && $5 == st && $9 == ref) print}' $BAMMAP)
 
     if [ -z "$LINE_A" ]; then
-        >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample not found in $BAMMAP
-        exit 1
+        if [ $ONLYWARN ]; then
+            >&2 echo WARNING: $REF_NAME $CASE $ES $ST sample not found in $BAMMAP
+        else
+            >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample not found in $BAMMAP
+            exit 1
+        fi
     elif [ $(echo "$LINE_A" | wc -l) != "1" ]; then
         >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample has multiple matches in $BAMMAP
         >&2 echo Not making assumptions about which to choose, YAML will need to be created manually

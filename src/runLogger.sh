@@ -18,25 +18,12 @@ Optional options
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -L LOG_OUT: Output log path.  Default: "./logs/runlog.dat"
--m NOTE: A note added to run log file for each case
 -f: Force logging even if run status is not Succeeded / Failed
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 
-A runlog file has the following columns
-    * `CASE`
-    * `WorkflowID`
-    * `Status`
-    * `StartTime`
-    * `EndTime`
-    * `Note` - optional, may indicate whether a restart, etc.
-A line is added to runlog for every case with a known WorkflowID every time this utility is run; this allows for runs to change 
-status over time, and multiple lines for same case and/or workflow ID is not an error.  By default, only runs with status of
-Succeeded or Failed will logged.  -f flag will make all runs be logged.
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
-Registration of runs in runlog allows mapping of CASE to WorkflowID of past runs even when logs are stashed (i.e., logs/CASE.out is
-no longer available).
 
 This script relies on `cq` to get WorkflowID, status and timestamps associated with each case
 

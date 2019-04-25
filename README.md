@@ -1,23 +1,43 @@
 # <img src="docs/TinDaisy.v1.2.png" width="64"/> TinDaisy
 
-TinDaisy is CWL wrapper around the [SomaticWrapper](https://github.com/ding-lab/somaticwrapper/tree/cwl) variant caller, and includes
-test data to demonstrate execution via Rabix Executor.
+[TinDaisy](https://github.com/ding-lab/tin-daisy) is a modular software package
+designed for detection of somatic variants from tumor and normal exome data.
+[TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core) obtains variant
+calls from four callers, merges them, and applies various filters.
 
-GitHub: https://github.com/ding-lab/tin-daisy
+Callers used:
 
-## Overview
+* [Strelka2](https://github.com/Illumina/strelka.git)
+* [VarScan.v2.3.8](http://varscan.sourceforge.net/)
+* [Pindel](https://github.com/ding-lab/pindel.git)
+* [mutect-1.1.7](https://github.com/broadinstitute/mutect)
 
-The goal of TinDaisy is to
+SNV calls from Strelka2, Varscan, Mutect. Indel calls from Stralka2, Varscan, and Pindel.
+[CWL Mutect Tool](https://github.com/mwyczalkowski/mutect-tool) is used for CWL Mutect calls
 
-* Serve as a quick start guide and reference implementation for SomaticWrapper usage and CWL development
-* Provide StrelkaDemo dataset for testing
-* Serve as reference project for `cwl` branch of somaticwrapper.
+Filters applied (details in VCF output)
+* For indels, require length < 100
+* Require normal VAF <= 0.020000, tumor VAF >= 0.050000 for all variants
+* Require read depth in tumor > 14 and normal > 8 for all variants
+* All variants must be called by 2 or more callers
+* Require Allele Frequency < 0.005000 (as determined by vep)
+* Retain exonic calls
+* Exclude calls which are in dbSnP but not in COSMIC
+
+TinDaisy and TinDaisy-Core were developed from [SomaticWrapper](https://github.com/ding-lab/somaticwrapper) and [GenomeVIP](https://genomevip.readthedocs.io/).
+
+The current CWL implementation is visualized below using [Rabix Composer](http://docs.rabix.io/rabix-composer-home)
+
+![TinDaisy CWL implementation](docs/TinDaisy.CWL.png)
+
 
 # Getting Started
 
+Some information below is dated.  **TODO** improve 
 
 ## Installation
-TinDaisy requires several packages to run.
+TinDaisy requires several packages to run.  It has been tested with `cwltool`, `rabix composer`, and `cromwell` CWL engines.
+Description below specific to Rabix
 
 ### [Docker](https://www.docker.com/community-edition)
 
@@ -55,11 +75,8 @@ This should run for a few seconds and then produce output like,
 
 ### [TinDaisy](https://github.com/ding-lab/tin-daisy)
 ```
-git clone --recurse-submodules https://github.com/ding-lab/tin-daisy
+git clone https://github.com/ding-lab/tin-daisy
 ```
-
-Note that TinDaisy has [Mutect CWL Tool](https://github.com/mwyczalkowski/mutect-tool) as a submodule, 
-which requires the `--recurse-submodules` flag during cloning
 
 ### Other
 
@@ -75,7 +92,7 @@ as a docker image, `mwyczalkowski/tindaisy-core:mutect`
 git clone https://github.com/ding-lab/TinDaisy-Core
 ```
 
-## Running CPTAC3 analyses
+## Running CPTAC3 analyses on katmai in a Rabix environment
 
 Example of CPTAC3 analyses is in `demo/task_call/katmai.C3`.  Scripts in this directory can be modified in place, or copied and modified in another directory.
 
@@ -104,6 +121,11 @@ This step will write results to two places specified in `project_config.sh`: `LO
 ### 5. Run `3_make_analysis_summary.sh`
 When analysis completes, this step will create an analysis summary file which reports on the path to the output VCF file per case, and the
 input files which were used to generate it.
+
+## Running CPTAC3 analyses on MGI in Cromwell environment
+
+See analyses in `./demo/task_call/cromwell`.  Significant development is taking place here, with a simple execution manager implemented with
+the following tools in `./src`: `runplan`, `rungo`, `runtidy`, `datatidy`.  TODO: improve documentation
 
 
 # Development notes

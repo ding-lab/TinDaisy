@@ -6,7 +6,7 @@ CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
 
 # -J N - specify number of jobs to run at once
 #ARGS="-J 6"
-bash $TD_ROOT/src/start_cromwell_runs.sh $ARGS -y $YAMLD -c $CWL -C $CONFIG $@
+bash $TD_ROOT/src/rungo $ARGS -c $CWL -C $CONFIG $@
 
 rc=$?
 if [[ $rc != 0 ]]; then

@@ -17,5 +17,12 @@ Subsequent runs in cromwell
 * Runs in directories cromwell, cromwell.B, and cromwell.C developed parallel runs tested on GBM cases
     * these were deleted, details noted in cromwell/README.historic-runs
 * Preliminary runs were rerun because of problems detected with dbSnP database.  Continuing with updated dbSnP-COSMIC version 20190416
-* cromwell.LB is run of Bobo's homemade realigned GBM
 
+# Production runs
+    * cromwell.LB is run of Bobo's homemade realigned GBM
+    * cromwell is run of 42 GBM cases.  Both this and cromwell.LB succeeded
+    * cromwell.C3L-01834 is a run of just that particular case
+        -> the three runs above should be finalized and merged
+    * cromwell.Y2b1.normals is run of 92 Y2b1 adjacent / blood normal analysis
+        -> 27 runs in total because only a subset has adjacent normals
+        -> run has been completed, not finalized

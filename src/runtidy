@@ -3,11 +3,14 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
+# TODO combine runLogger and logStash
+# this also registers
+
 read -r -d '' USAGE <<'EOF'
-Archive Cromwell logs
+Register, query, and archive Cromwell runs 
 
 Usage:
-  bash logStash.sh [options] [ CASE1 [CASE2 ...]]
+  bash runtidy [options] [ CASE1 [CASE2 ...]]
 
 Required options:
 
@@ -16,6 +19,7 @@ Optional options
 -d: dry run: print commands but do not run
 -v: verbose
 -1: stop after one case processed.
+-x TASK: Execute given task.  Values: 'query' (default), 'register', 'stash', 'finalize'
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -T STASHD: root directory of archived logs.  Default "./logs"
@@ -23,10 +27,32 @@ Optional options
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
 -Y: move (not copy) YAML files
 -F: Force stashing even if run not in runlog.dat
--f: Force stashing even if run status is not Succeeded/Failed
+-f STATUS: Force processing of runs of given status.  Require all cases to have same status
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
+-m NOTE: A note added to run log file for each case
+
+Runtidy performs the following task:
+* `query`: Evaluate and print for each case
+    - case, workflowId, run output log path
+* `register`: write entry in run log
+* `stash`: copy run output data to directory named after workflowID
+* `finalize`: Run `register` and `stash` tasks, and also register with `runtidy`
+
+A runlog file has the following columns
+    * `CASE`
+    * `WorkflowID`
+    * `Status`
+    * `StartTime`
+    * `EndTime`
+    * `Note` - optional, may indicate whether a restart, etc.
+A line is added to runlog for every case with a known WorkflowID every time this utility is run; this allows for runs to change 
+status over time, and multiple lines for same case and/or workflow ID is not an error.  By default, only runs with status of
+Succeeded or Failed will logged.  -f flag will make all runs be logged.
 
 Move run output files and copy YAML files to a directory named after WorkflowID
+
+Registration of runs in runlog allows mapping of CASE to WorkflowID of past runs even when logs are stashed (i.e., logs/CASE.out is
+no longer available).
 
 If files do not exist print a warning but proceed, so that running this utility twice does not yield
 an error
