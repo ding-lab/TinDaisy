@@ -3,6 +3,8 @@ Task call is based on that developed here:
 
 It consists of a simple workflow manager which uses GNU Parallel to run N tasks at a time
 
+Early Cromwell runs tracked here: https://docs.google.com/spreadsheets/d/12ANLh3H1dgZcGFwmCjL3i-XZHtukeicw6DtboAjMT7E/edit#gid=0
+
 Preliminary work focused on Rabix as a workflow manager:
 * katmai.C3 - ran cases.A.dat and running cases.B.dat on kobuk
     * these fail at merge step.  Is it kobuk-specific?
@@ -26,3 +28,12 @@ Subsequent runs in cromwell
     * cromwell.Y2b1.normals is run of 92 Y2b1 adjacent / blood normal analysis
         -> 27 runs in total because only a subset has adjacent normals
         -> run has been completed, not finalized
+
+    * Starting with an analysis of 5 Yige BAMs, /gscuser/mwyczalk/projects/TinDaisy/TinDaisyCromwellRunner
+      Cromwell runs will be in their own git repository.  Idea is that this repository will be cloned for each
+      run.
+
+# TODO
+
+In the yige 5 run, 2 runs were zombie state in VCF_2_MAF.  This is a problematic package and step, and either need to debug the
+bypass code or just remove it from CWL entirely
