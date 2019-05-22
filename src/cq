@@ -7,12 +7,12 @@ read -r -d '' USAGE <<'EOF'
 Cromwell Query: Print out per-case run statistics. Specific to cromwell runs registered with MGI Cromwell database
 
 Usage:
-  cq [options] [ CASE1 [CASE2 ...] ]
+  cq [options] [ RID1 [RID2 ...] ]
 
 Options:
 -h: Print this help message
 -1: Stop after one
--k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
+-k CASES_FN: file with list of all cases, one per line, used when RID1 not defined. Default: dat/cases.dat
 -q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'runlog', 'url'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
 -V: output query result only only (i.e., don't write case and workflow ID)
@@ -20,13 +20,12 @@ Options:
 -S: retain only cases where Status is Succeeded
 -T: Skip cases where logs are stashed 
 
-Example usage - specifying cases:
+RID is RunID, and can be either a Case or a WorkflowID.  Examples:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
 * `cq CASE1 CASE2 CASE3` - returns status of runs for three cases.  TODO: discuss how this looked up
 * `cq WID1 WID2` - returns status for two runs with given WorkflowIDs
 
-If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
-If CASE is a WorkflowID, use that instead of CASE name.  
+If RID is - then read RID from STDIN.  If RID is not defined, read from CASES_FN file.
 
 Evaluates the following information for each case
 * The workflow ID of the cromwell job
@@ -36,7 +35,8 @@ Evaluates the following information for each case
     * logs - List of stderr/stdout for each run.  All steps shown unless -s STEP is defined
     * workflowRoot - Path to root of cromwell output
     * timing - URL to visualize timing and progress of workflow
-    * output - Output VCF of TinDaisy run
+    * output - Output VCF of TinDaisy run associated with tindaisy.cwl.output_vcf
+    * outputs - All outputs of TinDaisy run as specified in input CWL
     * runlog - Output status, start, end times
     * url - print URL of Cromwell server and quit.  This is a hardcoded value, but useful to know for manual queries
 
@@ -141,11 +141,23 @@ function get_workflowRoot {
     echo "$S"
 }
 
+# This will return one output location, for tindaisy.cwl.output_vcf
 function get_output {
     WID=$1
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
     test_exit_status
     S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
+    test_exit_status
+    echo "$S"
+}
+
+# This will return ALL outputs specified in CWL.  Note that this will consist of multiple lines
+function get_outputs {
+    WID=$1
+    R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
+    test_exit_status
+    # Return all outputs which are not null
+    S=$( echo "$R" | jq -r '.outputs[] | .location' )
     test_exit_status
     echo "$S"
 }
@@ -164,24 +176,24 @@ function get_runlog {
     printf "$STATUS\t$START\t$END"
 }
 
-# this allows us to get case names in one of three ways:
-# 1: cq CASE1 CASE2 ...
+# this allows us to get Run IDs in one of three ways:
+# 1: cq RID1 RID2 ...
 # 2: cat cases.dat | cq -
-# 3: read from CASES file
-# Note that if no cases defined, assume CASE='-'
+# 3: read from CASES_FN file
+# Note that if no Run IDs defined, assume RIDS='-'
 if [ "$#" == 0 ]; then
     confirm $CASES_FN
-    CASES=$(cat $CASES_FN)
+    RIDS=$(cat $CASES_FN)
 elif [ "$1" == "-" ] ; then
-    CASES=$(cat - )
+    RIDS=$(cat - )
 else
-    CASES="$@"
+    RIDS="$@"
 fi
 
 # loop over all cases, obtain WID and database status
 # If log file does not exist, assume that the run has not started
 # RID (run ID) may be either CASE or WorkflowID
-for RID in $CASES; do
+for RID in $RIDS; do
 
     # Skip comments
     [[ $RID = \#* ]] && continue
@@ -225,8 +237,10 @@ for RID in $CASES; do
         elif [ "$QUERY" == 'timing' ]; then
             # URL as provided by tmooney on slack 
             STATUS="$CROMWELL_URL/api/workflows/v1/$WID/timing"
-        elif [ "$QUERY" == 'output' ]; then
+        elif [ "$QUERY" == 'output' ]; then     # this returns output associated with tindaisy.cwl.output_vcf
             STATUS=$(get_output $WID)
+        elif [ "$QUERY" == 'outputs' ]; then    # this returns multiple outputs
+            STATUS=$(get_outputs $WID | grep -v -w "null")
         elif [ "$QUERY" == 'runlog' ]; then
             STATUS=$(get_runlog $WID)
         elif [ "$QUERY" == 'url' ]; then
@@ -240,7 +254,9 @@ for RID in $CASES; do
     fi
 
     if [ -z $STATUS_ONLY ]; then
-        printf "$CASE\t$WID\t$STATUS\n" 
+        for S in $STATUS; do
+            printf "$CASE\t$WID\t$S\n" 
+        done
     else
         printf "$STATUS\n" 
     fi
