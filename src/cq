@@ -253,10 +253,9 @@ for RID in $RIDS; do
         fi
     fi
 
+    # Note that STATUS can have one or multiple lines (in the case of outputs query).  Awk deals with this correctly
     if [ -z $STATUS_ONLY ]; then
-        for S in $STATUS; do
-            printf "$CASE\t$WID\t$S\n" 
-        done
+        echo "$STATUS" | awk -v c=$CASE -v w=$WID '{OFS="\t"}{print c,w,$0}'
     else
         printf "$STATUS\n" 
     fi
