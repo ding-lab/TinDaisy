@@ -1,5 +1,6 @@
 # Various utilities common to cromwell runs
 # No database calls here
+# TODO: explain file formats and logic of how WorkflowID is looked up
 
 
 function test_exit_status {
@@ -132,11 +133,15 @@ function isStashed {
 }
 
 # obtain both Case and WorkflowID based on one of these values. RUNID passed can be either CASE or WorkflowID
-#   If it is a WorkflowID, get case by evaluating runlog
-#   If it is a case, get WorkflowID by
-#   1. parsing output log file named logs/CASE.out
-#       Value "Unknown" or "Unassigned" is returned if log file does not exist or does not contain WorkflowID, resp.
-#   2. or, if output log file does not exist, by parsing logs/runlog.dat
+# A) if RUNID is a WorkflowID, get Case by evaluating logs/runlog.dat
+# B) If RUNID Is a Case, get Workflow ID as follows
+#   1) If logs/CASE.out exists, parse it to get WorkflowID
+#      * if logs/CASE.out does not contain WorkflowID, WorkflowID is "Unassigned"
+#   2) if logs/CASE.out does not exist, obtain WorkflowID from logs/runlog.dat
+#       * if logs/runlog.dat does not exist, WorkflowID is "Unknown"
+# Both values Case and WorkflowID are returned.  Usage:
+#    read MYCASE MYWID < <( getCaseWID $CASE )
+# 
 function getCaseWID {
     RUNID=$1
     # Evaluate if RUNID is a WorkflowID.  
@@ -154,9 +159,7 @@ function getCaseWID {
             WID=$( getRunLogWID $CASE )
         fi
     fi
-    echo "$CASE" "$WID"
 
-#    # To read:
-#    # https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
-#    read MYCASE MYWID < <( getCaseWID $CASE )
+#   https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
+    echo "$CASE" "$WID"
 }
