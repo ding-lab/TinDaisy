@@ -19,13 +19,13 @@ Optional options
 -x TASK: Execute given task.  Values: 'query' (default), 'register', 'stash', 'finalize'
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) can be found.  Default "./logs"
--T STASHD: root directory where we write archived logs.  Default "./logs"
+-T STASHD: root directory where we write archived logs.  Default "./logs/stashed"
 -L RUNLOGD: Run log directory or file. If directory, run log file is RUNLOGD/runlog.dat.  If filename 
     given, assume this is existing run log file.  Default is "./logs"
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
 -Y: move (not copy) YAML files
 -F EXPECTED_STATUS: Define expected status of runs
--c CQ: explicit path to cromwell query utility `cq`.  Default "cq" 
+-c CQD: explicit path to cromwell query utility `cq` and `datatidy`
 -m NOTE: A note added to run log file for each case
 -D DATATIDY_ARGS: arguments passed to datatidy during registration
 
@@ -85,29 +85,35 @@ source cromwell_utils.sh
 SCRIPT=$(basename $0)
 SCRIPT_PATH=$(dirname $0)
 
-CQ="cq"
+TASK="query"
 LOGD="./logs"       # where we find Cromwell run logs
-STASHD="./logs"     # where we put stashed logs
+STASHD="./logs/stashed"     # where we put stashed logs
 RUNLOGD="./logs"    # Where we write runlog.dat
 
 YAMLD="./yaml"
 CASES_FN="dat/cases.dat"
 QUIET=1
 
-while getopts ":hd1k:l:T:fF:c:L:YvD:" opt; do
+while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
       exit 0
       ;;
-    d)  # echo work command instead of evaluating it
+    d)  # propagate to datatidy
       DRYRUN="d"
+      QUIET=0   # print stuff out
+      DATATIDY_ARGS="$DATATIDY_ARGS -d"
       ;;
-    1) 
+    1)  # propagate to datatidy
       JUSTONE=1
+      DATATIDY_ARGS="$DATATIDY_ARGS -1"
       ;;
     v) 
       QUIET=0
+      ;;
+    x)
+      TASK="$OPTARG"
       ;;
     k) 
       CASES_FN="$OPTARG"
@@ -118,20 +124,26 @@ while getopts ":hd1k:l:T:fF:c:L:YvD:" opt; do
     T) 
       STASHD="$OPTARG"
       ;;
-    F) 
-      EXPECTED_STATUS="$OPTARG"
-      ;;
-    c) 
-      CQ="$OPTARG"
-      ;;
     L) 
-      RUNLOG="$OPTARG"
+      RUNLOGD="$OPTARG"
+      ;;
+    y) 
+      YAMLD="$OPTARG"
       ;;
     Y) 
       YAML_MV=1
       ;;
+    F) 
+      EXPECTED_STATUS="$OPTARG"
+      ;;
+    c) 
+      CQD="$OPTARG"
+      ;;
+    m)
+      NOTE="$OPTARG"
+      ;;
     D) 
-      DATATIDY_ARGS="$OPTARG"
+      DATATIDY_ARGS="$DATATIDY_ARGS $OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -146,6 +158,14 @@ while getopts ":hd1k:l:T:fF:c:L:YvD:" opt; do
   esac
 done
 shift $((OPTIND-1))
+
+if [ -z $CQD ]; then
+    CQ="cq"
+    DATATIDY="datatidy"
+else
+    CQ="$CQD/cq"
+    DATATIDY="$CQD/datatidy"
+fi
 
 mkdir -p $LOGD
 test_exit_status
@@ -195,7 +215,7 @@ function do_register {
     CQL=$( $CQ -q runlog $CASE ) 
     test_exit_status
     WID=$( echo "$CQL" | cut -f 2 )
-    if [ $WID == "Unknown" ] || [ $WID == "Unassigned" ]; then
+    if [ "$WID" == "Unknown" ] || [ "$WID" == "Unassigned" ]; then
         continue
     fi
 
@@ -218,7 +238,10 @@ function do_register {
 #    * if Status is not "Succeeded" print warning and continue to next case, unless FORCE_STATUS=1
 #  * Check if STASHD/WorkflowID directory exists.  If it does, exit with an error
 #  * Check if runlog has entry with WorkflowID.  If it does not, exit with an error
-#  * Move LOGD/CASE.* and YAMLD/CASE.yaml to STASHD/WorkflowID
+#  * Move LOGD/CASE.* to STASHD/WorkflowID
+#  * If STATUS = Succeeded or YAML_MV is defined
+#    * Move YAMLD/CASE.yaml to STASHD/WorkflowID
+#    * otherwise copy YAMLD/CASE.yaml to STASHD/WorkflowID
 function do_stash {
     CASE=$1
 
@@ -234,37 +257,36 @@ function do_stash {
         else
             >&2 echo WARNING: $CASE: Log/yaml files does not exist, skipping this case 
         fi
-        continue
+        return
     fi
 
     # WID may be unknown for various reasons, like error conditions.  Stashing requires that this
     # value be known; if it is not, print a complaint and go on
     if [ $WID == "Unknown" ]; then
         >&2 echo Warning: WorkflowID for $CASE is $WID.  Not stashing these logs, continuing
-        continue
+        return
     fi
 
     STATUS=$( $CQ -V -q status $CASE ) 
     test_exit_status
-    if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
-        if [ "$FORCE_STATUS" ]; then
-            >&2 echo NOTE: $CASE status is $STATUS.  Proceeding with stashing
-        else
-            >&2 echo WARNING: $CASE status is $STATUS.  Skipping this case
-            continue
-        fi
+    if [ $STATUS == "Succeeded" ] || [ "$YAML_MV" ]; then
+        YAML_CMD="mv"
+    else
+        YAML_CMD="cp"
     fi
 
     if ! grep -F -q $WID $RUNLOG ; then
-        >&2 echo ERROR: $CASE \( $WID \) not found in $RUNLOG. Register run with \`runLogger.sh\` before stashing or override with -F.  Exiting.
-        exit 1
+        if [ ! "$DRYRUN" ]; then
+            >&2 echo ERROR: $CASE \( $WID \) not found in $RUNLOG. Register run with \`runLogger.sh\` before stashing
+            exit 1
+        fi
     fi
 
     OUTD="$STASHD/$WID"
     if [ -d $OUTD ]; then
         >&2 echo WARNING: Stash directory exists: $OUTD
         >&2 echo Skipping this case
-        continue
+        return
     fi
 
     CMD="mkdir -p $OUTD"
@@ -273,11 +295,7 @@ function do_stash {
     CMD="mv $LOGD/$CASE.* $OUTD"
     run_cmd "$CMD" "$DRYRUN" $QUIET
 
-    if [ "$YAML_MV" ]; then
-        CMD="mv $YAMLD/$CASE.yaml $OUTD"
-    else
-        CMD="cp $YAMLD/$CASE.yaml $OUTD"
-    fi
+    CMD="$YAML_CMD $YAMLD/$CASE.yaml $OUTD"
     run_cmd "$CMD" "$DRYRUN" $QUIET
 }
 
@@ -292,6 +310,9 @@ if [ ! -z $EXPECTED_STATUS ]; then
             exit 2  # to distinguish status mismatch from garden variety errors
         fi
         DOCKET="$DOCKET $CASE"
+        if [ $JUSTONE ]; then
+            break
+        fi
     done
     CASE=$DOCKET    #  CASE replenished to loop through all cases again
 fi
@@ -299,12 +320,13 @@ fi
 for CASE in $CASES; do
 
     STATUS=$( $CQ -V -q status $CASE )
+
     case "$TASK" in
       "query")
-        do_query $RID 
+        do_query $CASE 
         ;;
       "register")
-        do_register $RID 
+        do_register $CASE 
         ;;
       "stash")
         if [ -z $EXPECTED_STATUS ]; then
@@ -312,7 +334,7 @@ for CASE in $CASES; do
                 continue
             fi
         fi
-        do_stash $RID 
+        do_stash $CASE 
         ;;
       "finalize")
         if [ -z $EXPECTED_STATUS ]; then
@@ -320,11 +342,14 @@ for CASE in $CASES; do
                 continue
             fi
         fi
-        datatidy $DATATIDY_ARGS -x original $RID 
+        if [ ! -z "$NOTE" ]; then   # NOTE can have spaces, so escaping it is a pain
+            $DATATIDY -m "$NOTE" $DATATIDY_ARGS -x original $CASE 
+        else
+            $DATATIDY $DATATIDY_ARGS -x original $CASE 
+        fi
         test_exit_status
-        do_register $RID 
-        do_stash $RID
-        
+        do_register $CASE 
+        do_stash $CASE
         ;;
       *)
         >&2 echo ERROR: Unknown task $TASK

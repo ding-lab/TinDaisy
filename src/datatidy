@@ -22,7 +22,7 @@ Optional options
 -x TASK: Execute given task.  Values: 'query' (default), 'original', 'inputs', 'compress', 'prune', 'final', 'wipe'
 -F EXPECTED_STATUS: Define expected status of runs 
 -w: output additional detail for query task
--c CQ: explicit path to cromwell query utility `cq`.  Default "cq" 
+-c CQD: explicit path to cromwell query utility `cq` and `datatidy`
 
 RID is RunID, and can be either a Case or a WorkflowID.  If RID is - then read
 RID from STDIN.  If RID is not defined, read from CASES_FN file.
@@ -71,11 +71,16 @@ source cromwell_utils.sh
 SCRIPT=$(basename $0)
 SCRIPT_PATH=$(dirname $0)
 
-CQ="cq"
 CASES_FN="./dat/cases.dat"
 NOTE=""
 TASK="query"
 DATALOGD="./logs"
+
+if [ -z $CQD ]; then
+    CQ="cq"
+else
+    CQ="$CQD/cq"
+fi
 
 while getopts ":hd1l:k:m:c:x:wF:" opt; do
   case $opt in
@@ -99,7 +104,7 @@ while getopts ":hd1l:k:m:c:x:wF:" opt; do
       NOTE="$OPTARG"
       ;;
     c) 
-      CQ="$OPTARG"
+      CQD="$OPTARG"
       ;;
     x)
       TASK="$OPTARG"
@@ -123,7 +128,6 @@ while getopts ":hd1l:k:m:c:x:wF:" opt; do
   esac
 done
 shift $((OPTIND-1))
-
 
 # this allows us to get Run IDs in one of three ways:
 # 1: cq RID1 RID2 ...
@@ -239,11 +243,11 @@ function write_datalog {
     DATAD=$( $CQ -V -q workflowRoot $MYWID )                               
     test_exit_status                                                                   
 
-    DATALOGLINE=$( printf "$MYCASE\t$MYWID\t$DATAD\t$NOW\t$TD\t$NOTE\n") 
+    DL=$( printf "$MYCASE\t$MYWID\t$DATAD\t$NOW\t$TL\t$NOTE\n") 
     if [ "$DRYRUN" ]; then
-        >&2 echo Dryrun: data log = "$RL"
+        >&2 echo Dryrun: data log = "$DL"
     else
-        echo "$RL" >> $DATALOG
+        echo "$DL" >> $DATALOG
     fi
     test_exit_status
 }
@@ -330,58 +334,38 @@ function do_wipe {
     return 1
 }
 
-function process_runs {
-    TASK=$1
-    DOCKET="$2"
-
-    for RID in $DOCKET; do
-
-        case "$TASK" in
-          "original_special")
-            :   # don't do anything, just let write_dialog below do its thing
-            ;;
-          "inputs")
-            delete_inputs $RID 
-            ;;
-          "compress")
-            delete_inputs $RID 
-            do_compress $RID
-            ;;
-          "prune")
-            delete_inputs $RID 
-            do_prune $RID
-            ;;
-          "final")
-            delete_inputs $RID 
-            do_final $RID
-            ;;
-          "wipe")
-            delete_inputs $RID 
-            do_wipe $RID
-            ;;
-          *)
-            >&2 echo ERROR: Unknown task $TASK
-            >&2 echo "$USAGE"
-            exit 1
-            ;;
-        esac
-
-        write_datalog $RID $TASK
-        test_exit_status
-    done
-}
 
 # catch original task with a specific status defined
 if [ $TASK == "original" ] && [ ! -z "$EXPECTED_STATUS" ]; then
     TASK="original_special"
 fi
 
-DO_DOCKET=0
-DOCKET=""
-
-# Looping over RunID, which is either Case or WorkflowID
 # for cases which involve deleting data (and "original" with non-default status values),
 # first check to make sure all runs have expected status before processing them
+if [ $TASK == "original_special" ] || [ $TASK == "inputs" ] || [ $TASK == "compress" ] || \
+   [ $TASK == "prune" ] || [ $TASK == "final" ] || [ $TASK == "wipe" ]; then
+
+    # if expecting a given status, first pre-check to make sure all cases are of this status
+    # to do this.  Note this is alternative logic to datatidy, where testing during main loop
+    if [ -z $EXPECTED_STATUS ]; then
+        >&2 echo ERROR: Task $TASK requires EXPECTED_STATUS \(-F\) to be defined
+        exit 1
+    fi
+
+    DOCKET=""
+    for CASE in $CASES; do
+        WID=$( check_expected_status $RID $EXPECTED_STATUS )
+        test_exit_status
+
+        DOCKET="$DOCKET $WID"
+        if [ $JUSTONE ]; then
+            break
+        fi
+    done
+    CASE=$DOCKET    #  CASE replenished to loop through all cases again
+fi
+
+# Looping over RunID, which is either Case or WorkflowID
 for RID in $RIDS; do
 
     case "$TASK" in
@@ -391,16 +375,32 @@ for RID in $RIDS; do
       "original")
         register_original $RID 
         ;;
-      "original_special"|"inputs"|"compress"|"prune"|"final"|"wipe")
-#        test if workflowID has expected status, and add to docket if so
-        DO_DOCKET=1
-        if [ -z $EXPECTED_STATUS ]; then
-            >&2 echo ERROR: Task $TASK requires EXPECTED_STATUS \(-F\) to be defined
-            exit 1
-        fi
-        WID=$( check_expected_status $RID $EXPECTED_STATUS )
-        test_exit_status
-        DOCKET="$DOCKET $WID"
+      "original_special")
+        write_datalog $RID $TASK
+        ;;
+      "inputs")
+        delete_inputs $RID 
+        write_datalog $RID $TASK
+        ;;
+      "compress")
+        delete_inputs $RID 
+        do_compress $RID
+        write_datalog $RID $TASK
+        ;;
+      "prune")
+        delete_inputs $RID 
+        do_prune $RID
+        write_datalog $RID $TASK
+        ;;
+      "final")
+        delete_inputs $RID 
+        do_final $RID
+        write_datalog $RID $TASK
+        ;;
+      "wipe")
+        delete_inputs $RID 
+        do_wipe $RID
+        write_datalog $RID $TASK
         ;;
       *)
         >&2 echo ERROR: Unknown task $TASK
@@ -414,12 +414,3 @@ for RID in $RIDS; do
     fi
 done
 
-if [ $DO_DOCKET ]; then
-
-    process_runs $TASK "$DOCKET"
-
-fi
-
-
-
->&2 echo Written to $DATALOG
