@@ -34,7 +34,7 @@ Datatidy performs the following task:
 * Delete and/or compress run data.  In all cases except wipe, CWL outputs will be retained in original path
     * `inputs` - `inputs` subdirectories in all steps deleted.  This takes place for all following tidy levels 
     * `compress` - All data compressed 
-    * `prune` - Delete selected intermediate data, retaining compressed logs and key intermediate results
+    * `prune` - Retain and compress final output of each step
     * `final` - Keep only final CWL outputs of each run
     * `wipe` - Delete everything
 
@@ -252,6 +252,14 @@ function write_datalog {
     test_exit_status
 }
 
+# Return a list of CWL outputs of a run
+# Pass either workflow ID or case ID
+function get_outputs {
+    RID=$1
+    OUTPUTS=$( $CQ -V -q OUTPUTS $RID )                               
+    echo "$OUTPUTS" 
+}
+
 # Register only those runs which have a status of Succeeded or Failed
 function register_original {
     RID=$1
@@ -290,40 +298,96 @@ function delete_inputs {
 }
 
 function rmrf_exclude {
-# Pass 1) root directory, 2) list of files to exclude
-# this will use extended pattern matching to remove all directories under root directory
-# with the exception of those in exclude list
-    >&2 echo Unimplemented
-    return 1
+    # Pass 1) root directory, 2) whitespace-separated list of files to exclude from deletion, which may include paths or filenames, and may include wildcards
+    # All empty directories will also be deleted
+    ROOT="$1"
+    FILES="$2"
+
+    PATHCMD=""
+    # Build up a command string like "-path $F1 -o -path $F2"
+    # https://alvinalexander.com/linux-unix/linux-find-multiple-filenames-patterns-command-example
+    for F in $FILES; do
+        if [ "$PATHCMD" == "" ]; then
+            PATHCMD="-path $F"
+        else
+            PATHCMD="$PATHCMD -o -path $F"
+        fi
+    done
+
+    # Delete all regular files which are not excluded
+    CMD="find $ROOT -type f -not \( $PATHCMD \) -delete"
+    run_cmd "$CMD" $DRYRUN
+
+    # Delete all links which are not excluded
+    CMD="find $ROOT -type l -not \( $PATHCMD \) -delete"
+    run_cmd "$CMD" $DRYRUN
+
+    # Delete all empty directories
+    CMD="find $ROOT -type d -empty -delete"
+    run_cmd "$CMD" $DRYRUN
 }
 
 function do_compress {
-# Run tar -zcf run_output.tar.gz *
-# Then run rmrf_exclude, keeping final output and run_output.tar.gz
-    >&2 echo Unimplemented
-    return 1
+    # compress all results to file compressed_results.tar.gz, then remove all 
+    # results except final output and compressed_results.tar.gz
+    RID=$1
 
+    WD=$( $CQ -V -q workflowRoot $RID )                               
+
+    CMD="tar -zcf $WD/compressed_results.tar.gz -C $WD ."   # https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+    run_cmd "$CMD" $DRYRUN
+    
+    OUTPUTS=$(get_outputs $RID)
+    rmrf_exclude $WD "$OUTPUTS $WD/compressed_results.tar.gz"
 }
 
 function do_prune {
-# TODO: make a list of things we want to keep and delete
-#   * All big files, all intermediate files
-#   * In general, output of each step should be retained
-    >&2 echo Unimplemented
-    return 1
+    # We retain all final outputs of each step (as obtained by inspection of CWL code)
+    # we then create pruned_results.tar.gz containing this data
+    # Finally, all these files are deleted except for final CWL outputs
+    RID=$1
 
+    WD=$( $CQ -V -q workflowRoot $RID )                               
+    RESULTS=" \
+        results/dbsnp_filter/dbsnp_pass.vcf \
+        results/merged/merged.filtered.vcf \
+        results/pindel/filter_out/pindel-raw.dat.CvgVafStrand_pass.Homopolymer_pass.vcf \
+        results/varscan/filter_indel_out/varscan.out.som_indel.Somatic.hc.vcf \
+        results/varscan/filter_snv_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf \
+        results/pindel/pindel_out/pindel-raw.dat \
+        results/strelka2/strelka_out/results/variants/somatic.snvs.vcf.gz \
+        results/strelka/strelka_out/results/passed.somatic.snvs.vcf \
+        results/varscan/varscan_out/varscan.out.som_indel.vcf \
+        results/varscan/varscan_out/varscan.out.som_snv.vcf \
+        results/vaf_length_depth_filters/filtered.vcf \
+        results/maf/output.maf \
+        results/vep/output_vep.vcf \
+        results/vep_filter/vep_filtered.vcf \
+        mutect_call_stats.txt \
+        mutect_coverage.wig.txt \
+        mutect.vcf \
+    "
+    OUTPUTS=$(get_outputs $RID)
+    # Delete all except results of each step
+    rmrf_exclude $WD "$OUTPUTS $RESULTS"
+
+    # compress all remaining data
+    CMD="tar -zcf $WD/pruned_results.tar.gz -C $WD ."   # https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+    run_cmd "$CMD" $DRYRUN
+
+    # Finally remove all except final output and the .tar.gz file
+    rmrf_exclude $WD "$OUTPUTS pruned_results.tar.gz"
 }
 
 # Note on deleting: https://www.tecmint.com/delete-all-files-in-directory-except-one-few-file-extensions/
 # can use extended pattern matching to not delete given files
 function do_final {
-# TODO: finish this
+    RID=$1
 
-# call cq -V outputs to get complete path to all final outputs
-# call rmrf_exclude, keeping all final output
-    >&2 echo Unimplemented
-    return 1
-
+    WD=$( $CQ -V -q workflowRoot $RID )                               
+    
+    OUTPUTS=$(get_outputs $RID)
+    rmrf_exclude $WD "$OUTPUTS "
 }
 
 
