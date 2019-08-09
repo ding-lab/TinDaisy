@@ -51,7 +51,7 @@ hard to map CASE to WorkflowID in future.  Stashing also copies or moves YAML
 files to stash directory; if status is Succeeded the YAML is moved, copied
 otherwise (-Y to always move YAML files).
 
-Registering a run creates an entry in run log file; this file tracks whichcase
+Registering a run creates an entry in run log file; this file tracks which case
 is associated with which Workflow ID.  Runs are stashed only when
 they have completed execution, but can be registered any time any number of times.
 

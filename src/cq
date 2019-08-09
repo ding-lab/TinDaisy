@@ -3,6 +3,9 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
+# TODO: check if server is running / available and report reasonable error message
+# allow CROMWELL_URL to be set as environment variable
+
 read -r -d '' USAGE <<'EOF'
 Cromwell Query: Print out per-case run statistics. Specific to cromwell runs registered with MGI Cromwell database
 
@@ -19,6 +22,8 @@ Options:
 -U: skip cases were WorkflowID is Unknown or Unassigned
 -S: retain only cases where Status is Succeeded
 -T: Skip cases where logs are stashed 
+-D: Do not access database.  This results in limited functionality.  Status is unknown, while best guesses are made for other queries
+-C CROMWELL_URL: define the cromwell URL.  Default: https://genome-cromwell.gsc.wustl.edu
 
 RID is RunID, and can be either a Case or a WorkflowID.  Examples:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
@@ -43,13 +48,17 @@ Evaluates the following information for each case
 Workflow ID associated with given cromwell output file is obtaining by grepping for output line like,
 [2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
 
+CROMWELL_URL can be defined as environment variable, e.g., `export CROMWELL_URL=http://localhost:8000`
+
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
 
 source cromwell_utils.sh
 
-# hardcoded for now
-CROMWELL_URL="https://genome-cromwell.gsc.wustl.edu"
+# read default from environment variable if possible, otherwise use default
+if [ -z $CROMWELL_URL ]; then
+    CROMWELL_URL="https://genome-cromwell.gsc.wustl.edu"
+fi
 CURL_ARG="-k"   # arguments passed to all cromwell db calls 
 
 
@@ -58,7 +67,7 @@ CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1k:q:s:VUST" opt; do
+while getopts ":h1k:q:s:VUSTDC:" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -88,6 +97,12 @@ while getopts ":h1k:q:s:VUST" opt; do
     T) 
       NO_STASH=1
       ;;
+    D) 
+      NO_DB=1
+      ;;
+    C) 
+      CROMWELL_URL="$OPTARG"
+      ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
       echo "$USAGE"
@@ -104,8 +119,15 @@ done
 shift $((OPTIND-1))
 
 
+# If no DB, status is Unknown
 function get_status {
     WID=$1
+
+    if [ $NO_DB ]; then
+        echo Unknown
+        return
+    fi
+
     URL="$CROMWELL_URL/api/workflows/v1/$WID/status"
     R=$( curl $CURL_ARG -s -X GET $URL -H "accept: application/json" )
     test_exit_status
@@ -116,8 +138,13 @@ function get_status {
     echo $S
 }
 
+# If no DB, return Unknown (though may be able to guess)
 function get_logs {
     WID=$1
+    if [ $NO_DB ]; then
+        echo Unknown
+        return
+    fi
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/logs" -H "accept: application/json" )
     test_exit_status
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
