@@ -32,7 +32,7 @@ Datatidy performs the following task:
     - case, workflowId, tidyLevel, path [, datasize, date, note]
 * `original` - Registers run data, marking it as "original" in data log
 * Delete and/or compress run data.  In all cases except wipe, CWL outputs will be retained in original path
-    * `inputs` - `inputs` subdirectories in all steps deleted.  This takes place for all following tidy levels 
+    * `inputs` - `inputs` subdirectories in all steps deleted.  This takes place for all other tidy levels 
     * `compress` - All data compressed 
     * `prune` - Retain and compress final output of each step
     * `final` - Keep only final CWL outputs of each run
@@ -176,7 +176,7 @@ function parseDataLog {
     # Search runlog from bottom, return column 1 of first matching line
     DL=$( tac $DATALOG | grep -m 1 -F "$WID"  )
     test_exit_status
-    if [ -z $DL ]; then
+    if [ -z "$DL" ]; then
         DL="Unregistered"
     fi
     echo "$DL"
@@ -206,9 +206,9 @@ function do_query {
     if [ "$QUERY_DETAIL" ]; then
         DATASIZE=$(du -sh "$DATAD" | cut -f 1)
         test_exit_status
-        print "$MYCASE\t$MYWID\t$DATAD\t$TIDYLEVEL\t$DATASIZE\t$DL_DATE\t$DL_NOTE\n" 
+        printf "$MYCASE\t$MYWID\t$DATAD\t$TIDYLEVEL\t$DATASIZE\t$DL_DATE\t$DL_NOTE\n" 
     else
-        print "$MYCASE\t$MYWID\t$DATAD\t$TIDYLEVEL\n" 
+        printf "$MYCASE\t$MYWID\t$DATAD\t$TIDYLEVEL\n" 
     fi
 }
 
@@ -217,15 +217,17 @@ function do_query {
 function check_expected_status {
     RID=$1
     ES=$2
+
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
     read MYCASE MYWID < <( getCaseWID $RID )
     STATUS=$( $CQ -V -q status $MYWID )                               
     if [ $STATUS != $ES ]; then
-        >&2 echo ERROR: Status of run $RID \( $STATUS \) differs from expected \( $ES \).  Note that \
-tasks which modify data require all runs to have status as defined by -F.  No run data has been altered.
+        >&2 echo ERROR: Status of run $RID \( $STATUS \) differs from expected \( $ES \)
+        >&2 echo "      " Tasks which delete data require all runs to have expected status \(-F\)
+        >&2 echo "      " No run data has been altered
         exit 2  # to distinguish status mismatch from garden variety errors
     fi
-    return $MYWID
+    echo "$MYWID"
 }
 
 # Write entry to datalog file 
@@ -245,7 +247,7 @@ function write_datalog {
 
     DL=$( printf "$MYCASE\t$MYWID\t$DATAD\t$NOW\t$TL\t$NOTE\n") 
     if [ "$DRYRUN" ]; then
-        >&2 echo Dryrun: data log = "$DL"
+        >&2 echo Dryrun: writing to datalog: "$DL"
     else
         echo "$DL" >> $DATALOG
     fi
@@ -256,7 +258,7 @@ function write_datalog {
 # Pass either workflow ID or case ID
 function get_outputs {
     RID=$1
-    OUTPUTS=$( $CQ -V -q OUTPUTS $RID )                               
+    OUTPUTS=$( $CQ -V -q outputs $RID )                               
     echo "$OUTPUTS" 
 }
 
@@ -330,15 +332,26 @@ function rmrf_exclude {
 function do_compress {
     # compress all results to file compressed_results.tar.gz, then remove all 
     # results except final output and compressed_results.tar.gz
+    # If the output file already exists skip compressing again, since data loss may occur
     RID=$1
 
     WD=$( $CQ -V -q workflowRoot $RID )                               
 
-    CMD="tar -zcf $WD/compressed_results.tar.gz -C $WD ."   # https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+    TAR="compressed_results.tar.gz"
+    if [ -f "$WD/$TAR" ]; then
+        >&2 echo WARNING: File $WD/$TAR exists.  Will not overwrite, skipping compress task
+        return
+    fi
+
+    # https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+    # The `touch` is to avoid error like "tar: .: file changed as we read it" per https://stackoverflow.com/questions/20318852/tar-file-changed-as-we-read-it 
+    CMD="touch $WD/$TAR && tar -zcf $WD/$TAR -C $WD --exclude $TAR ."   
     run_cmd "$CMD" $DRYRUN
     
     OUTPUTS=$(get_outputs $RID)
     rmrf_exclude $WD "$OUTPUTS $WD/compressed_results.tar.gz"
+
+    write_datalog $RID $TASK
 }
 
 function do_prune {
@@ -347,36 +360,50 @@ function do_prune {
     # Finally, all these files are deleted except for final CWL outputs
     RID=$1
 
+# TODO: update as in compress
+#   * tar
+#   * check if file exists
+
     WD=$( $CQ -V -q workflowRoot $RID )                               
+
+
+    TAR="pruned_results.tar.gz"
+    if [ -f "$WD/$TAR" ]; then
+        >&2 echo WARNING: File $WD/$TAR exists.  Will not overwrite, skipping prune task
+        return
+    fi
+
     RESULTS=" \
-        results/dbsnp_filter/dbsnp_pass.vcf \
-        results/merged/merged.filtered.vcf \
-        results/pindel/filter_out/pindel-raw.dat.CvgVafStrand_pass.Homopolymer_pass.vcf \
-        results/varscan/filter_indel_out/varscan.out.som_indel.Somatic.hc.vcf \
-        results/varscan/filter_snv_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf \
-        results/pindel/pindel_out/pindel-raw.dat \
-        results/strelka2/strelka_out/results/variants/somatic.snvs.vcf.gz \
-        results/strelka/strelka_out/results/passed.somatic.snvs.vcf \
-        results/varscan/varscan_out/varscan.out.som_indel.vcf \
-        results/varscan/varscan_out/varscan.out.som_snv.vcf \
-        results/vaf_length_depth_filters/filtered.vcf \
-        results/maf/output.maf \
-        results/vep/output_vep.vcf \
-        results/vep_filter/vep_filtered.vcf \
-        mutect_call_stats.txt \
-        mutect_coverage.wig.txt \
-        mutect.vcf \
+        \*/results/dbsnp_filter/dbsnp_pass.vcf \
+        \*/results/merged/merged.filtered.vcf \
+        \*/results/pindel/filter_out/pindel-raw.dat.CvgVafStrand_pass.Homopolymer_pass.vcf \
+        \*/results/varscan/filter_indel_out/varscan.out.som_indel.Somatic.hc.vcf \
+        \*/results/varscan/filter_snv_out/varscan.out.som_snv.Somatic.hc.somfilter_pass.vcf \
+        \*/results/pindel/pindel_out/pindel-raw.dat \
+        \*/results/strelka2/strelka_out/results/variants/somatic.snvs.vcf.gz \
+        \*/results/strelka/strelka_out/results/passed.somatic.snvs.vcf \
+        \*/results/varscan/varscan_out/varscan.out.som_indel.vcf \
+        \*/results/varscan/varscan_out/varscan.out.som_snv.vcf \
+        \*/results/vaf_length_depth_filters/filtered.vcf \
+        \*/results/maf/output.maf \
+        \*/results/vep/output_vep.vcf \
+        \*/results/vep_filter/vep_filtered.vcf \
+        \*/mutect_call_stats.txt \
+        \*/mutect_coverage.wig.txt \
+        \*/mutect.vcf \
     "
     OUTPUTS=$(get_outputs $RID)
     # Delete all except results of each step
     rmrf_exclude $WD "$OUTPUTS $RESULTS"
 
-    # compress all remaining data
-    CMD="tar -zcf $WD/pruned_results.tar.gz -C $WD ."   # https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+    # https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+    # The `touch` is to avoid error like "tar: .: file changed as we read it" per https://stackoverflow.com/questions/20318852/tar-file-changed-as-we-read-it 
+    CMD="touch $WD/$TAR && tar -zcf $WD/$TAR -C $WD --exclude $TAR ."   
     run_cmd "$CMD" $DRYRUN
-
+    
     # Finally remove all except final output and the .tar.gz file
-    rmrf_exclude $WD "$OUTPUTS pruned_results.tar.gz"
+    rmrf_exclude $WD "$OUTPUTS \*/$TAR"
+    write_datalog $RID $TASK
 }
 
 # Note on deleting: https://www.tecmint.com/delete-all-files-in-directory-except-one-few-file-extensions/
@@ -388,6 +415,7 @@ function do_final {
     
     OUTPUTS=$(get_outputs $RID)
     rmrf_exclude $WD "$OUTPUTS "
+
 }
 
 
@@ -398,8 +426,8 @@ function do_wipe {
     WD=$( $CQ -V -q workflowRoot $RID )                               
     CMD="rm -rf $WD"
     run_cmd "$CMD" $DRYRUN
+    write_datalog $RID $TASK
 }
-
 
 # catch original task with a specific status defined
 if [ $TASK == "original" ] && [ ! -z "$EXPECTED_STATUS" ]; then
@@ -419,7 +447,7 @@ if [ $TASK == "original_special" ] || [ $TASK == "inputs" ] || [ $TASK == "compr
     fi
 
     DOCKET=""
-    for CASE in $CASES; do
+    for RID in $RIDS; do
         WID=$( check_expected_status $RID $EXPECTED_STATUS )
         test_exit_status
 
@@ -428,7 +456,7 @@ if [ $TASK == "original_special" ] || [ $TASK == "inputs" ] || [ $TASK == "compr
             break
         fi
     done
-    CASE=$DOCKET    #  CASE replenished to loop through all cases again
+    RIDS=$DOCKET    #  CASE replenished to loop through all cases again
 fi
 
 # Looping over RunID, which is either Case or WorkflowID
@@ -451,22 +479,18 @@ for RID in $RIDS; do
       "compress")
         delete_inputs $RID 
         do_compress $RID
-        write_datalog $RID $TASK
         ;;
       "prune")
         delete_inputs $RID 
         do_prune $RID
-        write_datalog $RID $TASK
         ;;
       "final")
         delete_inputs $RID 
         do_final $RID
-        write_datalog $RID $TASK
         ;;
       "wipe")
         delete_inputs $RID 
         do_wipe $RID
-        write_datalog $RID $TASK
         ;;
       *)
         >&2 echo ERROR: Unknown task $TASK
