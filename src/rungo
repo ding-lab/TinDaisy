@@ -10,7 +10,7 @@ Usage:
   rungo [options] [ CASE1 [CASE2 ...]]
 
 Required options:
--c CWL: CWL file which defines workflow
+-W CWL: CWL file which defines workflow
 -C CROMWELL_CONFIG: Cromwell config file. Required.
 
 Optional options
@@ -26,6 +26,9 @@ Optional options
    will not save to database
 -R CROMWELL_JAR: Cromwell JAR file.  Default: /opt/cromwell.jar
 -j JAVA: path to java.  Default: /usr/bin/java
+-c CQD: explicit path to cromwell query utilities `runtidy` and `datatidy`
+-F: Finalize run and compress run data immediately after successful completion of run.
+    This calls `runtidy -x finalize` and `datatidy -x compress`
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -56,7 +59,7 @@ CROMWELL_JAR="/opt/cromwell.jar"
 JAVA="/usr/bin/java"
 CASES_FN="dat/cases.dat"
 
-while getopts ":c:y:hd1J:l:eC:D:R:j:k:" opt; do
+while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:F" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -77,7 +80,7 @@ while getopts ":c:y:hd1J:l:eC:D:R:j:k:" opt; do
     l) 
       LOGD="$OPTARG"
       ;;
-    c) 
+    W) 
       CWL=$OPTARG
       ;;
     J) 
@@ -97,6 +100,12 @@ while getopts ":c:y:hd1J:l:eC:D:R:j:k:" opt; do
       ;;
     j) 
       JAVA="$OPTARG"
+      ;;
+    c) 
+      CQD="$OPTARG"
+      ;;
+    F) 
+      DO_FINALIZE=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -150,6 +159,14 @@ confirm $CROMWELL_CONFIG
 mkdir -p $LOGD
 test_exit_status
 
+if [ -z $CQD ]; then
+    RUNTIDY="runtidy"
+    DATATIDY="datatidy"
+else
+    RUNTIDY="$CQD/runtidy"
+    DATATIDY="$CQD/datatidy"
+fi
+
 # Used for `parallel` job groups 
 NOW=$(date)
 MYID=$(date +%Y%m%d%H%M%S)
@@ -182,6 +199,13 @@ for CASE in $CASES; do
 
     CMD=$(get_cromwell_cmd $CWL $CASE $CROMWELL_CONFIG $STDOUT_FN $STDERR_FN)
     test_exit_status
+
+    if [ $DO_FINALIZE ]; then
+        # finalize and compress run immediately after successful completion
+        RT_CMD="$RUNTIDY -x finalize -m Autofinalizing $CASE"
+        DT_CMD="$DATATIDY -F Succeeded -x compress $CASE"
+        CMD="$CMD && $RT_CMD && $DT_CMD"
+    fi
 
     if [ $NJOBS != 0 ]; then
         JOBLOG="$LOGD/$CASE.log"

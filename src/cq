@@ -22,7 +22,7 @@ Options:
 -U: skip cases were WorkflowID is Unknown or Unassigned
 -S: retain only cases where Status is Succeeded
 -T: Skip cases where logs are stashed 
--D: Do not access database.  This results in limited functionality.  Status is unknown, while best guesses are made for other queries
+-D: Do not access database.  Limited functionality: status is unknown, best guesses are made for other queries.  TODO: complete implementation
 -C CROMWELL_URL: define the cromwell URL.  Default: https://genome-cromwell.gsc.wustl.edu
 
 RID is RunID, and can be either a Case or a WorkflowID.  Examples:
