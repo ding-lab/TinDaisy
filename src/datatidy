@@ -64,6 +64,10 @@ A data log file has the following columns:
 
 This script relies on `cq` to get WorkflowID, status and timestamps associated with each case
 
+Note that in the case of queries, only the most recent workflow ID is returned; if there are
+multiple runs for a given case the older ones will be masked.  TODO: allow multiple workflow IDs
+to be listed for a given case if they exist.
+
 EOF
 
 source cromwell_utils.sh
@@ -175,7 +179,6 @@ function parseDataLog {
 
     # Search runlog from bottom, return column 1 of first matching line
     DL=$( tac $DATALOG | grep -m 1 -F "$WID"  )
-    test_exit_status
     if [ -z "$DL" ]; then
         DL="Unregistered"
     fi
@@ -270,7 +273,7 @@ function register_original {
     if [ $STATUS == "Succeeded" ] || [ $STATUS == "Failed" ]; then
         write_datalog $RID "original"
     else
-        >&2 echo Skipping $RID : Status = $STATUS
+        >&2 echo Skipping datatidy registration $RID : Status = $STATUS
     fi
 }
 

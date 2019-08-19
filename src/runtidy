@@ -315,8 +315,8 @@ if [ ! -z $EXPECTED_STATUS ]; then
     DOCKET=""
     for CASE in $CASES; do
         STATUS=$( $CQ -V -q status $CASE )
-        if [ $STATUS != $ES ]; then
-            >&2 echo ERROR: Status of case $CASE \( $STATUS \) differs from expected \( $ES \)
+        if [ "$STATUS" != "$EXPECTED_STATUS" ]; then
+            >&2 echo ERROR: Status of case $CASE \( $STATUS \) differs from expected \( $EXPECTED_STATUS \)
             exit 2  # to distinguish status mismatch from garden variety errors
         fi
         DOCKET="$DOCKET $CASE"
@@ -351,6 +351,9 @@ for CASE in $CASES; do
             if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
                 continue
             fi
+        else
+            # If expected status is defined, pass this along to datatidy.  
+            DATATIDY_ARGS="$DATATIDY_ARGS -F $EXPECTED_STATUS"   
         fi
         if [ ! -z "$NOTE" ]; then   # NOTE can have spaces, so escaping it is a pain
             $DATATIDY -m "$NOTE" $DATATIDY_ARGS -x original $CASE 
