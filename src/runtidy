@@ -265,7 +265,7 @@ function do_stash {
         if [ -d $LOGD/$WID ]; then
             >&2 echo $CASE already stashed 
         else
-            >&2 echo WARNING: $CASE: Log/yaml files does not exist, skipping this case 
+            >&2 echo WARNING: $CASE: Log/yaml files do not exist, not stashing
         fi
         return
     fi

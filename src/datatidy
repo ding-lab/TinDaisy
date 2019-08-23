@@ -243,6 +243,7 @@ function write_datalog {
     NOW=$(date)
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
     read MYCASE MYWID < <( getCaseWID $RID )
+
     test_exit_status                                                                   
 
     DATAD=$( $CQ -V -q workflowRoot $MYWID )                               
@@ -413,19 +414,14 @@ function do_prune {
 # can use extended pattern matching to not delete given files
 function do_final {
     RID=$1
-
     WD=$( $CQ -V -q workflowRoot $RID )                               
-    
     OUTPUTS=$(get_outputs $RID)
     rmrf_exclude $WD "$OUTPUTS "
-
 }
-
 
 # Bad and scary - remove entire workflow directory
 function do_wipe {
     RID=$1
-
     WD=$( $CQ -V -q workflowRoot $RID )                               
     CMD="rm -rf $WD"
     run_cmd "$CMD" $DRYRUN
@@ -454,7 +450,7 @@ if [ $TASK == "original_special" ] || [ $TASK == "inputs" ] || [ $TASK == "compr
         WID=$( check_expected_status $RID $EXPECTED_STATUS )
         test_exit_status
 
-        DOCKET="$DOCKET $WID"
+        DOCKET="$DOCKET $RID"
         if [ $JUSTONE ]; then
             break
         fi
