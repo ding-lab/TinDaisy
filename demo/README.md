@@ -10,7 +10,9 @@ There are a number of projects created here during development and testing.
 * test.cwltool - Using cwltool to test validity of CWL code before using on Cromwell
 * katmai.C3L - development and examples of CPTAC3 real data pipelines. Called individually using Rabix
 * task_call - running multiple samples at once with Rabix and Cromwell
-    * currently under active development
-    * katmai.C3 and kenai.C3.B - two directories demonstrating multiple runs in parallel using Rabix
-      These serve as models for production runs.  Note that these were mistakenly run using WGS data but WXS parameters
-    * test.cromwell - Example runs of CPTAC3 data using Cromwell on MGI.  
+    * Old development of run manager, currently deleted
+        * Archived datasets on MGI:/gscuser/mwyczalk/projects/TinDaisy/old.task_call.dev.tar.gz
+    * This formed the basis of utilities including cq, runtidy, datatidy, rungo, runplan
+        * Driver scripts are specific to Cromwell on MGI, though could be extended to Rabix
+    * [CromwellRunner](https://github.com/ding-lab/CromwellRunner) has detailed documenation about running TinDaisy
+      using cq and related utilities
