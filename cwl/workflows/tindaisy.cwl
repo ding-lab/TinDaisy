@@ -377,7 +377,7 @@ steps:
     in:
       - id: input
         source: merge_vcf/merged_vcf
-      - id: bam
+      - id: tumor_bam
         source: tumor_bam
     out:
       - id: filtered_VCF

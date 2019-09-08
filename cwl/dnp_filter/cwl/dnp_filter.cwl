@@ -13,7 +13,7 @@ inputs:
       position: 0
       prefix: '--input'
     label: VCF file
-  - id: bam
+  - id: tumor_bam
     type: File
     inputBinding:
       position: 0
