@@ -134,19 +134,19 @@ inputs:
 outputs:
   - id: output_maf
     outputSource:
-      - vcf_2_maf/output_maf
+      vcf_2_maf/output_maf
     type: File
     'sbg:x': 3463.528076171875
     'sbg:y': 640.6875
   - id: output_vcf
     outputSource:
-      - vep_filter/output_vcf
+      vep_filter/output_vcf
     type: File
     'sbg:x': 3091.59423828125
     'sbg:y': 694.078125
   - id: merged_vcf
     outputSource:
-      - merge_vcf/merged_vcf
+      merge_vcf/merged_vcf
     type: File
     'sbg:x': 1844.6331787109375
     'sbg:y': 41.628971099853516
