@@ -134,19 +134,19 @@ inputs:
 outputs:
   - id: output_maf
     outputSource:
-      vcf_2_maf/output_maf
+      - vcf_2_maf/output_maf
     type: File
     'sbg:x': 3463.528076171875
     'sbg:y': 640.6875
   - id: output_vcf
     outputSource:
-      vep_filter/output_vcf
+      - vep_filter/output_vcf
     type: File
     'sbg:x': 3091.59423828125
     'sbg:y': 694.078125
   - id: merged_vcf
     outputSource:
-      merge_vcf/merged_vcf
+      - merge_vcf/merged_vcf
     type: File
     'sbg:x': 1844.6331787109375
     'sbg:y': 41.628971099853516
@@ -349,7 +349,7 @@ steps:
   - id: dbsnp_filter
     in:
       - id: input_vcf
-        source: merge_vcf/merged_vcf
+        source: dnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
       - id: bypass_dbsnp
@@ -479,4 +479,16 @@ steps:
     label: mutect vaf_length_depth
     'sbg:x': 1020
     'sbg:y': -438.0108947753906
+  - id: dnp_filter
+    in:
+      - id: input
+        source: merge_vcf/merged_vcf
+      - id: bam
+        source: tumor_bam
+    out:
+      - id: filtered_VCF
+    run: ../dnp_filter/cwl/dnp_filter.cwl
+    label: DNP_filter
+    'sbg:x': 1651.4376220703125
+    'sbg:y': 317.5137634277344
 requirements: []
