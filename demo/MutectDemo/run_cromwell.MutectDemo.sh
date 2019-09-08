@@ -6,9 +6,8 @@ source /opt/lsf9/conf/lsf.conf
 # Root directory.  Where TinDaisy is installed
 TD_ROOT="/gscuser/mwyczalk/projects/TinDaisy/TinDaisy"
 
-
 # config file has to be modified for each system.  
-# currently saving intermediate data to /gscmnt/gc2741/ding/cptac/cromwell-workdir
+# currently saving intermediate data to ./cromwell_executions
 CONFIG="cromwell-config.dat"
 
 CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
