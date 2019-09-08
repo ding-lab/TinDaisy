@@ -28,18 +28,16 @@ inputs:
       prefix: '--threshold'
     label: threshold
     doc: fraction of reads supporing DNP
-  - id: output
-    type: string
-    inputBinding:
-      position: 0
-      prefix: '--output'
-    label: output VCF file name
 outputs:
   - id: filtered_VCF
     type: File
     outputBinding:
-      glob: $(inputs.output)
+      glob: DNP_combined.vcf
 label: DNP_filter
+arguments:
+    - position: 0
+      prefix: '--output'
+      valueFrom: DNP_combined.vcf
 requirements:
   - class: DockerRequirement
     dockerPull: 'dinglab2/dnp_filter:20190905'
