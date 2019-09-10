@@ -121,6 +121,10 @@ while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:F" opt; do
 done
 shift $((OPTIND-1))
 
+# Confirm that `jq` is available
+# from https://stackoverflow.com/questions/592620/how-to-check-if-a-program-exists-from-a-bash-script
+command -v jq >/dev/null 2>&1 || { echo >&2 "ERROR: jq is not installed.  Quitting"; exit 1; }
+
 function get_cromwell_cmd {
     CWL="$1"
     CASE="$2"
@@ -163,8 +167,8 @@ if [ -z $CQD ]; then
     RUNTIDY="runtidy"
     DATATIDY="datatidy"
 else
-    RUNTIDY="$CQD/runtidy"
-    DATATIDY="$CQD/datatidy"
+    RUNTIDY="$CQD/runtidy -c $CQD"
+    DATATIDY="$CQD/datatidy -c $CQD"
 fi
 
 # Used for `parallel` job groups 
