@@ -29,6 +29,7 @@ Optional options
 -c CQD: explicit path to cromwell query utilities `runtidy` and `datatidy`
 -F: Finalize run and compress run data immediately after successful completion of run.
     This calls `runtidy -x finalize` and `datatidy -x compress`
+-X JAVA_OPTS: additional arguments to java invocation
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -59,7 +60,7 @@ CROMWELL_JAR="/opt/cromwell.jar"
 JAVA="/usr/bin/java"
 CASES_FN="dat/cases.dat"
 
-while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:F" opt; do
+while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -107,6 +108,9 @@ while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:F" opt; do
     F) 
       DO_FINALIZE=1
       ;;
+    X) 
+      JAVA_OPTS="$OPTARG"
+      ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
       >&2 echo "$USAGE"
@@ -141,7 +145,7 @@ function get_cromwell_cmd {
         STDERR_REDIRECT="2> $STDERR_FN"
     fi
     
-    CMD="$JAVA -Dconfig.file=$CROMWELL_CONFIG $DB_ARGS -jar $CROMWELL_JAR run -t cwl -i $YAML $CWL > $STDOUT_FN $STDERR_REDIRECT"
+    CMD="$JAVA $JAVA_OPTS -Dconfig.file=$CROMWELL_CONFIG $DB_ARGS -jar $CROMWELL_JAR run -t cwl -i $YAML $CWL > $STDOUT_FN $STDERR_REDIRECT"
 
     echo "$CMD"
 }
