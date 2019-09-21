@@ -53,6 +53,7 @@ CROMWELL_URL can be defined as environment variable, e.g., `export CROMWELL_URL=
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
 
+
 source cromwell_utils.sh
 
 # read default from environment variable if possible, otherwise use default
@@ -130,10 +131,9 @@ function get_status {
         echo Unknown
         return
     fi
-
     URL="$CROMWELL_URL/api/workflows/v1/$WID/status"
     R=$( curl $CURL_ARG -s -X GET $URL -H "accept: application/json" )
-    test_exit_status
+    test_exit_status    # This seems like it fails uninformatively if db server not running
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
     S=$( echo $R | jq -r '.status' )
@@ -243,6 +243,7 @@ for RID in $RIDS; do
     # Skip runs which are stashed, i.e. those whose logs have been moved to directory logs/WorkflowID
     if [ $NO_STASH ]; then
         ISS=$(isStashed $RID)
+        test_exit_status
         if [ $ISS == 1 ]; then
             continue
         fi
@@ -257,22 +258,28 @@ for RID in $RIDS; do
     else
         if [ "$QUERY" == 'logs' ]; then
             STATUS=$(get_logs $WID)
+            test_exit_status
             STATUS=$(printf "\n$STATUS")
         elif [ "$QUERY" == 'status' ]; then
             STATUS=$(get_status $WID)
+            test_exit_status
         elif [ "$QUERY" == 'wid' ]; then
             STATUS=$WID
         elif [ "$QUERY" == 'workflowRoot' ]; then
             STATUS=$(get_workflowRoot $WID)
+            test_exit_status
         elif [ "$QUERY" == 'timing' ]; then
             # URL as provided by tmooney on slack 
             STATUS="$CROMWELL_URL/api/workflows/v1/$WID/timing"
         elif [ "$QUERY" == 'output' ]; then     # this returns output associated with tindaisy.cwl.output_vcf
             STATUS=$(get_output $WID)
+            test_exit_status
         elif [ "$QUERY" == 'outputs' ]; then    # this returns multiple outputs
             STATUS=$(get_outputs $WID | grep -v -w "null")
+            test_exit_status
         elif [ "$QUERY" == 'runlog' ]; then
             STATUS=$(get_runlog $WID)
+            test_exit_status
         elif [ "$QUERY" == 'url' ]; then
             echo $CROMWELL_URL
             exit 0
