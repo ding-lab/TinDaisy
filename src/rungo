@@ -176,7 +176,6 @@ else
 fi
 
 # Used for `parallel` job groups 
-NOW=$(date)
 MYID=$(date +%Y%m%d%H%M%S)
 
 # this allows us to get case names in one of three ways:
@@ -200,7 +199,8 @@ else
 fi
 
 for CASE in $CASES; do
-    >&2 echo Processing case $CASE
+    NOW=$(date)
+    >&2 echo \[ $NOW \] : Processing case $CASE
 
     STDOUT_FN="$LOGD/$CASE.out"
     STDERR_FN="$LOGD/$CASE.err"

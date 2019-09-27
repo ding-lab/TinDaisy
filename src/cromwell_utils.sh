@@ -1,6 +1,7 @@
 # Various utilities common to cromwell runs
 # No database calls here
 # TODO: explain file formats and logic of how WorkflowID is looked up
+# TODO: RUNLOG should not be hard coded, allow to be specified either with argument or environment / global variable
 
 
 function test_exit_status {
