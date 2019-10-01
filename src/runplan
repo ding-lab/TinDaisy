@@ -234,10 +234,15 @@ function get_BAM {
             exit 1
         fi
     elif [ $(echo "$LINE_A" | wc -l) != "1" ]; then
-        >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample has multiple matches in $BAMMAP
-        >&2 echo Not making assumptions about which to choose, YAML will need to be created manually
-        #LINE_A=$(echo "$LINE_A" | head -n 1)
-        exit 1
+        if [ $ONLYWARN ]; then
+            >&2 echo WARNING: $REF_NAME $CASE $ES $ST sample has multiple matches in $BAMMAP
+            >&2 echo We will choose the first match.  Please review YAML file carefully
+            LINE_A=$(echo "$LINE_A" | head -n 1)
+        else
+            >&2 echo ERROR: $REF_NAME $CASE $ES $ST sample has multiple matches in $BAMMAP
+            >&2 echo Not making assumptions about which to choose, YAML will need to be created manually
+            exit 1
+        fi
     fi
 
     # Sample Name and UUID will be needed for analysis summary

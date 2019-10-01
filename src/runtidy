@@ -341,6 +341,7 @@ for CASE in $CASES; do
       "stash")
         if [ -z $EXPECTED_STATUS ]; then
             if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
+                >&2 echo Skipping $CASE \(Status $STATUS not Succeeded or Failed.  Specify expected status with -F to stash\)
                 continue
             fi
         fi
@@ -349,6 +350,7 @@ for CASE in $CASES; do
       "finalize")
         if [ -z $EXPECTED_STATUS ]; then
             if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
+                >&2 echo Skipping $CASE \(Status $STATUS not Succeeded or Failed.  Specify expected status with -F to finalize\)
                 continue
             fi
         else
