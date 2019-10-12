@@ -18,6 +18,7 @@ Optional options
 -l DATALOGD: data log directory or file.  If directory, data log file is DATALOGD/datalog.dat. If path given,
     assumed this is an existing data log file.  Default: is "./logs"
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
+-p PROJECT: A project name added to data log file for each case.  This is mandatory when writing to datalog
 -m NOTE: A note added to data log file for each case
 -x TASK: Execute given task.  Values: 'query' (default), 'original', 'inputs', 'compress', 'prune', 'final', 'wipe'
 -F EXPECTED_STATUS: Define expected status of runs 
@@ -58,6 +59,7 @@ A data log file has the following columns:
     Case        - Case of run
     WorkflowID  - WorkflowID of run
     Path        - Path to workflowRoot directory of this run
+    Project     - Name of current project, to help identify provenance
     TidyDate    - Date this entry generated (this is not necessarily date of run)
     TidyLevel   - One of: `original`, `inputs`, `compress`, `prune`, `final`, `wipe`
     Note        - Arbitrary note about this run or cleaning
@@ -67,7 +69,6 @@ This script relies on `cq` to get WorkflowID, status and timestamps associated w
 Note that in the case of queries, only the most recent workflow ID is returned; if there are
 multiple runs for a given case the older ones will be masked.  TODO: allow multiple workflow IDs
 to be listed for a given case if they exist.
-
 EOF
 
 source cromwell_utils.sh
@@ -86,7 +87,7 @@ else
     CQ="$CQD/cq"
 fi
 
-while getopts ":hd1l:k:m:c:x:wF:" opt; do
+while getopts ":hd1l:k:m:c:x:wF:p:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -118,6 +119,9 @@ while getopts ":hd1l:k:m:c:x:wF:" opt; do
       ;;
     F) 
       EXPECTED_STATUS="$OPTARG"
+      ;;
+    p) 
+      MYPROJECT="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -162,7 +166,7 @@ fi
 if [ ! -f $DATALOG ]; then
     >&2 echo Creating new data log $DATALOG
     # Write header
-    printf "Case\tWorkflowID\tPath\tDate\tTidyLevel\tNote\n" > $DATALOG
+    printf "Case\tWorkflowID\tPath\tProject\tDate\tTidyLevel\tNote\n" > $DATALOG
     test_exit_status
 else
     >&2 echo Existing data log $DATALOG
@@ -170,7 +174,7 @@ fi
 
 # Given a WorkflowID, return the most recent entry from datalog
 # The entire data log line is returned:
-#   Case WorkflowID Path Date TidyLevel Note
+#   Case WorkflowID Path Project Date TidyLevel Note
 # If workflowID is not found, return "Unregistered"
 function parseDataLog {
     WID=$1
@@ -202,16 +206,17 @@ function do_query {
         return
     fi
     DATAD=$( echo "$DL" | cut -f 3 )
-    DL_DATE=$( echo "$DL" | cut -f 4 )
-    TIDYLEVEL=$( echo "$DL" | cut -f 5 )
-    DL_NOTE=$( echo "$DL" | cut -f 6 )
+    PROJECT=$( echo "$DL" | cut -f 4 )
+    DL_DATE=$( echo "$DL" | cut -f 5 )
+    TIDYLEVEL=$( echo "$DL" | cut -f 6 )
+    DL_NOTE=$( echo "$DL" | cut -f 7 )
 
     if [ "$QUERY_DETAIL" ]; then
         DATASIZE=$(du -sh "$DATAD" | cut -f 1)
         test_exit_status
-        printf "$MYCASE\t$MYWID\t$DATAD\t$TIDYLEVEL\t$DATASIZE\t$DL_DATE\t$DL_NOTE\n" 
+        printf "$MYCASE\t$MYWID\t$DATAD\t$PROJECT\t$TIDYLEVEL\t$DATASIZE\t$DL_DATE\t$DL_NOTE\n" 
     else
-        printf "$MYCASE\t$MYWID\t$DATAD\t$TIDYLEVEL\n" 
+        printf "$MYCASE\t$MYWID\t$DATAD\t$PROJECT\t$TIDYLEVEL\n" 
     fi
 }
 
@@ -240,6 +245,12 @@ function write_datalog {
     RID=$1
     TL=$2
 
+    # Confirm that MYPROJECT is defined.  This could be checked earlier
+    if [ -z $MYPROJECT ]; then
+        >&2 echo ERROR: project \(-p\) is not defined.
+        exit 1
+    fi
+
     NOW=$(date)
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
     read MYCASE MYWID < <( getCaseWID $RID )
@@ -249,7 +260,7 @@ function write_datalog {
     DATAD=$( $CQ -V -q workflowRoot $MYWID )                               
     test_exit_status                                                                   
 
-    DL=$( printf "$MYCASE\t$MYWID\t$DATAD\t$NOW\t$TL\t$NOTE\n") 
+    DL=$( printf "$MYCASE\t$MYWID\t$DATAD\t$MYPROJECT\t$NOW\t$TL\t$NOTE\n") 
     if [ "$DRYRUN" ]; then
         >&2 echo Dryrun: writing to datalog: "$DL"
     else
@@ -364,12 +375,9 @@ function do_prune {
     # Finally, all these files are deleted except for final CWL outputs
     RID=$1
 
-# TODO: update as in compress
-#   * tar
-#   * check if file exists
+# TODO: allow the particular files to keep during pruning (i.e., RESULTS) to be passed as an argument
 
     WD=$( $CQ -V -q workflowRoot $RID )                               
-
 
     TAR="pruned_results.tar.gz"
     if [ -f "$WD/$TAR" ]; then
