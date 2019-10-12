@@ -17,6 +17,7 @@ Optional options
 -1: stop after one case processed.
 -l DATALOGD: data log directory or file.  If directory, data log file is DATALOGD/datalog.dat. If path given,
     assumed this is an existing data log file.  Default: is "./logs"
+-f: Create data log file if it does not exist
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -p PROJECT: A project name added to data log file for each case.  This is mandatory when writing to datalog
 -m NOTE: A note added to data log file for each case
@@ -87,7 +88,7 @@ else
     CQ="$CQD/cq"
 fi
 
-while getopts ":hd1l:k:m:c:x:wF:p:" opt; do
+while getopts ":hd1l:k:m:c:x:wF:p:f" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -122,6 +123,9 @@ while getopts ":hd1l:k:m:c:x:wF:p:" opt; do
       ;;
     p) 
       MYPROJECT="$OPTARG"
+      ;;
+    f) 
+      MAKE_DATALOG=1
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -164,6 +168,11 @@ else
 fi
 
 if [ ! -f $DATALOG ]; then
+    if [ -z $MAKE_DATALOG ]; then
+        >&2 echo ERROR: datalog file $DATALOG does not exist, will not create one by default
+        >&2 echo Specify -f if you wish to make the datalog.dat file
+        exit 1
+    fi
     >&2 echo Creating new data log $DATALOG
     # Write header
     printf "Case\tWorkflowID\tPath\tProject\tDate\tTidyLevel\tNote\n" > $DATALOG
