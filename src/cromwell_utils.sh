@@ -3,6 +3,14 @@
 # TODO: explain file formats and logic of how WorkflowID is looked up
 # TODO: RUNLOG should not be hard coded, allow to be specified either with argument or environment / global variable
 
+# obtain both Case and WorkflowID based on one of these values. RUNID passed can be either CASE or WorkflowID
+# A) if RUNID is a WorkflowID, get Case by evaluating logs/runlog.dat
+# B) If RUNID Is a Case, get Workflow ID as follows
+#   1) If logs/CASE.out exists, parse it to get WorkflowID
+#      * if logs/CASE.out does not contain WorkflowID, WorkflowID is "Unassigned"
+#   2) if logs/CASE.out does not exist, obtain WorkflowID from logs/runlog.dat
+#       * if logs/runlog.dat does not exist, error
+
 
 function test_exit_status {
     # Evaluate return value for chain of pipes; see https://stackoverflow.com/questions/90418/exit-shell-script-based-on-process-exit-code
@@ -78,10 +86,12 @@ function getLogWID {
 # If not found or runlog does not exit, return "Unknown"
 function getRunLogCase {
     WID=$1
-    RUNLOG="./logs/runlog.dat"
+    # RUNLOG="./logs/runlog.dat"
+    RUNLOG=$2
+    # We require RUNLOG to exist.  It should be created elsewhere for new runs
     if [ ! -f $RUNLOG ]; then
-        echo "Unknown"
-        return 
+        >&2 echo "ERROR: Runlog file $RUNLOG does not exist"
+        exit 1
     fi
 
     # Search runlog from bottom, return column 1 of first matching line
@@ -98,10 +108,12 @@ function getRunLogCase {
 # If not found or runlog does not exit, return "Unknown"
 function getRunLogWID {
     CASE=$1
-    RUNLOG="./logs/runlog.dat"
+#    RUNLOG="./logs/runlog.dat"
+    RUNLOG=$2
+    # We require RUNLOG to exist.  It should be created elsewhere for new runs
     if [ ! -f $RUNLOG ]; then
-        echo "Unknown"
-        return 
+        >&2 echo "ERROR: Runlog file $RUNLOG does not exist"
+        exit 1
     fi
 
     # Search runlog from bottom, return column 2 of first matching case
@@ -114,18 +126,24 @@ function getRunLogWID {
     echo "$RLWID"
 }
 
-# Usage: isStashed CASE
+# Usage: isStashed CASE RUNLOG
 # Return 1 if logs/CASE.out does not exist and there is a logs/WorkflowID directory
 # Return 0 otherwise
 # CASE may also be a WorkflowID
 function isStashed {
     RID=$1
+    RUNLOG=$2   
+    if [ -z $RUNLOG ]; then 
+        >&2 echo ERROR: RUNLOG must be passed
+        exit 1
+    fi
+    
     LOG="logs/$RID.out"
     if [ -e $LOG ]; then
         echo 0
         return
     fi
-    read MYCASE MYWID < <( getCaseWID $RID )
+    read MYCASE MYWID < <( getCaseWID $RID $RUNLOG )
     if [ -d "logs/$MYWID" ]; then
         echo 1
         return 
@@ -139,17 +157,23 @@ function isStashed {
 #   1) If logs/CASE.out exists, parse it to get WorkflowID
 #      * if logs/CASE.out does not contain WorkflowID, WorkflowID is "Unassigned"
 #   2) if logs/CASE.out does not exist, obtain WorkflowID from logs/runlog.dat
-#       * if logs/runlog.dat does not exist, WorkflowID is "Unknown"
+#       * if logs/runlog.dat does not exist, that is an error
 # Both values Case and WorkflowID are returned.  Usage:
-#    read MYCASE MYWID < <( getCaseWID $CASE )
+#    read MYCASE MYWID < <( getCaseWID $CASE $RUNLOG )
 # 
 function getCaseWID {
     RUNID=$1
+    RUNLOG=$2   
+    if [ -z $RUNLOG ]; then 
+        >&2 echo ERROR: RUNLOG must be passed
+        exit 1
+    fi
+
     # Evaluate if RUNID is a WorkflowID.  
     # From https://stackoverflow.com/questions/38416602/check-if-string-is-uuid
     if [[ $RUNID =~ ^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$ ]]; then
         WID=$RUNID
-        CASE=$( getRunLogCase $WID )
+        CASE=$( getRunLogCase $WID $RUNLOG )
     else
         CASE=$RUNID
         LOG="logs/$CASE.out"
@@ -157,7 +181,7 @@ function getCaseWID {
             WID=$( getLogWID $LOG )
             test_exit_status
         else
-            WID=$( getRunLogWID $CASE )
+            WID=$( getRunLogWID $CASE $RUNLOG )
         fi
     fi
 

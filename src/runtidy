@@ -4,6 +4,7 @@
 # https://dinglab.wustl.edu/
 
 # TODO: implement query
+# add project column to runlog
 
 read -r -d '' USAGE <<'EOF'
 Register, query, and archive Cromwell run output
@@ -22,14 +23,15 @@ Optional options
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) can be found.  Default "./logs"
 -T STASHD: root directory where we write archived logs.  Default "./logs/stashed"
--L RUNLOGD: Run log directory or file. If directory, run log file is RUNLOGD/runlog.dat.  If filename 
-    given, assume this is existing run log file.  Default is "./logs"
+-L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Has to exist unless -f is set.  Can be obtained from environment variable
+-f: Create run log file if it does not exist
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
 -Y: move (not copy) YAML files
 -F EXPECTED_STATUS: Define expected status of runs
 -c CQD: explicit path to cromwell query utility `cq` and `datatidy`
 -m NOTE: A note added to run log file for each case
 -D DATATIDY_ARGS: arguments passed to datatidy during registration
+-p PROJECT: Project name associated with this analysis, mandatory for register and finalize tasks
 
 Runtidy performs the following task:
 * `query`: Evaluate and print for each case
@@ -59,6 +61,7 @@ they have completed execution, but can be registered any time any number of time
 
 A run log file has the following columns
     * `Case`
+    * `Project` (new)
     * `WorkflowID`
     * `Status`
     * `StartTime`
@@ -66,7 +69,7 @@ A run log file has the following columns
     * `Note` - optional, may indicate whether a restart, etc.
 
 Finalizing involves registering with run log file, stashing, and also
-registering data output using `datatidy`
+registering data output using `datatidy`.  This requires a project name 
 
 By default, only runs with status (as obtained from `cq`) of `Succeeded` or
 `Failed` are evaluated for `stash` and `finalize` tasks.  To stash and finalize
@@ -80,6 +83,8 @@ If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES
 `runtidy` script does not WorkflowIDs as arguments to define runs
 
 This script relies on `cq` to get WorkflowID and status associated with each case
+
+RUNLOG can be defined as environment variable, e.g., `export RUNLOG=/path/to/logs/runlog.dat`
 EOF
 
 source cromwell_utils.sh
@@ -90,13 +95,17 @@ SCRIPT_PATH=$(dirname $0)
 TASK="query"
 LOGD="./logs"       # where we find Cromwell run logs
 STASHD="./logs/stashed"     # where we put stashed logs
-RUNLOGD="./logs"    # Where we write runlog.dat
 
 YAMLD="./yaml"
 CASES_FN="dat/cases.dat"
 QUIET=1
 
-while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:" opt; do
+# read default from environment variable if possible, otherwise use default
+if [ -z $RUNLOG ]; then
+    RUNLOG="./logs/runlog.dat"
+fi
+
+while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:fp:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -127,7 +136,7 @@ while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:" opt; do
       STASHD="$OPTARG"
       ;;
     L) 
-      RUNLOGD="$OPTARG"
+      RUNLOG="$OPTARG"
       ;;
     y) 
       YAMLD="$OPTARG"
@@ -146,6 +155,12 @@ while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:" opt; do
       ;;
     D) 
       DATATIDY_ARGS="$DATATIDY_ARGS $OPTARG"
+      ;;
+    f) 
+      MAKE_RUNLOG=1
+      ;;
+    p) 
+      PROJECT="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -186,23 +201,15 @@ else
     CASES="$@"
 fi
 
-# If RUNLOGD is an existing directory use that, and create runlog.dat if necessary
-# elif RUNLOGD is an existing file use that,
-# else error
-if [ -d $RUNLOGD ]; then
-    RUNLOG="$RUNLOGD/runlog.dat"
-elif [ -f $RUNLOGD ]; then
-    RUNLOG="$RUNLOGD"
-else
-    >&2 echo ERROR: Not a file or directory: $RUNLOGD
-    exit 1
-fi
-
-# TODO- update with RUNLOG header
 if [ ! -f $RUNLOG ]; then
+    if [ -z $MAKE_RUNLOG ]; then
+        >&2 echo ERROR: runlog file $RUNLOG does not exist, will not create one by default
+        >&2 echo Specify -f if you wish to create new runlog.dat file
+        exit 1
+    fi
     >&2 echo Creating new run log $RUNLOG
     # Write header
-    printf "# Case\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $RUNLOG
+    printf "# Case\tProject\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $RUNLOG
     test_exit_status
 else
     >&2 echo Existing data log $RUNLOG
@@ -216,18 +223,21 @@ function do_query {
     >&2 echo do_query is unimplemented
     exit 1
 }
+
 function do_register {
     CASE=$1
 
     STATUS=$( $CQ -V -q status $CASE )
 
-    # CQL has all columns except for the note
+    # CQL has all columns except for project and note
     CQL=$( $CQ -q runlog $CASE ) 
     test_exit_status
     WID=$( echo "$CQL" | cut -f 2 )
     if [ "$WID" == "Unknown" ] || [ "$WID" == "Unassigned" ]; then
         continue
     fi
+
+    CQLP=$(echo "$CQL" | awk -v p="$PROJECT" 'BEGIN{FS="\t";OFS="\t"}{print $1,p,$2,$3,$4,$5}')
 
     RL=$( printf "$CQL\t$NOTE\n" )
 
@@ -236,7 +246,6 @@ function do_register {
     else
         echo "$RL" >> $RUNLOG
     fi
-
 }
 
 # Stashing detail. For each case:
@@ -273,7 +282,7 @@ function do_stash {
     # WID may be unknown for various reasons, like error conditions.  Stashing requires that this
     # value be known; if it is not, print a complaint and go on
     if [ $WID == "Unknown" ]; then
-        >&2 echo Warning: WorkflowID for $CASE is $WID.  Not stashing these logs, continuing
+        >&2 echo WARNING: WorkflowID for $CASE is $WID.  Not stashing these logs, continuing
         return
     fi
 
@@ -336,6 +345,11 @@ for CASE in $CASES; do
         do_query $CASE  # TODO implement this
         ;;
       "register")
+        # Confirm that PROJECT is defined.  
+        if [ -z $PROJECT ]; then
+            >&2 echo ERROR: project \(-p\) is not defined.
+            exit 1
+        fi
         do_register $CASE 
         ;;
       "stash")
@@ -357,6 +371,11 @@ for CASE in $CASES; do
             # If expected status is defined, pass this along to datatidy.  
             DATATIDY_ARGS="$DATATIDY_ARGS -F $EXPECTED_STATUS"   
         fi
+        # Confirm that PROJECT is defined.  
+        if [ -z $PROJECT ]; then
+            >&2 echo ERROR: project \(-p\) is not defined.
+            exit 1
+        fi
         if [ ! -z "$NOTE" ]; then   # NOTE can have spaces, so escaping it is a pain
             $DATATIDY -m "$NOTE" $DATATIDY_ARGS -x original $CASE 
         else
@@ -372,7 +391,6 @@ for CASE in $CASES; do
         exit 1
         ;;
     esac
-
 
     if [ $JUSTONE ]; then
         break

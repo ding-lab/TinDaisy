@@ -3,6 +3,7 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
+
 read -r -d '' USAGE <<'EOF'
 Utility for logging, reporting, and cleaning Cromwell run data
 
@@ -15,11 +16,10 @@ Optional options
 -h: print usage information
 -d: dry run: print commands but do not modify data or write to data log
 -1: stop after one case processed.
--l DATALOGD: data log directory or file.  If directory, data log file is DATALOGD/datalog.dat. If path given,
-    assumed this is an existing data log file.  Default: is "./logs"
+-l DATALOG: data log file.  Default: is "./logs". Can be obtained from environment variable
 -f: Create data log file if it does not exist
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--p PROJECT: A project name added to data log file for each case.  This is mandatory when writing to datalog
+-p PROJECT: Project name associated with this analysis
 -m NOTE: A note added to data log file for each case
 -x TASK: Execute given task.  Values: 'query' (default), 'original', 'inputs', 'compress', 'prune', 'final', 'wipe'
 -F EXPECTED_STATUS: Define expected status of runs 
@@ -70,6 +70,8 @@ This script relies on `cq` to get WorkflowID, status and timestamps associated w
 Note that in the case of queries, only the most recent workflow ID is returned; if there are
 multiple runs for a given case the older ones will be masked.  TODO: allow multiple workflow IDs
 to be listed for a given case if they exist.
+
+DATALOG can be defined as environment variable, e.g., `export DATALOG=/path/to/logs/datalog.dat`
 EOF
 
 source cromwell_utils.sh
@@ -80,7 +82,11 @@ SCRIPT_PATH=$(dirname $0)
 CASES_FN="./dat/cases.dat"
 NOTE=""
 TASK="query"
-DATALOGD="./logs"
+
+# read default from environment variable if possible, otherwise use default
+if [ -z $DATALOG ]; then
+    DATALOG="./logs/datalog.dat"
+fi
 
 if [ -z $CQD ]; then
     CQ="cq"
@@ -104,7 +110,7 @@ while getopts ":hd1l:k:m:c:x:wF:p:f" opt; do
       CASES_FN="$OPTARG"
       ;;
     l) 
-      DATALOGD="$OPTARG"
+      DATALOG="$OPTARG"
       ;;
     m)
       NOTE="$OPTARG"
@@ -155,22 +161,10 @@ else
     RIDS="$@"
 fi
 
-# If DATALOGD is an existing directory use that, and create datalog.dat if necessary
-# elif DATALOGD is an existing file use that,
-# else error
-if [ -d $DATALOGD ]; then
-    DATALOG="$DATALOGD/datalog.dat"
-elif [ -f $DATALOGD ]; then
-    DATALOG="$DATALOGD"
-else
-    >&2 echo ERROR: Not a file or directory: $DATALOGD
-    exit 1
-fi
-
 if [ ! -f $DATALOG ]; then
     if [ -z $MAKE_DATALOG ]; then
         >&2 echo ERROR: datalog file $DATALOG does not exist, will not create one by default
-        >&2 echo Specify -f if you wish to make the datalog.dat file
+        >&2 echo Specify -f if you wish to create new datalog.dat file
         exit 1
     fi
     >&2 echo Creating new data log $DATALOG
@@ -204,7 +198,7 @@ function parseDataLog {
 function do_query {
     RID=$1
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
-    read MYCASE MYWID < <( getCaseWID $RID )
+    read MYCASE MYWID < <( getCaseWID $RID $RUNLOG )
     # get additional details from datalog
     #   Case WorkflowID Path Date TidyLevel Note
     DL=$(parseDataLog $MYWID $DATALOG)
@@ -236,7 +230,7 @@ function check_expected_status {
     ES=$2
 
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
-    read MYCASE MYWID < <( getCaseWID $RID )
+    read MYCASE MYWID < <( getCaseWID $RID $RUNLOG )
     STATUS=$( $CQ -V -q status $MYWID )                               
     if [ $STATUS != $ES ]; then
         >&2 echo ERROR: Status of run $RID \( $STATUS \) differs from expected \( $ES \)
@@ -262,7 +256,7 @@ function write_datalog {
 
     NOW=$(date)
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
-    read MYCASE MYWID < <( getCaseWID $RID )
+    read MYCASE MYWID < <( getCaseWID $RID $RUNLOG )
 
     test_exit_status                                                                   
 

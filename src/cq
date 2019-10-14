@@ -4,7 +4,7 @@
 # https://dinglab.wustl.edu/
 
 # TODO: check if server is running / available and report reasonable error message
-# allow CROMWELL_URL to be set as environment variable
+# TODO: RUNLOG is required for queries, but is not known here.
 
 read -r -d '' USAGE <<'EOF'
 Cromwell Query: Print out per-case run statistics. Specific to cromwell runs registered with MGI Cromwell database
@@ -229,7 +229,7 @@ for RID in $RIDS; do
     [[ $RID = \#* ]] && continue
 
     # https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
-    read CASE WID < <( getCaseWID $RID )
+    read CASE WID < <( getCaseWID $RID $RUNLOG )
     test_exit_status
 
     if [ "$ONLY_SUCCESS" ]; then

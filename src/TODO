@@ -1,0 +1,4 @@
+* Allow limited functionality when database is not available
+* Extend to work with Rabix
+* Finish implementation of datatidy
+
