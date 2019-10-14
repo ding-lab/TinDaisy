@@ -24,6 +24,7 @@ Options:
 -T: Skip cases where logs are stashed 
 -D: Do not access database.  Limited functionality: status is unknown, best guesses are made for other queries.  TODO: complete implementation
 -C CROMWELL_URL: define the cromwell URL.  Default: https://genome-cromwell.gsc.wustl.edu
+-L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Has to exist unless -f is set.  Can be obtained from environment variable
 
 RID is RunID, and can be either a Case or a WorkflowID.  Examples:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
@@ -49,6 +50,7 @@ Workflow ID associated with given cromwell output file is obtaining by grepping 
 [2019-04-14 15:54:01,69] [info] SingleWorkflowRunnerActor: Workflow submitted d6c83416-af3f-46f3-a892-ff1e9074fe74
 
 CROMWELL_URL can be defined as environment variable, e.g., `export CROMWELL_URL=http://localhost:8000`
+RUNLOG can be defined as environment variable, e.g., `export RUNLOG=/path/to/logs/runlog.dat`
 
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
@@ -62,13 +64,17 @@ if [ -z $CROMWELL_URL ]; then
 fi
 CURL_ARG="-k"   # arguments passed to all cromwell db calls 
 
+# read default from environment variable if possible, otherwise use default
+if [ -z $RUNLOG ]; then
+    RUNLOG="./logs/runlog.dat"
+fi
 
 # Defaults
 CASES_FN="dat/cases.dat"
 QUERY="status"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1k:q:s:VUSTDC:" opt; do
+while getopts ":h1k:q:s:VUSTDC:L:" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -103,6 +109,9 @@ while getopts ":h1k:q:s:VUSTDC:" opt; do
       ;;
     C) 
       CROMWELL_URL="$OPTARG"
+      ;;
+    L) 
+      RUNLOG="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"

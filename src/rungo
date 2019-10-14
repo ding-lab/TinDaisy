@@ -30,6 +30,7 @@ Optional options
 -F: Finalize run and compress run data immediately after successful completion of run.
     This calls `runtidy -x finalize` and `datatidy -x compress`
 -X JAVA_OPTS: additional arguments to java invocation
+-p PROJECT: Project name associated with this analysis.  Required if -F
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -60,7 +61,7 @@ CROMWELL_JAR="/opt/cromwell.jar"
 JAVA="/usr/bin/java"
 CASES_FN="dat/cases.dat"
 
-while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:" opt; do
+while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:p:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -110,6 +111,9 @@ while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:" opt; do
       ;;
     X) 
       JAVA_OPTS="$OPTARG"
+      ;;
+    p) 
+      PROJECT="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -209,9 +213,14 @@ for CASE in $CASES; do
     test_exit_status
 
     if [ $DO_FINALIZE ]; then
+        # Confirm that MYPROJECT is defined.  This could be checked earlier
+        if [ -z $PROJECT ]; then
+            >&2 echo ERROR: Project \(-p\) is required if autofinalizing \(-F\).
+            exit 1
+        fi
         # finalize and compress run immediately after successful completion
-        RT_CMD="$RUNTIDY -x finalize -m Autofinalizing $CASE"
-        DT_CMD="$DATATIDY -F Succeeded -x compress $CASE"
+        RT_CMD="$RUNTIDY -x finalize -m Autofinalizing -p $PROJECT $CASE"
+        DT_CMD="$DATATIDY -F Succeeded -x compress -p $PROJECT $CASE"
         CMD="$CMD && $RT_CMD && $DT_CMD"
     fi
 
