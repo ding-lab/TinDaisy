@@ -3,7 +3,6 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
-# TODO: implement query
 # add project column to runlog
 
 read -r -d '' USAGE <<'EOF'
@@ -21,7 +20,7 @@ Optional options
 -1: stop after one case processed.
 -x TASK: Execute given task.  Values: 'query' (default), 'register', 'stash', 'finalize'
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
--l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) can be found.  Default "./logs"
+-g LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) can be found.  Default "./logs"
 -T STASHD: root directory where we write archived logs.  Default "./logs/stashed"
 -L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Has to exist unless -f is set.  Can be obtained from environment variable
 -f: Create run log file if it does not exist
@@ -35,7 +34,7 @@ Optional options
 
 Runtidy performs the following task:
 * `query`: Evaluate and print for each case
-    - case, workflowId, path to run output log 
+    - case, workflowId, path to run log 
 * `register`: write entry in run log and register with `runtidy`
 * `stash`: move run output files and copy YAML config file to directory named after workflowID
 * `finalize`: Run `register` and `stash` 
@@ -59,7 +58,7 @@ Registering a run creates an entry in run log file; this file tracks which case
 is associated with which Workflow ID.  Runs are stashed only when
 they have completed execution, but can be registered any time any number of times.
 
-A run log file has the following columns
+A run log (RUNLOG) file has the following columns
     * `Case`
     * `Project` (new)
     * `WorkflowID`
@@ -105,7 +104,7 @@ if [ -z $RUNLOG ]; then
     RUNLOG="./logs/runlog.dat"
 fi
 
-while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:fp:" opt; do
+while getopts ":hdv1x:k:g:T:L:y:YF:c:m:D:fp:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -129,7 +128,7 @@ while getopts ":hdv1x:k:l:T:L:y:YF:c:m:D:fp:" opt; do
     k) 
       CASES_FN="$OPTARG"
       ;;
-    l) 
+    g) 
       LOGD="$OPTARG"
       ;;
     T) 
@@ -184,8 +183,13 @@ else
     DATATIDY="$CQD/datatidy"
 fi
 
-mkdir -p $LOGD
-test_exit_status
+if [ $TASK == "register" ] || [ $TASK == "finalize" ]; then
+    # Confirm that PROJECT is defined.  
+    if [ -z $PROJECT ]; then
+        >&2 echo $SCRIPT ERROR: project \(-p\) is not defined.
+        exit 1
+    fi
+fi
 
 # this allows us to get case names in one of three ways:
 # 1: cq CASE1 CASE2 ...
@@ -203,25 +207,22 @@ fi
 
 if [ ! -f $RUNLOG ]; then
     if [ -z $MAKE_RUNLOG ]; then
-        >&2 echo ERROR: runlog file $RUNLOG does not exist, will not create one by default
-        >&2 echo Specify -f if you wish to create new runlog.dat file
+        >&2 echo $SCRIPT ERROR: RUNLOG file $RUNLOG does not exist, will not create one by default
+        >&2 echo "        runlog file can be created with \`$SCRIPT -f1\`"
         exit 1
     fi
     >&2 echo Creating new run log $RUNLOG
     # Write header
-    printf "# Case\tProject\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n" > $RUNLOG
-    test_exit_status
-else
-    >&2 echo Existing data log $RUNLOG
+    CMD="printf \"# Case\tProject\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n\" > $RUNLOG"
+    run_cmd "$CMD" "$DRYRUN"
 fi
 
 function do_query {
     CASE=$1
 # * `query`: Evaluate and print for each case
-#     - case, workflowId, path to run output log 
-
-    >&2 echo do_query is unimplemented
-    exit 1
+#     - case, workflowId, path to run log 
+    WID=$( $CQ -V -q wid $CASE )
+    printf "$CASE\t$WID\t$RUNLOG\n"
 }
 
 function do_register {
@@ -231,7 +232,7 @@ function do_register {
 
     # CQL has all columns except for project and note
     CQL=$( $CQ -q runlog $CASE ) 
-    test_exit_status
+    test_exit_status $SCRIPT
     WID=$( echo "$CQL" | cut -f 2 )
     if [ "$WID" == "Unknown" ] || [ "$WID" == "Unassigned" ]; then
         continue
@@ -287,7 +288,7 @@ function do_stash {
     fi
 
     STATUS=$( $CQ -V -q status $CASE ) 
-    test_exit_status
+    test_exit_status $SCRIPT
     if [ $STATUS == "Succeeded" ] || [ "$YAML_MV" ]; then
         YAML_CMD="mv"
     else
@@ -296,7 +297,7 @@ function do_stash {
 
     if ! grep -F -q $WID $RUNLOG ; then
         if [ ! "$DRYRUN" ]; then
-            >&2 echo ERROR: $CASE \( $WID \) not found in $RUNLOG. Register run with \`runLogger.sh\` before stashing
+            >&2 echo $SCRIPT ERROR: $CASE \( $WID \) not found in $RUNLOG. Register run with \`runLogger.sh\` before stashing
             exit 1
         fi
     fi
@@ -325,7 +326,7 @@ if [ ! -z $EXPECTED_STATUS ]; then
     for CASE in $CASES; do
         STATUS=$( $CQ -V -q status $CASE )
         if [ "$STATUS" != "$EXPECTED_STATUS" ]; then
-            >&2 echo ERROR: Status of case $CASE \( $STATUS \) differs from expected \( $EXPECTED_STATUS \)
+            >&2 echo $SCRIPT ERROR: Status of case $CASE \( $STATUS \) differs from expected \( $EXPECTED_STATUS \)
             exit 2  # to distinguish status mismatch from garden variety errors
         fi
         DOCKET="$DOCKET $CASE"
@@ -336,25 +337,25 @@ if [ ! -z $EXPECTED_STATUS ]; then
     CASE=$DOCKET    #  CASE replenished to loop through all cases again
 fi
 
+
+CMD="mkdir -p $LOGD"
+run_cmd "$CMD" "$DRYRUN"
+
+
 for CASE in $CASES; do
 
     STATUS=$( $CQ -V -q status $CASE )
 
     case "$TASK" in
       "query")
-        do_query $CASE  # TODO implement this
+        do_query $CASE  
         ;;
       "register")
-        # Confirm that PROJECT is defined.  
-        if [ -z $PROJECT ]; then
-            >&2 echo ERROR: project \(-p\) is not defined.
-            exit 1
-        fi
         do_register $CASE 
         ;;
       "stash")
         if [ -z $EXPECTED_STATUS ]; then
-            if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
+            if [ "$STATUS" != "Succeeded" ] && [ "$STATUS" != "Failed" ]; then
                 >&2 echo Skipping $CASE \(Status $STATUS not Succeeded or Failed.  Specify expected status with -F to stash\)
                 continue
             fi
@@ -362,31 +363,27 @@ for CASE in $CASES; do
         do_stash $CASE 
         ;;
       "finalize")
+        DATATIDY_ARGS="$DATATIDY_ARGS -p $PROJECT"   
         if [ -z $EXPECTED_STATUS ]; then
-            if [ $STATUS != "Succeeded" ] && [ $STATUS != "Failed" ]; then
+            if [ "$STATUS" != "Succeeded" ] && [ "$STATUS" != "Failed" ]; then
                 >&2 echo Skipping $CASE \(Status $STATUS not Succeeded or Failed.  Specify expected status with -F to finalize\)
                 continue
             fi
         else
             # If expected status is defined, pass this along to datatidy.  
-            DATATIDY_ARGS="$DATATIDY_ARGS -F $EXPECTED_STATUS"   
-        fi
-        # Confirm that PROJECT is defined.  
-        if [ -z $PROJECT ]; then
-            >&2 echo ERROR: project \(-p\) is not defined.
-            exit 1
+            DATATIDY_ARGS="$DATATIDY_ARGS -F $EXPECTED_STATUS "   
         fi
         if [ ! -z "$NOTE" ]; then   # NOTE can have spaces, so escaping it is a pain
             $DATATIDY -m "$NOTE" $DATATIDY_ARGS -x original $CASE 
         else
             $DATATIDY $DATATIDY_ARGS -x original $CASE 
         fi
-        test_exit_status
+        test_exit_status $SCRIPT
         do_register $CASE 
         do_stash $CASE
         ;;
       *)
-        >&2 echo ERROR: Unknown task $TASK
+        >&2 echo $SCRIPT ERROR: Unknown task $TASK
         >&2 echo "$USAGE"
         exit 1
         ;;

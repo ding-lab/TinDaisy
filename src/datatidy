@@ -10,13 +10,12 @@ Utility for logging, reporting, and cleaning Cromwell run data
 Usage:
   datatidy [options] [ RID1 [RID2 ...]]
 
-Required:
-
 Optional options
 -h: print usage information
 -d: dry run: print commands but do not modify data or write to data log
 -1: stop after one case processed.
--l DATALOG: data log file.  Default: is "./logs". Can be obtained from environment variable
+-l DATALOG: Data log file.  Default: is "./logs/datalog.dat". Must exist unless -f is set. Can be obtained from environment variable
+-L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Can be obtained from environment variable
 -f: Create data log file if it does not exist
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -p PROJECT: Project name associated with this analysis
@@ -56,7 +55,7 @@ Tasks which delete any data require EXPECTED_STATUS to be defined.
 To help avoid inadvertantly deleting data, all cases must have a status (as
 obtained from `cq`) same as EXPECTED_STATUS.
 
-A data log file has the following columns:
+A data log (DATALOG) file has the following columns:
     Case        - Case of run
     WorkflowID  - WorkflowID of run
     Path        - Path to workflowRoot directory of this run
@@ -65,13 +64,15 @@ A data log file has the following columns:
     TidyLevel   - One of: `original`, `inputs`, `compress`, `prune`, `final`, `wipe`
     Note        - Arbitrary note about this run or cleaning
 
+See runtidy for details about RUNLOG
+
 This script relies on `cq` to get WorkflowID, status and timestamps associated with each case
 
 Note that in the case of queries, only the most recent workflow ID is returned; if there are
 multiple runs for a given case the older ones will be masked.  TODO: allow multiple workflow IDs
 to be listed for a given case if they exist.
 
-DATALOG can be defined as environment variable, e.g., `export DATALOG=/path/to/logs/datalog.dat`
+DATALOG and RUNLOG can be defined as environment variables, e.g., `export DATALOG=/path/to/logs/datalog.dat`
 EOF
 
 source cromwell_utils.sh
@@ -87,6 +88,9 @@ TASK="query"
 if [ -z $DATALOG ]; then
     DATALOG="./logs/datalog.dat"
 fi
+if [ -z $RUNLOG ]; then
+    RUNLOG="./logs/runlog.dat"
+fi
 
 if [ -z $CQD ]; then
     CQ="cq"
@@ -94,7 +98,7 @@ else
     CQ="$CQD/cq"
 fi
 
-while getopts ":hd1l:k:m:c:x:wF:p:f" opt; do
+while getopts ":hd1l:L:k:m:c:x:wF:p:f" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -111,6 +115,9 @@ while getopts ":hd1l:k:m:c:x:wF:p:f" opt; do
       ;;
     l) 
       DATALOG="$OPTARG"
+      ;;
+    L) 
+      RUNLOG="$OPTARG"
       ;;
     m)
       NOTE="$OPTARG"
@@ -163,16 +170,21 @@ fi
 
 if [ ! -f $DATALOG ]; then
     if [ -z $MAKE_DATALOG ]; then
-        >&2 echo ERROR: datalog file $DATALOG does not exist, will not create one by default
-        >&2 echo Specify -f if you wish to create new datalog.dat file
+        >&2 echo ERROR: DATALOG file $DATALOG does not exist, will not create one by default
+        >&2 echo "       datalog file can be created with \`$SCRIPT -f1\`"
         exit 1
     fi
     >&2 echo Creating new data log $DATALOG
     # Write header
-    printf "Case\tWorkflowID\tPath\tProject\tDate\tTidyLevel\tNote\n" > $DATALOG
-    test_exit_status
-else
-    >&2 echo Existing data log $DATALOG
+    printf "# Case\tWorkflowID\tPath\tProject\tDate\tTidyLevel\tNote\n" > $DATALOG
+    test_exit_status $SCRIPT
+#else
+#    >&2 echo Existing data log $DATALOG
+fi
+if [ ! -f $RUNLOG ]; then
+        >&2 echo ERROR: RUNLOG file $RUNLOG does not exist, will not create one by default
+        >&2 echo "       runlog file can be created with \`runtidy -f1\`"
+        exit 1
 fi
 
 # Given a WorkflowID, return the most recent entry from datalog
@@ -199,10 +211,11 @@ function do_query {
     RID=$1
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
     read MYCASE MYWID < <( getCaseWID $RID $RUNLOG )
+    test_exit_status $SCRIPT
     # get additional details from datalog
     #   Case WorkflowID Path Date TidyLevel Note
     DL=$(parseDataLog $MYWID $DATALOG)
-    test_exit_status
+    test_exit_status $SCRIPT
     # DL = Unregistered
     if [ "$DL" == "Unregistered" ]; then
         printf "$MYCASE\t$MYWID\tUnregistered\n"
@@ -216,7 +229,7 @@ function do_query {
 
     if [ "$QUERY_DETAIL" ]; then
         DATASIZE=$(du -sh "$DATAD" | cut -f 1)
-        test_exit_status
+        test_exit_status $SCRIPT
         printf "$MYCASE\t$MYWID\t$DATAD\t$PROJECT\t$TIDYLEVEL\t$DATASIZE\t$DL_DATE\t$DL_NOTE\n" 
     else
         printf "$MYCASE\t$MYWID\t$DATAD\t$PROJECT\t$TIDYLEVEL\n" 
@@ -248,20 +261,14 @@ function write_datalog {
     RID=$1
     TL=$2
 
-    # Confirm that MYPROJECT is defined.  This could be checked earlier
-    if [ -z $MYPROJECT ]; then
-        >&2 echo ERROR: project \(-p\) is not defined.
-        exit 1
-    fi
-
     NOW=$(date)
     # get case and WorkflowID, based on runlog parser in cromwell_utils.sh
     read MYCASE MYWID < <( getCaseWID $RID $RUNLOG )
 
-    test_exit_status                                                                   
+    test_exit_status $SCRIPT
 
     DATAD=$( $CQ -V -q workflowRoot $MYWID )                               
-    test_exit_status                                                                   
+    test_exit_status $SCRIPT
 
     DL=$( printf "$MYCASE\t$MYWID\t$DATAD\t$MYPROJECT\t$NOW\t$TL\t$NOTE\n") 
     if [ "$DRYRUN" ]; then
@@ -269,7 +276,7 @@ function write_datalog {
     else
         echo "$DL" >> $DATALOG
     fi
-    test_exit_status
+    test_exit_status $SCRIPT
 }
 
 # Return a list of CWL outputs of a run
@@ -459,7 +466,7 @@ if [ $TASK == "original_special" ] || [ $TASK == "inputs" ] || [ $TASK == "compr
     DOCKET=""
     for RID in $RIDS; do
         WID=$( check_expected_status $RID $EXPECTED_STATUS )
-        test_exit_status
+        test_exit_status $SCRIPT
 
         DOCKET="$DOCKET $RID"
         if [ $JUSTONE ]; then
@@ -467,6 +474,14 @@ if [ $TASK == "original_special" ] || [ $TASK == "inputs" ] || [ $TASK == "compr
         fi
     done
     RIDS=$DOCKET    #  CASE replenished to loop through all cases again
+fi
+
+# all tasks which call write_datalog must have MYPROJECT defined
+if [ "$TASK" == "original" ] || [ "$TASK" == "original_special" ] || [ "$TASK" == "inputs" ] || [ "$TASK" == "compress" ] || [ "$TASK" == "prune" ] || [ "$TASK" == "final" ] || [ "$TASK" == "wipe" ]; then
+    if [ -z $MYPROJECT ]; then
+        >&2 echo ERROR: project \(-p\) is not defined.
+        exit 1
+    fi
 fi
 
 # Looping over RunID, which is either Case or WorkflowID

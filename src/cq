@@ -24,7 +24,7 @@ Options:
 -T: Skip cases where logs are stashed 
 -D: Do not access database.  Limited functionality: status is unknown, best guesses are made for other queries.  TODO: complete implementation
 -C CROMWELL_URL: define the cromwell URL.  Default: https://genome-cromwell.gsc.wustl.edu
--L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Has to exist unless -f is set.  Can be obtained from environment variable
+-L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Can be obtained from environment variable
 
 RID is RunID, and can be either a Case or a WorkflowID.  Examples:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
@@ -55,8 +55,8 @@ RUNLOG can be defined as environment variable, e.g., `export RUNLOG=/path/to/log
 Note that this script requires `jq` to be installed: https://stedolan.github.io/jq/download/
 EOF
 
-
 source cromwell_utils.sh
+SCRIPT=$(basename $0)
 
 # read default from environment variable if possible, otherwise use default
 if [ -z $CROMWELL_URL ]; then
@@ -142,11 +142,11 @@ function get_status {
     fi
     URL="$CROMWELL_URL/api/workflows/v1/$WID/status"
     R=$( curl $CURL_ARG -s -X GET $URL -H "accept: application/json" )
-    test_exit_status    # This seems like it fails uninformatively if db server not running
+    test_exit_status $SCRIPT   # This seems like it fails uninformatively if db server not running
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
     S=$( echo $R | jq -r '.status' )
-    test_exit_status
+    test_exit_status $SCRIPT
     echo $S
 }
 
@@ -158,7 +158,7 @@ function get_logs {
         return
     fi
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/logs" -H "accept: application/json" )
-    test_exit_status
+    test_exit_status $SCRIPT
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
     if [ -z $STEP ]; then
@@ -167,16 +167,16 @@ function get_logs {
         FILTER=".calls.${STEP}[0]"
     fi
     S=$( echo "$R" | jq -r "$FILTER" )
-    test_exit_status
+    test_exit_status $SCRIPT
     echo "$S"
 }
 
 function get_workflowRoot {
     WID=$1
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" )
-    test_exit_status
+    test_exit_status $SCRIPT
     S=$( echo "$R" | jq -r '.workflowRoot' )
-    test_exit_status
+    test_exit_status $SCRIPT
     echo "$S"
 }
 
@@ -184,9 +184,9 @@ function get_workflowRoot {
 function get_output {
     WID=$1
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
-    test_exit_status
+    test_exit_status $SCRIPT
     S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
-    test_exit_status
+    test_exit_status $SCRIPT
     echo "$S"
 }
 
@@ -194,10 +194,10 @@ function get_output {
 function get_outputs {
     WID=$1
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
-    test_exit_status
+    test_exit_status $SCRIPT
     # Return all outputs which are not null
     S=$( echo "$R" | jq -r '.outputs[] | .location' )
-    test_exit_status
+    test_exit_status $SCRIPT
     echo "$S"
 }
 
@@ -206,12 +206,12 @@ function get_outputs {
 function get_runlog {
     WID=$1
     STATUS=$(get_status $WID)
-    test_exit_status
+    test_exit_status $SCRIPT
 
     START=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.start')
-    test_exit_status
+    test_exit_status $SCRIPT
     END=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/metadata" -H "accept: application/json" | jq -r '.end')
-    test_exit_status
+    test_exit_status $SCRIPT
     printf "$STATUS\t$START\t$END"
 }
 
@@ -229,6 +229,12 @@ else
     RIDS="$@"
 fi
 
+# REquire RUNLOG be defined, but it need not exist
+#if [ ! -f $RUNLOG ]; then
+#    >&2 echo ERROR: RUNLOG file $RUNLOG does not exist
+#    exit 1
+#fi
+
 # loop over all cases, obtain WID and database status
 # If log file does not exist, assume that the run has not started
 # RID (run ID) may be either CASE or WorkflowID
@@ -239,11 +245,11 @@ for RID in $RIDS; do
 
     # https://stackoverflow.com/questions/2488715/idioms-for-returning-multiple-values-in-shell-scripting
     read CASE WID < <( getCaseWID $RID $RUNLOG )
-    test_exit_status
+    test_exit_status $SCRIPT
 
     if [ "$ONLY_SUCCESS" ]; then
         STATUS=$( get_status $WID )
-        test_exit_status
+        test_exit_status $SCRIPT
         if [ $STATUS != "Succeeded" ]; then
             continue
         fi
@@ -252,7 +258,7 @@ for RID in $RIDS; do
     # Skip runs which are stashed, i.e. those whose logs have been moved to directory logs/WorkflowID
     if [ $NO_STASH ]; then
         ISS=$(isStashed $RID)
-        test_exit_status
+        test_exit_status $SCRIPT
         if [ $ISS == 1 ]; then
             continue
         fi
@@ -267,28 +273,28 @@ for RID in $RIDS; do
     else
         if [ "$QUERY" == 'logs' ]; then
             STATUS=$(get_logs $WID)
-            test_exit_status
+            test_exit_status $SCRIPT
             STATUS=$(printf "\n$STATUS")
         elif [ "$QUERY" == 'status' ]; then
             STATUS=$(get_status $WID)
-            test_exit_status
+            test_exit_status $SCRIPT
         elif [ "$QUERY" == 'wid' ]; then
             STATUS=$WID
         elif [ "$QUERY" == 'workflowRoot' ]; then
             STATUS=$(get_workflowRoot $WID)
-            test_exit_status
+            test_exit_status $SCRIPT
         elif [ "$QUERY" == 'timing' ]; then
             # URL as provided by tmooney on slack 
             STATUS="$CROMWELL_URL/api/workflows/v1/$WID/timing"
         elif [ "$QUERY" == 'output' ]; then     # this returns output associated with tindaisy.cwl.output_vcf
             STATUS=$(get_output $WID)
-            test_exit_status
+            test_exit_status $SCRIPT
         elif [ "$QUERY" == 'outputs' ]; then    # this returns multiple outputs
             STATUS=$(get_outputs $WID | grep -v -w "null")
-            test_exit_status
+            test_exit_status $SCRIPT
         elif [ "$QUERY" == 'runlog' ]; then
             STATUS=$(get_runlog $WID)
-            test_exit_status
+            test_exit_status $SCRIPT
         elif [ "$QUERY" == 'url' ]; then
             echo $CROMWELL_URL
             exit 0

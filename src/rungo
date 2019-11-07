@@ -19,7 +19,7 @@ Optional options
 -1 : stop after one case processed.
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -y YAMLD: directory with YAML input files (named CASE.yaml).  Default "./yaml"
--l LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
+-g LOGD: directory where runtime output (CASE.out, CASE.err, CASE.log ) written.  Default "./logs"
 -J N: run N tasks in parallel.  If 0, disable parallel mode. Default 0
 -e: write STDERR output of workflow to terminal rather than LOGD/CASE.err
 -D DB_ARGS: arguments for connecting to Cromwell DB.  Default as specified in Cromwell configuration page below.  If value is "none",
@@ -31,6 +31,8 @@ Optional options
     This calls `runtidy -x finalize` and `datatidy -x compress`
 -X JAVA_OPTS: additional arguments to java invocation
 -p PROJECT: Project name associated with this analysis.  Required if -F
+-L RUNLOG: Run log file used by runtidy if -F defined.  Can be obtained from environment variable
+-l DATALOG: Data log file used by datatidy if -F defined.  Can be obtained from environment variable
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -61,7 +63,7 @@ CROMWELL_JAR="/opt/cromwell.jar"
 JAVA="/usr/bin/java"
 CASES_FN="dat/cases.dat"
 
-while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:p:" opt; do
+while getopts ":W:y:hd1J:g:eC:D:R:j:k:c:FX:p:L:l:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -79,7 +81,7 @@ while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:p:" opt; do
     y) 
       YAMLD="$OPTARG"
       ;;
-    l) 
+    g) 
       LOGD="$OPTARG"
       ;;
     W) 
@@ -114,6 +116,13 @@ while getopts ":W:y:hd1J:l:eC:D:R:j:k:c:FX:p:" opt; do
       ;;
     p) 
       PROJECT="$OPTARG"
+      ;;
+    L)  # RUNLOG
+      RUNTIDY_ARG="-L $OPTARG"
+      DATATIDY_ARG="$DATATIDY_ARG -L $OPTARG"
+      ;;
+    l)  # DATALOG
+      DATATIDY_ARG="$DATATIDY_ARG -l $OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -169,14 +178,14 @@ fi
 confirm $CROMWELL_CONFIG 
 
 mkdir -p $LOGD
-test_exit_status
+test_exit_status $SCRIPT
 
 if [ -z $CQD ]; then
-    RUNTIDY="runtidy"
-    DATATIDY="datatidy"
+    RUNTIDY="runtidy $RUNTIDY_ARG"
+    DATATIDY="datatidy $DATATIDY_ARG"
 else
-    RUNTIDY="$CQD/runtidy -c $CQD"
-    DATATIDY="$CQD/datatidy -c $CQD"
+    RUNTIDY="$CQD/runtidy -c $CQD $RUNTIDY_ARG"
+    DATATIDY="$CQD/datatidy -c $CQD $DATATIDY_ARG"
 fi
 
 # Used for `parallel` job groups 
@@ -202,6 +211,26 @@ else
     >&2 echo Job submission with $NJOBS cases in parallel
 fi
 
+# if finalizing at completion of run, confirm that runtidy and datatidy are likely to succeed:
+# * PROJECT is defined
+# * runtidy default query returns OK
+# * datatidy default query returns OK
+if [ $DO_FINALIZE ]; then
+    if [ -z $PROJECT ]; then
+        >&2 echo ERROR: Project \(-p\) is required if autofinalizing \(-F\).
+        exit 1
+    fi
+
+    # run one runtidy and datatidy query to make sure they don't error out
+    CMD="$RUNTIDY -1 -x query"
+    R=$($CMD)
+    test_exit_status $SCRIPT
+
+    CMD="$DATATIDY -1 -x query"
+    R=$($CMD)
+    test_exit_status $SCRIPT
+fi
+
 for CASE in $CASES; do
     NOW=$(date)
     >&2 echo \[ $NOW \] : Processing case $CASE
@@ -210,14 +239,9 @@ for CASE in $CASES; do
     STDERR_FN="$LOGD/$CASE.err"
 
     CMD=$(get_cromwell_cmd $CWL $CASE $CROMWELL_CONFIG $STDOUT_FN $STDERR_FN)
-    test_exit_status
+    test_exit_status $SCRIPT
 
     if [ $DO_FINALIZE ]; then
-        # Confirm that MYPROJECT is defined.  This could be checked earlier
-        if [ -z $PROJECT ]; then
-            >&2 echo ERROR: Project \(-p\) is required if autofinalizing \(-F\).
-            exit 1
-        fi
         # finalize and compress run immediately after successful completion
         RT_CMD="$RUNTIDY -x finalize -m Autofinalizing -p $PROJECT $CASE"
         DT_CMD="$DATATIDY -F Succeeded -x compress -p $PROJECT $CASE"
