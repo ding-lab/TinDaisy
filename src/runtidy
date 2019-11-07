@@ -3,8 +3,6 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
-# add project column to runlog
-
 read -r -d '' USAGE <<'EOF'
 Register, query, and archive Cromwell run output
 
@@ -183,6 +181,8 @@ else
     DATATIDY="$CQD/datatidy"
 fi
 
+# note about adding new tasks or modifying existing ones:
+# rungo calls runtidy -q query to make sure things are working ok
 if [ $TASK == "register" ] || [ $TASK == "finalize" ]; then
     # Confirm that PROJECT is defined.  
     if [ -z $PROJECT ]; then
@@ -221,6 +221,7 @@ function do_query {
     CASE=$1
 # * `query`: Evaluate and print for each case
 #     - case, workflowId, path to run log 
+# TODO: add time start and duration of run
     WID=$( $CQ -V -q wid $CASE )
     printf "$CASE\t$WID\t$RUNLOG\n"
 }

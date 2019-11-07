@@ -16,7 +16,7 @@ Options:
 -h: Print this help message
 -1: Stop after one
 -k CASES_FN: file with list of all cases, one per line, used when RID1 not defined. Default: dat/cases.dat
--q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'output', 'outputs', 'runlog', 'url'.  Default is `status`
+-q QUERY: type of query, one of 'status', 'logs', 'workflowRoot', 'timing', 'duration', 'output', 'outputs', 'runlog', 'url'.  Default is `status`
 -s STEP: define step of interest for use with 'logs' query
 -V: output query result only only (i.e., don't write case and workflow ID)
 -U: skip cases were WorkflowID is Unknown or Unassigned
@@ -41,6 +41,7 @@ Evaluates the following information for each case
     * logs - List of stderr/stdout for each run.  All steps shown unless -s STEP is defined
     * workflowRoot - Path to root of cromwell output
     * timing - URL to visualize timing and progress of workflow
+    * duration - display duration of run in minutes
     * output - Output VCF of TinDaisy run associated with tindaisy.cwl.output_vcf
     * outputs - All outputs of TinDaisy run as specified in input CWL
     * runlog - Output status, start, end times
@@ -215,6 +216,26 @@ function get_runlog {
     printf "$STATUS\t$START\t$END"
 }
 
+# duration returns the fields,
+# status, run_duration_minutes
+function get_duration {
+    WID=$1
+    RUNLOG=$(get_runlog $WID)
+    test_exit_status 
+
+    STATUS=$(echo "$RUNLOG" | cut -f 1)
+    START=$(echo "$RUNLOG" | cut -f 2)
+    END=$(echo "$RUNLOG" | cut -f 3)
+
+# Duration calculation : https://stackoverflow.com/questions/14309032/bash-script-difference-in-minutes-between-two-times
+    START_NUM=$(date -d $START +%s)
+    END_NUM=$(date -d $END +%s)
+
+    DIFF=$(( (END_NUM - START_NUM) / 60))
+
+    printf "$STATUS\t$DIFF"
+}
+
 # this allows us to get Run IDs in one of three ways:
 # 1: cq RID1 RID2 ...
 # 2: cat cases.dat | cq -
@@ -282,6 +303,9 @@ for RID in $RIDS; do
             STATUS=$WID
         elif [ "$QUERY" == 'workflowRoot' ]; then
             STATUS=$(get_workflowRoot $WID)
+            test_exit_status $SCRIPT
+        elif [ "$QUERY" == 'duration' ]; then
+            STATUS=$(get_duration $WID)
             test_exit_status $SCRIPT
         elif [ "$QUERY" == 'timing' ]; then
             # URL as provided by tmooney on slack 
