@@ -49,7 +49,7 @@ inputs:
     label: BED file to restrict strelka2 calling regions
     doc: bgzip-compressed tabix-indexed BED file
     secondaryFiles:
-      - ^.tbi
+      - .tbi
   - id: num_parallel_strelka2
     type: int?
     inputBinding:
