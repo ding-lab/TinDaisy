@@ -63,6 +63,8 @@ inputs:
     type: File
   - id: chrlist
     type: File?
+  - id: call_regions
+    type: File?
   - id: num_parallel_pindel
     type: int?
   - id: num_parallel_strelka2
@@ -348,6 +350,8 @@ steps:
         source: strelka_config
       - id: num_parallel_strelka2
         source: num_parallel_strelka2
+      - id: call_regions
+        source: call_regions
     out:
       - id: strelka2_snv_vcf
       - id: strelka2_indel_vcf

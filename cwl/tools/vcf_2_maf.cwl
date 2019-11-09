@@ -77,5 +77,5 @@ requirements:
   - class: ResourceRequirement
     ramMin: 2000
   - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/tindaisy-core:20190415'
+    dockerPull: 'mwyczalkowski/tindaisy-core:20191108'
   - class: InlineJavascriptRequirement

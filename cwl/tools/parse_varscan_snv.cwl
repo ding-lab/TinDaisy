@@ -40,7 +40,7 @@ arguments:
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/tindaisy-core:20190415'
+    dockerPull: 'mwyczalkowski/tindaisy-core:20191108'
   - class: InlineJavascriptRequirement
   - class: ResourceRequirement
     ramMin: 2000
