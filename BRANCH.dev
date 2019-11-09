@@ -1,0 +1,3 @@
+Testing of strelka2-dev branch of TinDaisy-core, which:
+* changes priority order when merging VCFs to retain Varscan format details
+* adds --callRegions option to strelka2 caller 

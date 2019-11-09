@@ -41,6 +41,15 @@ inputs:
       prefix: '--manta_vcf'
     label: Output from Manta
     doc: Optional file for use with strelka2 processing
+  - id: call_regions
+    type: File?
+    inputBinding:
+      position: 0
+      prefix: '--call_regions'
+    label: BED file to restrict strelka2 calling regions
+    doc: bgzip-compressed tabix-indexed BED file
+    secondaryFiles:
+      - ^.tbi
   - id: num_parallel_strelka2
     type: int?
     inputBinding:
