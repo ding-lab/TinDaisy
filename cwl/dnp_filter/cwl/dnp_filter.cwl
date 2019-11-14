@@ -4,7 +4,7 @@ $namespaces:
   sbg: 'https://www.sevenbridges.com/'
 id: dnp_filter
 baseCommand:
-  - python
+  - /usr/local/bin/python
   - /opt/dnp_filter/src/DNP_filter.py
 inputs:
   - id: input
