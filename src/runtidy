@@ -214,7 +214,7 @@ if [ ! -f $RUNLOG ]; then
     >&2 echo Creating new run log $RUNLOG
     # Write header
     CMD="printf \"# Case\tProject\tWorkflowID\tStatus\tStartTime\tEndTime\tNote\n\" > $RUNLOG"
-    run_cmd "$CMD" "$DRYRUN"
+    run_cmd "$CMD" "$DRYRUN" 1
 fi
 
 function do_query {
@@ -311,7 +311,7 @@ function do_stash {
     fi
 
     CMD="mkdir -p $OUTD"
-    run_cmd "$CMD" "$DRYRUN" $QUIET
+    run_cmd "$CMD" "$DRYRUN" $QUIET 
 
     CMD="mv $LOGD/$CASE.* $OUTD"
     run_cmd "$CMD" "$DRYRUN" $QUIET

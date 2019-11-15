@@ -271,7 +271,7 @@ function get_restartd {
     CASE=$1
     RESTART_MAP=$2
 
-    UUID=$(grep CASE $RESTART_MAP | cut -f 2)
+    UUID=$(grep $CASE $RESTART_MAP | cut -f 2)
 
     if [ -z "$UUID" ]; then
         if [ $ONLYWARN ]; then
@@ -313,17 +313,6 @@ function init_yaml {
         exit 1
     fi
     confirm $YAML_TEMPLATE 
-
-    # If RESTART_MAP is defined,
-    # confirm it exists and confirm RESTART_ROOT is defined
-    if [ ! -z $RESTART_MAP ]; then
-        confirm $RESTART_MAP 
-        >&2 echo Restart mapping from $RESTART_MAP
-        if [ -z $RESTART_ROOT ]; then
-            >&2 echo ERROR: RESTART_ROOT not defined in $PARAMS
-            exit 1
-        fi
-    fi
 
     if [ $YAMLD != "-" ]; then
         mkdir -p $YAMLD
@@ -504,6 +493,16 @@ function do_query {
 }
 
 # Note init_params has already been called
+# If RESTART_MAP is defined,
+# confirm it exists and confirm RESTART_ROOT is defined
+if [ ! -z $RESTART_MAP ]; then
+    confirm $RESTART_MAP 
+    >&2 echo Restart mapping from $RESTART_MAP
+    if [ -z $RESTART_ROOT ]; then
+        >&2 echo ERROR: RESTART_ROOT not defined in $PARAMS
+        exit 1
+    fi
+fi
 
 # Initialize and check for valid task name
 if [ $TASK == "query" ]; then
@@ -521,10 +520,10 @@ fi
 for CASE in $CASES; do
 
 # this goes into called functions
-
     if [ $TASK == "query" ]; then
         do_query $CASE 
     elif [ $TASK == "yaml" ]; then
+
         if [ $YAMLD != "-" ]; then
             YAML_FN="$YAMLD/$CASE.yaml"
         else
@@ -533,14 +532,15 @@ for CASE in $CASES; do
         do_yaml $CASE $YAML_FN
 
         # Now do a sanity check on YAML files - make sure all files listed in it exist
-        SANITY=$(grep path MMRF_1016.yaml | cut -f 2 -d : | xargs ls -l 2>&1)
+        SANITY=$(grep path $YAML_FN | cut -f 2 -d : | xargs ls -l 2>&1 >/dev/null)
+        
         rcs=${PIPESTATUS[*]};
         for rc in ${rcs}; do
             if [[ $rc != 0 ]]; then
                 if [ $ONLYWARN ]; then
                     >&2 echo WARNING: $YAML_FN has non-existing paths
                 else 
-                    >&2 echo ERROR: $YAML_FN has non-existing paths
+                    >&2 echo ERROR: $YAML_FN has non-existing paths:
                     >&2 echo "$SANITY"
                     exit $rc;
                 fi
