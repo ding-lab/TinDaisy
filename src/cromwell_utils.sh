@@ -1,7 +1,6 @@
 # Various utilities common to cromwell runs
 # No database calls here
 # TODO: explain file formats and logic of how WorkflowID is looked up
-# TODO: RUNLOG should not be hard coded, allow to be specified either with argument or environment / global variable
 
 # obtain both Case and WorkflowID based on one of these values. RUNID passed can be either CASE or WorkflowID
 # A) if RUNID is a WorkflowID, get Case by evaluating RUNLOG (e.g., logs/runlog.dat)
