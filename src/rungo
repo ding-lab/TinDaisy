@@ -33,6 +33,7 @@ Optional options
 -p PROJECT: Project name associated with this analysis.  Required if -F
 -L RUNLOG: Run log file used by runtidy if -F defined.  Can be obtained from environment variable
 -l DATALOG: Data log file used by datatidy if -F defined.  Can be obtained from environment variable
+-G TD_ROOT: write to STDERR contents of `git log -1` and `git remote -v` for git repository at given TD_ROOT
 
 If CASE is - then read CASE from STDIN.  If CASE is not defined, read from CASES_FN file.
 
@@ -63,7 +64,7 @@ CROMWELL_JAR="/opt/cromwell.jar"
 JAVA="/usr/bin/java"
 CASES_FN="dat/cases.dat"
 
-while getopts ":W:y:hd1J:g:eC:D:R:j:k:c:FX:p:L:l:" opt; do
+while getopts ":W:y:hd1J:g:eC:D:R:j:k:c:FX:p:L:l:G:" opt; do
   case $opt in
     h) 
       echo "$USAGE"
@@ -124,6 +125,12 @@ while getopts ":W:y:hd1J:g:eC:D:R:j:k:c:FX:p:L:l:" opt; do
     l)  # DATALOG
       DATATIDY_ARG="$DATATIDY_ARG -l $OPTARG"
       ;;
+    G) GTD_ROOT="$OPTARG"
+      if [ ! -d $GTD_ROOT ]; then
+        >&2 echo ERROR: GTD_ROOT $GTD_ROOT : bad directory name
+        exit 1
+      fi
+      ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
       >&2 echo "$USAGE"
@@ -162,6 +169,23 @@ function get_cromwell_cmd {
 
     echo "$CMD"
 }
+
+# -G TD_ROOT: write to STDERR contents of `git log -1` and `git remote -v` for git repository at given TD_ROOT
+function write_git {
+    TD_ROOT=$1
+
+    >&2 echo "## Details of git project TD_ROOT $TD_ROOT"
+    >&2 echo "## git log -1 "
+    >&2 echo "`git -C $TD_ROOT log -1`"
+    >&2 echo "## git remote -v"
+    >&2 echo "`git -C $TD_ROOT remote -v` "
+    >&2 echo "## end of git details"
+}
+
+if [ $GTD_ROOT ]; then
+    write_git $GTD_ROOT
+fi
+
 
 if [ -z $CWL ]; then
     >&2 echo $SCRIPT: ERROR: CWL file not defined \(-c\)
