@@ -45,6 +45,8 @@ Output YAML file filename is CASE.yaml.  It is based on YAML_TEMPLATE, with the 
     * DBSNP_DB
     * VEP_CACHE_GZ
     * RESTART_D
+    * VEP_CACHE_VERSION
+    * ASSEMBLY
 The TUMOR_BAM and NORMAL_BAM are defined by lookup of CASE in BamMap, RESTART_D
 is defined when -R flag is set, remainder defined in PARAMS
 
@@ -152,11 +154,22 @@ function init_params {
         >&2 echo ERROR: VEP_CACHE_GZ not defined in $PARAMS
         exit 1
     fi
+    if [ -z $VEP_CACHE_VERSION ]; then
+        >&2 echo ERROR: VEP_CACHE_VERSION not defined in $PARAMS
+        exit 1
+    fi
+    if [ -z $ASSEMBLY ]; then
+        >&2 echo ERROR: ASSEMBLY not defined in $PARAMS
+        exit 1
+    fi
+
     # envsubst requires variables to be exported - these are the parameters used for yaml file
     export REF_PATH
     export TD_ROOT
     export DBSNP_DB
     export VEP_CACHE_GZ
+    export VEP_CACHE_VERSION
+    export ASSEMBLY
 
     # These parameters used to be passed as arguments, but are now in PARAMS
     if [ -z $BAMMAP ]; then

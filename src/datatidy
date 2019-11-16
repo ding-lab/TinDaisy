@@ -3,7 +3,6 @@
 # Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
 # https://dinglab.wustl.edu/
 
-
 read -r -d '' USAGE <<'EOF'
 Utility for logging, reporting, and cleaning Cromwell run data
 
@@ -20,7 +19,7 @@ Optional options
 -k CASES_FN: file with list of all cases, one per line, used when CASE1 not defined. Default: dat/cases.dat
 -p PROJECT: Project name associated with this analysis
 -m NOTE: A note added to data log file for each case
--x TASK: Execute given task.  Values: 'query' (default), 'original', 'inputs', 'compress', 'prune', 'final', 'wipe'
+-x TASK: Execute given task.  Values: 'query' (default), 'original', 'inputs', 'compress', 'prune', 'final', 'wipe', `uncompress_merge`
 -F EXPECTED_STATUS: Define expected status of runs 
 -w: output additional detail for query task
 -c CQD: explicit path to cromwell query utility `cq` and `datatidy`
@@ -38,6 +37,9 @@ Datatidy performs the following task:
     * `prune` - Retain and compress final output of each step
     * `final` - Keep only final CWL outputs of each run
     * `wipe` - Delete everything
+* Uncompress specific paths
+    * `uncompress_merge` - extract from compressed_results.tar.gz or pruned_results.tar.gz VCFs which are input into merge step
+       does not update DATALOG
 
 Cromwell workflow output can be large and it is useful to reduce disk usage by
 deleting staged and intermediate data and compressing other output.  The role
@@ -428,6 +430,34 @@ function do_prune {
     write_datalog $RID $TASK
 }
 
+function do_uncompress_merge {
+    RID=$1
+
+    WD=$( $CQ -V -q workflowRoot $RID )                               
+
+    TARC="$WD/compressed_results.tar.gz"
+    TARP="$WD/pruned_results.tar.gz"
+
+    if [ -f $TARC ]; then
+        TAR=$TARC
+    elif [ -f $TARP ]; then
+        TAR=$TARP
+    else
+        >&2 echo ERROR: No TAR file in $WD, nothing to do.  Exiting
+        exit 1
+    fi
+
+    FILES="./call-pindel_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf \
+        ./call-varscan_snv_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf \
+        ./call-varscan_indel_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf \
+        ./call-strelka_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf \
+        ./call-strelka_indel_vaf_length_depth/execution/results/vaf_length_depth_filters/filtered.vcf \
+        ./call-mutect_vaf_length_depth/execution/results/vaf_length_depth_filters/filtered.vcf"
+
+    CMD="tar -zxf $TAR -C $WD $FILES"   
+    run_cmd "$CMD" $DRYRUN
+}
+
 # Note on deleting: https://www.tecmint.com/delete-all-files-in-directory-except-one-few-file-extensions/
 # can use extended pattern matching to not delete given files
 function do_final {
@@ -484,8 +514,14 @@ if [ "$TASK" == "original" ] || [ "$TASK" == "original_special" ] || [ "$TASK" =
     fi
 fi
 
+VAR=( $RIDS )
+N_IDS=${#VAR[@]}
+IDS_SEEN=0
+
 # Looping over RunID, which is either Case or WorkflowID
 for RID in $RIDS; do
+
+    IDS_SEEN=$(($IDS_SEEN + 1))
 
     case "$TASK" in
       "query")
@@ -498,24 +534,33 @@ for RID in $RIDS; do
         write_datalog $RID $TASK
         ;;
       "inputs")
+        >&2 echo Processing $IDS_SEEN / $N_IDS [ $(date) ]: $RID 
         delete_inputs $RID 
         write_datalog $RID $TASK
         ;;
       "compress")
+        >&2 echo Processing $IDS_SEEN / $N_IDS [ $(date) ]: $RID 
         delete_inputs $RID 
         do_compress $RID
         ;;
       "prune")
+        >&2 echo Processing $IDS_SEEN / $N_IDS [ $(date) ]: $RID 
         delete_inputs $RID 
         do_prune $RID
         ;;
       "final")
+        >&2 echo Processing $IDS_SEEN / $N_IDS [ $(date) ]: $RID 
         delete_inputs $RID 
         do_final $RID
         ;;
       "wipe")
+        >&2 echo Processing $IDS_SEEN / $N_IDS [ $(date) ]: $RID 
         delete_inputs $RID 
         do_wipe $RID
+        ;;
+      "uncompress_merge")
+        >&2 echo Processing $IDS_SEEN / $N_IDS [ $(date) ]: $RID 
+        do_uncompress_merge $RID 
         ;;
       *)
         >&2 echo ERROR: Unknown task $TASK

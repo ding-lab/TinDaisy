@@ -25,6 +25,7 @@ Options:
 -D: Do not access database.  Limited functionality: status is unknown, best guesses are made for other queries.  TODO: complete implementation
 -C CROMWELL_URL: define the cromwell URL.  Default: https://genome-cromwell.gsc.wustl.edu
 -L RUNLOG: Run log file. Default is "./logs/runlog.dat".  Can be obtained from environment variable
+-W CWL: CWL filename.  Used for parsing JSON output if it is not the default "tindaisy.cwl"
 
 RID is RunID, and can be either a Case or a WorkflowID.  Examples:
 * `cq` - will return status for all cases defined in `dat/cases.dat`
@@ -73,9 +74,10 @@ fi
 # Defaults
 CASES_FN="dat/cases.dat"
 QUERY="status"
+CWL="tindaisy.cwl"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":h1k:q:s:VUSTDC:L:" opt; do
+while getopts ":h1k:q:s:VUSTDC:L:W:" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -114,6 +116,9 @@ while getopts ":h1k:q:s:VUSTDC:L:" opt; do
     L) 
       RUNLOG="$OPTARG"
       ;;
+    W) 
+      CWL="$OPTARG"
+      ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
       echo "$USAGE"
@@ -144,6 +149,20 @@ function get_status {
     URL="$CROMWELL_URL/api/workflows/v1/$WID/status"
     R=$( curl $CURL_ARG -s -X GET $URL -H "accept: application/json" )
     test_exit_status $SCRIPT   # This seems like it fails uninformatively if db server not running
+
+    # We validate JSON as recommended here: https://github.com/stedolan/jq/issues/1637
+    if jq -e . >/dev/null 2>&1 <<<"$R"; then
+        ERR=$(echo $R | jq -r '.errors[]? ')
+        test_exit_status
+    else
+        ERR="$R"
+    fi
+
+    if [ ! -z $ERROR ]; then
+        >&2 echo ERROR : $ERR
+        exit 1
+    fi
+
     # from /Users/mwyczalk/Projects/Rabix/somatic_sv_workflow/src/make_analysis_summary.sh
     # extract result path from YAML-format result file using `jq` utility, and confirm that it exists
     S=$( echo $R | jq -r '.status' )
@@ -182,11 +201,17 @@ function get_workflowRoot {
 }
 
 # This will return one output location, for tindaisy.cwl.output_vcf
+# TODO: this will not work if running anything other than tindaisy.cwl, e.g., restarts
 function get_output {
+>&2 echo DEBUG: get_output
     WID=$1
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
     test_exit_status $SCRIPT
-    S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
+>&2 echo DEBUG: R = $R
+#    S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
+#    S=$( echo "$R" | jq -r '.outputs."tindaisy-postcall.cwl.output_vcf".location' )
+    JQQ=".outputs.\"$CWL.output_vcf\".location" 
+    S=$( echo "$R" | jq -r $JQQ )
     test_exit_status $SCRIPT
     echo "$S"
 }
