@@ -201,13 +201,12 @@ function get_workflowRoot {
 }
 
 # This will return one output location, for tindaisy.cwl.output_vcf
-# TODO: this will not work if running anything other than tindaisy.cwl, e.g., restarts
+# or some other output as specified by -W CWL
+# TODO: this should be simplified, can wildcards be used in jq query?
 function get_output {
->&2 echo DEBUG: get_output
     WID=$1
     R=$( curl $CURL_ARG -s -X GET "$CROMWELL_URL/api/workflows/v1/$WID/outputs" -H "accept: application/json" )
     test_exit_status $SCRIPT
->&2 echo DEBUG: R = $R
 #    S=$( echo "$R" | jq -r '.outputs."tindaisy.cwl.output_vcf".location' )
 #    S=$( echo "$R" | jq -r '.outputs."tindaisy-postcall.cwl.output_vcf".location' )
     JQQ=".outputs.\"$CWL.output_vcf\".location" 
