@@ -21,6 +21,7 @@ Options:
 -s SUMMARY_OUT: output analysis summary file for task `summary`.  If '-', write to STDOUT
 -c CROMWELL_QUERY: explicit path to cromwell query utility `cq`.  Default "cq" 
 -R RESTART_MAP: file listing workflow IDs for each case when restarting runs.  Requires RESTART_ROOT in PARAMS
+-W CWLS: CWL filename.  Used by `cq` for parsing JSON output if it is not the default "tindaisy.cwl"
 
 runplan uses BamMap and parameters file to review, initialize, and summarize completed runs.  This
 script makes use of the PARAMS file (default config/project_config.sh) to get various parameters
@@ -67,11 +68,12 @@ YAMLD="./yaml"
 SUMMARY_OUT="./dat/analysis_summary.dat"
 PARAMS="./config/project_config.sh"
 CROMWELL_QUERY="cq"
+CWLS="tindaisy.cwl"
 
 TUMOR_ST='tumor'
 NORMAL_ST='blood_normal'
 
-while getopts ":h1P:x:y:upnwgs:c:R:" opt; do
+while getopts ":h1P:x:y:upnwgs:c:R:W:" opt; do
   case $opt in
     h)  
       echo "$USAGE"
@@ -112,6 +114,9 @@ while getopts ":h1P:x:y:upnwgs:c:R:" opt; do
       ;;
     R) 
       RESTART_MAP="$OPTARG"
+      ;;
+    W) 
+      CWLS="$OPTARG"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG" 
@@ -411,7 +416,8 @@ function do_summary {
     NORMAL_UUID=$(echo "$NORMAL" | cut -f 3)
     DIS=$(echo "$TUMOR" | cut -f 4)
 
-    RESULT_FILE=` $CROMWELL_QUERY -V -q output $CASE `
+    RESULT_FILE=` $CROMWELL_QUERY -V -q output -W $CWLS $CASE `
+
     test_exit_status
     confirm $RESULT_FILE $ONLYWARN  # complain if result file does not exist
 
