@@ -33,7 +33,7 @@ Filters applied (details in VCF output)
 * Require Allele Frequency < 0.005000 (as determined by vep)
 * Retain exonic calls
 * Exclude calls which are in dbSnP but not in COSMIC
-* Two or more SNPs adjacent on same haplotype merged into MNPs using [DNP_Filter](TODO)
+* Two or more sequential SNPs on same haplotype merged into MNPs using [DNP_Filter](TODO)
 
 Majority of above processing is implemented in
 [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core), which was developed
