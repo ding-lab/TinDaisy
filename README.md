@@ -1,10 +1,5 @@
 # <img src="docs/TinDaisy.v1.2.png" width="64"/> TinDaisy
 
-# TODO
-
-* Describe versioning
-* Discuss CWL and CQ code
-
 [TinDaisy](https://github.com/ding-lab/tin-daisy) is a CWL pipeline for calling
 somatic variants fronm tumor and normal exome data.  TinDaisy implements
 functionality from [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core)
@@ -33,20 +28,17 @@ Filters applied (details in VCF output)
 * Require Allele Frequency < 0.005000 (as determined by vep)
 * Retain exonic calls
 * Exclude calls which are in dbSnP but not in COSMIC
-* Two or more sequential SNPs on same haplotype merged into MNPs using [DNP_Filter](TODO)
+* Two or more sequential SNPs on same haplotype merged into MNPs using [DNP_Filter](https://github.com/ding-lab/dnp_filter)
 
 Majority of above processing is implemented in
 [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core), which was developed
 from [SomaticWrapper](https://github.com/ding-lab/somaticwrapper) and
-[GenomeVIP](https://genomevip.readthedocs.io/) projects.  [DNP_Filter](TODO) is
+[GenomeVIP](https://genomevip.readthedocs.io/) projects.  [DNP_Filter](https://github.com/ding-lab/dnp_filter) is
 implemented as a separate project and CWL tool.
-
-
-**TODO** confirm image below displays correctly.
 
 ![TinDaisy CWL implementation](docs/tindaisy.cwl.20191116.png)
 
-*caption* overview of TinDaisy CWL as visualized with [Rabix Composer](http://docs.rabix.io/rabix-composer-home)
+overview of TinDaisy CWL as visualized with [Rabix Composer](http://docs.rabix.io/rabix-composer-home)
 
 
 
@@ -81,7 +73,7 @@ CromwellRunner is a workflow manager for TinDaisy runs.  It consists of the foll
 
 Goal of CromwellRunner is to initialize, launch, inspect, clean up, restart,
 and log TinDaisy runs, particularly for batches of tens and hundreds of runs.
-See [CromwellRunner](TODO) documentation for additional details and examples
+See [CromwellRunner](https://github.com/ding-lab/CromwellRunner) documentation for additional details and examples
 
 
 # Installation
@@ -95,7 +87,7 @@ the bulk of processing, can be obtained for inspection with,
 ``` 
 git clone https://github.com/ding-lab/TinDaisy-Core
 ```
-and (DNP_Filter)[TODO] can be obtained similarly.  Note that for CWL runs the
+and (DNP_Filter)[https://github.com/ding-lab/dnp_filter] can be obtained similarly.  Note that for CWL runs the
 TinDaisy-Core code is distributed in a docker image such as `mwyczalkowski/tindaisy-core:20191108`.
 See development notes below for details about modifying such code.
 
