@@ -1,1 +1,4 @@
 Testing varscan VCF remapping.  Details: https://github.com/ding-lab/varscan_vcf_remap
+
+Ongoing development of TinDaisy
+* Removing cq functionality (this will go into CromwellRunner)

@@ -1,3 +1,0 @@
-Scripts here were developed for Rabix.  Cromwell-specific scripts were forked off these,
-implemented auditing without back propagation of functionality.
-it will be useful to merge auditing functionality into Rabix
