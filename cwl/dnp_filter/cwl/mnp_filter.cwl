@@ -2,10 +2,10 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com/'
-id: dnp_filter
+id: mnp_filter
 baseCommand:
   - /usr/local/bin/python
-  - /opt/dnp_filter/src/DNP_filter.py
+  - /opt/mnp_filter/src/mnp_filter.py
 inputs:
   - id: input
     type: File
@@ -21,27 +21,19 @@ inputs:
     label: tumor bam
     secondaryFiles:
       - .bai
-  - id: threshold
-    type: float?
-    inputBinding:
-      position: 0
-      prefix: '--threshold'
-    label: threshold
-    doc: fraction of reads supporing DNP
 outputs:
   - id: filtered_VCF
     type: File
     outputBinding:
-      glob: DNP_combined.vcf
-label: DNP_filter
+      glob: MNP_combined.vcf
+label: MNP_filter
 arguments:
-    - position: 0
-      prefix: '--output'
-      valueFrom: DNP_combined.vcf
+  - position: 0
+    prefix: '--output'
+    valueFrom: MNP_combined.vcf
 requirements:
-  - class: DockerRequirement
-    dockerPull: 'dinglab2/dnp_filter:20190916'
-  - class: InlineJavascriptRequirement
   - class: ResourceRequirement
     ramMin: 2000
-
+  - class: DockerRequirement
+    dockerPull: 'dinglab2/mnp_filter:20191211'
+  - class: InlineJavascriptRequirement
