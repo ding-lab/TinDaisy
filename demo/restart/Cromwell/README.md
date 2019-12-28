@@ -1,3 +1,5 @@
+# Setup
+
 Goal is to develop simple test of running tindaisy-postcall.cwl, which 
 is a workflow which starts following the vaf / length / depth filter
 for each caller.
@@ -17,7 +19,7 @@ Prior work on restarts done in /gscmnt/gc2737/ding/fernanda/Somatic_MMY/MMRF/MMR
 
 Cromwell testing based on work here: https://github.com/ding-lab/mnp_filter/tree/master/testing/cwl_call
 
--- Details of runs --
+# Run details
 
 First successful run:
     /gscmnt/gc2508/dinglab/mwyczalk/cromwell-dev/cromwell-workdir/cromwell-executions/tindaisy-postcall.cwl/bdad7b0c-a650-4a95-9281-bad7ec734a9d

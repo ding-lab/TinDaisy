@@ -8,7 +8,7 @@ CONFIG="cromwell-config.dat"
 CWL="../../../cwl/workflows/tindaisy-postcall.cwl"
 YAML="postcall.C3L-01000.yaml"
 
-CROMWELL="/opt/cromwell.jar"
+CROMWELL="/gscuser/mwyczalk/projects/TinDaisy/CromwellRunner/cromwell.jar/44/cromwell-44.jar"
 
 # from https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell#Cromwell-ConnectingtotheDatabase
 # Connecting to the database section
@@ -24,4 +24,3 @@ if [[ $rc != 0 ]]; then
     >&2 echo Fatal error $rc: $!.  Exiting.
     exit $rc;
 fi
-
