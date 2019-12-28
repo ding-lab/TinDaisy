@@ -1,0 +1,7 @@
+input:
+  class: File
+  path: ../testing/demo_data/merged.filtered_for_test_DNP_TNP_QNP.vcf 
+bam:
+  class: File
+  path: ../testing/demo_data/synthetic.BWA.bam 
+output: "mnp_combined.vcf"
