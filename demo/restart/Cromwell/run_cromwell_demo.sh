@@ -5,8 +5,8 @@ source /opt/lsf9/conf/lsf.conf
 
 CONFIG="cromwell-config.dat"
 
-CWL="../../cwl/mnp_filter.cwl"
-YAML="demo.yaml"
+CWL="../../../cwl/workflows/tindaisy-postcall.cwl"
+YAML="postcall.C3L-01000.yaml"
 
 CROMWELL="/opt/cromwell.jar"
 
