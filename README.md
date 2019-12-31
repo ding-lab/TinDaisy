@@ -40,6 +40,10 @@ implemented as a separate project and CWL tool.
 
 overview of TinDaisy CWL as visualized with [Rabix Composer](http://docs.rabix.io/rabix-composer-home)
 
+# TODO
+
+* Separate out CromwellRunner discussion below to CromwellRunner
+* Describe Demo direcotry structure and use
 
 
 ## Changelog
@@ -128,5 +132,4 @@ because Rabix does not stage directories.  VEP cache must be passed as a `.tar.g
 Strelka](https://github.com/Illumina/strelka/tree/master/src/demo/data) (hence the name), as well as
 in the `./StrelkaDemo.dat` directory.  These are used for quickly testing workflow steps, and are described
 in more detail in [docs/README.strelka_demo.md](docs/README.strelka_demo.md)
-
 
