@@ -62,9 +62,9 @@ steps:
       - id: strelka_snv_vcf
         source: strelka_snv_vcf
       - id: varscan_indel_vcf
-        source: varscan_indel_vcf
+        source: varscan_vcf_remap_1/remapped_VCF
       - id: varscan_snv_vcf
-        source: varscan_snv_vcf
+        source: varscan_vcf_remap/remapped_VCF
       - id: pindel_vcf
         source: pindel_vcf
       - id: reference_fasta
@@ -84,7 +84,7 @@ steps:
   - id: dbsnp_filter
     in:
       - id: input_vcf
-        source: dnp_filter/filtered_VCF
+        source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
       - id: bypass_dbsnp
@@ -147,7 +147,7 @@ steps:
       - id: output_maf
     run: ../tools/vcf_2_maf.cwl
     label: vcf_2_maf
-  - id: dnp_filter
+  - id: mnp_filter
     in:
       - id: input
         source: merge_vcf/merged_vcf
@@ -155,6 +155,22 @@ steps:
         source: tumor_bam
     out:
       - id: filtered_VCF
-    run: ../dnp_filter/cwl/dnp_filter.cwl
-    label: DNP_filter
+    run: ../mnp_filter/cwl/mnp_filter.cwl
+    label: MNP_filter
+  - id: varscan_vcf_remap
+    in:
+      - id: input
+        source: varscan_snv_vcf
+    out:
+      - id: remapped_VCF
+    run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
+    label: varscan_vcf_remap
+  - id: varscan_vcf_remap_1
+    in:
+      - id: input
+        source: varscan_indel_vcf
+    out:
+      - id: remapped_VCF
+    run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
+    label: varscan_vcf_remap
 requirements: []

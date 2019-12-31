@@ -1,4 +1,0 @@
-* Allow limited functionality when database is not available
-    * Extend to work with Rabix
-* Finish implementation of datatidy
-* cq should indicate in the status whether run has been stashed

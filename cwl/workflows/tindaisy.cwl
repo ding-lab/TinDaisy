@@ -261,7 +261,7 @@ steps:
   - id: dbsnp_filter
     in:
       - id: input_vcf
-        source: dnp_filter/filtered_VCF
+        source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
       - id: bypass_dbsnp
@@ -377,7 +377,7 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: mutect vaf_length_depth
-  - id: dnp_filter
+  - id: mnp_filter
     in:
       - id: input
         source: merge_vcf/merged_vcf
@@ -385,6 +385,6 @@ steps:
         source: tumor_bam
     out:
       - id: filtered_VCF
-    run: ../dnp_filter/cwl/dnp_filter.cwl
-    label: DNP_filter
+    run: ../mnp_filter/cwl/mnp_filter.cwl
+    label: MNP_filter
 requirements: []

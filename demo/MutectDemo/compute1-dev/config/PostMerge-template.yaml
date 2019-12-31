@@ -1,0 +1,71 @@
+# Template for TinDaisy-PostMerge YAML input file
+# The following arguments must be substituted:
+# * NORMAL_BAM
+# * TUMOR_BAM
+# * REF_PATH
+# * TD_ROOT
+# * DBSNP_DB
+# * VEP_CACHE_GZ
+# * RESTART_D * for restarting YAML
+# * VEP_CACHE_VERSION
+# * ASSEMBLY
+
+# Parameters expected by tindaisy-postcall.cwl
+
+pindel_vcf:
+  class: File
+  path: ${RESTART_D}/call-pindel_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+varscan_snv_vcf:
+  class: File
+  path: ${RESTART_D}/call-varscan_snv_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+varscan_indel_vcf:
+  class: File
+  path: ${RESTART_D}/call-varscan_indel_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+strelka_snv_vcf:
+  class: File
+  path: ${RESTART_D}/call-strelka_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+strelka_indel_vcf:
+  class: File
+  path: ${RESTART_D}/call-strelka_indel_vaf_length_depth/execution/results/vaf_length_depth_filters/filtered.vcf
+mutect_vcf:
+  class: File
+  path: ${RESTART_D}/call-mutect_vaf_length_depth/execution/results/vaf_length_depth_filters/filtered.vcf
+
+tumor_bam:
+  class: File
+  path: ${TUMOR_BAM}
+reference_fasta:
+  class: File
+  path: ${REF_PATH}
+
+# Other filter config
+classification_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/classification_filter_config.ini
+af_filter_config:
+  class: File
+  path: ${TD_ROOT}/params/af_filter_config.ini
+
+# See README.md for discussion of dbSnP references
+dbsnp_db:
+  class: File
+  path: ${DBSNP_DB}
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+vep_cache_gz:
+  class: File
+  path: ${VEP_CACHE_GZ}
+
+# These are being defined in PARAMS
+# vep_cache_version: "90"
+# assembly: "GRCh38"
+
+vep_cache_version: ${VEP_CACHE_VERSION}
+assembly: ${ASSEMBLY}
+
+bypass_vcf2maf: true
+
+

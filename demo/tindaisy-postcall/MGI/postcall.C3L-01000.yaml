@@ -1,0 +1,57 @@
+pindel_vcf:
+  class: File
+  path: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/e8d19867-8b3b-497e-b853-37a1579da46f/call-pindel_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+varscan_snv_vcf:
+  class: File
+  path: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/e8d19867-8b3b-497e-b853-37a1579da46f/call-varscan_snv_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+varscan_indel_vcf:
+  class: File
+  path: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/e8d19867-8b3b-497e-b853-37a1579da46f/call-varscan_indel_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+strelka_snv_vcf:
+  class: File
+  path: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/e8d19867-8b3b-497e-b853-37a1579da46f/call-strelka_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
+strelka_indel_vcf:
+  class: File
+  path: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/e8d19867-8b3b-497e-b853-37a1579da46f/call-strelka_indel_vaf_length_depth/execution/results/vaf_length_depth_filters/filtered.vcf
+mutect_vcf:
+  class: File
+  path: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/e8d19867-8b3b-497e-b853-37a1579da46f/call-mutect_vaf_length_depth/execution/results/vaf_length_depth_filters/filtered.vcf
+
+tumor_bam:
+  class: File
+  path: /gscmnt/gc2741/ding/CPTAC3-data/GDC_import/data/d793c326-a30f-4dc6-848d-bb47a385666a/85d26179-d508-42a7-96c2-c030e69c8600_wxs_gdc_realn.bam
+reference_fasta:
+  class: File
+  path: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/A_Reference/GRCh38.d1.vd1.fa
+
+# Other filter config
+classification_filter_config:
+  class: File
+  path:  /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/classification_filter_config.ini
+af_filter_config:
+  class: File
+  path:  /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/af_filter_config.ini
+
+# See README.md for discussion of dbSnP references
+dbsnp_db:
+  class: File
+  path: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/B_Filter/dbSnP-COSMIC.GRCh38.d1.vd1.20190416.vcf.gz
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+vep_cache_gz:
+  class: File
+  path: /gscmnt/gc2521/dinglab/mwyczalk/somatic-wrapper-data/image.data/D_VEP/vep-cache.90_GRCh38.tar.gz
+
+# These are being defined in PARAMS
+# vep_cache_version: "90"
+# assembly: "GRCh38"
+
+vep_cache_version: "90"
+assembly: "GRCh38"
+
+bypass_vcf2maf: true
+
+
