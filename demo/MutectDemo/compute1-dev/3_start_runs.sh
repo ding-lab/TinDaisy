@@ -4,38 +4,16 @@
 # below is for compute1
 source /opt/ibm/lsfsuite/lsf/conf/lsf.conf
 
-PARAMS=$1
-shift
-if [ -z $PARAMS ]; then 
-    echo pass PARAMS argument $PARAMS 
-    exit 1
-fi
+# /usr/bin/java -Xmx10g -Dconfig.file=dat/cromwell-config-db.dat -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStore=/gscmnt/gc2560/core/genome/cromwell/cromwell.truststore -jar /usr/local/cromwell/cromwell-47.jar run -t cwl -i ./yaml/MutectDemo.yaml /home/m.wyczalkowski/Projects/TinDaisy/TinDaisy/cwl/workflows/tindaisy.cwl
 
-if [ ! -f $PARAMS ]; then 
-    echo $PARAMS  does not exist
-    exit 1
-fi
+ARGS="-Xmx10g"
+YAML="./dat/MutectDemo.yaml"
+DB_ARGS="-Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStore=/gscmnt/gc2560/core/genome/cromwell/cromwell.truststore"
+#CROMWELL_JAR="/opt/cromwell.jar"
+CROMWELL_JAR="/usr/local/cromwell/cromwell-47.jar"
+CWL="/home/m.wyczalkowski/Projects/TinDaisy/TinDaisy/cwl/workflows/tindaisy.cwl"
+CONFIG="-Dconfig.file=dat/cromwell-config-db.dat"
 
-source $PARAMS
+/usr/bin/java $ARGS $CONFIG $DB_ARGS -jar $CROMWELL_JAR run -t cwl -i $YAML $CWL
 
-# CQD="$TD_ROOT/src"
-
-
-# -J N - specify number of jobs to run at once
-# -F - finalize and compress jobs immediately upon completion
-# -G - git project details of TD_ROOT`
-#ARGS="-J 4 -F"
-#ARGS="-F"
-ARGS="$ARGS -X -Xmx10g -G $TD_ROOT"
-#CMD="bash src/rungo $ARGS -c src -p $PROJECT -R $CROMWELL_JAR -W $CWL -C $CONFIG_FILE -k $CASES_FN $@"
-CMD="bash src/rungo $ARGS -c src -p $PROJECT -R $CROMWELL_JAR -W $CWL -C $CONFIG_FILE $@"
-<&2 echo Running: $CMD
-eval $CMD
-
-rc=$?
-if [[ $rc != 0 ]]; then
-    >&2 echo Fatal error $rc: $!.  Exiting.
-    exit $rc;
-fi
-
-
+# Could not localize /home/m.wyczalkowski/Projects/TinDaisy/TinDaisy/demo/demo/MutectDemo/demo-data/G15512.HCC1954.1.COST16011_region.bam -> /data/Active/cromwell-data/cromwell-wor

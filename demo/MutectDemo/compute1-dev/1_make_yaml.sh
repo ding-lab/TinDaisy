@@ -1,18 +1,10 @@
-# Generate YAML config files
+# Generate cromwell config file
 
-# Usage:
-# 1_make_yaml.sh -P PARAMS
+YAML_TEMPLATE="config/MutectDemo-template.yaml"
+TD_ROOT="../../.."
+YAML_FILE="dat/MutectDemo.yaml"
 
-# All arguments are passed as is to src/runplan
+>&2 echo Writing YAML file to $YAML_FILE
 
-# Note that running `runplan` with no arguments will give back useful information about anticipated runs
-# perhaps add this as default?
-
-#RESTART_MAP="dat/MMRF-20190925.map.dat"
-
->&2 echo Writing YAML files
-CMD="src/runplan -x yaml "$@" "
-
->&2 echo Running: $CMD
-eval $CMD
-
+mkdir -p $(dirname $YAML_FILE)
+src/make_yaml.sh $YAML_TEMPLATE "$TD_ROOT" > $YAML_FILE
