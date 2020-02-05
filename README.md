@@ -4,8 +4,9 @@
 somatic variants fronm tumor and normal exome data.  TinDaisy implements
 functionality from [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core)
 to obtain variant calls, merge and filter them; other CWL tools outside of
-TinDaisy-Core are also integrated into the TinDaisy pipeline.  TinDaisy also
-includes a simple workflow manager to allow for command-line driven management
+TinDaisy-Core are also integrated into the TinDaisy pipeline.  
+
+See [CromwellRunner](https://github.com/ding-lab/CromwellRunner.git) for a simple workflow manager to allow for command-line driven management
 of jobs in a Cromwell workflow engine environment.
 
 # Overview
@@ -64,20 +65,7 @@ in workflow management
 
 ## Simple example
 
-TODO: show example of running java cromwell directly
-
-## CromwellRunner workflow manager
-
-CromwellRunner is a workflow manager for TinDaisy runs.  It consists of the following utilities:
-* cq - query cromwell server
-* datatidy - manage TinDaisy run results 
-* rungo - launch TinDaisy jobs 
-* runplan - initialize TinDaisy jobs
-* runtidy - Organize TinDaisy job logs
-
-Goal of CromwellRunner is to initialize, launch, inspect, clean up, restart,
-and log TinDaisy runs, particularly for batches of tens and hundreds of runs.
-See [CromwellRunner](https://github.com/ding-lab/CromwellRunner) documentation for additional details and examples
+TODO: show example of running cromwell directly
 
 
 # Installation
@@ -86,6 +74,7 @@ TinDaisy can be obtained from GitHub with,
 git clone https://github.com/ding-lab/tin-daisy
 ```
 
+## Unnecessary
 [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core) code, which performs
 the bulk of processing, can be obtained for inspection with,
 ``` 
@@ -100,11 +89,34 @@ Cromwell implementation.
 
 
 
-## CromwellRunner dependencies
+# Data prep
 
-The following packages are required for CromwellRunner:
-* [`jq`](https://stedolan.github.io/jq/download/)
-* [`GNU Parallel`](https://www.gnu.org/software/parallel/)
+## Index BAMs
+BAM files and reference need to be indexed.  This is frequently done prior to analysis
+```
+samtools index BAM
+java -jar picard.jar CreateSequenceDictionary R=REF.fa O=REF.dict
+```
+where for instance `REF="all_sequences"`
+
+## dbSnP-COSMIC
+TODO: describe this in more detail.
+
+dbSnP-COSMIC VCF needs to have chromosome names which match the reference, otherwise it will
+silently not match anything.  Note that dbSnP-COSMIC.GRCh38.d1.vd1.20190416.vcf.gz has chrom names like `chr1`
+
+## chrlist
+
+This is a list of all chromosomes of interest, used for pindel.  Can be created from the reference's .fai file, retaining
+only the names of the chromosomes of interest (typically 1-Y)
+
+## Confirm YAML file
+
+It might be good to quickly check the existence of all files in YAML file with the following,
+```
+grep path $YAML | cut -f 2 -d : | xargs ls -l
+```
+
 
 # Development notes
 
