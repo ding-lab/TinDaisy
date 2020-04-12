@@ -100,7 +100,7 @@ java -jar picard.jar CreateSequenceDictionary R=REF.fa O=REF.dict
 where for instance `REF="all_sequences"`
 
 ## dbSnP-COSMIC
-TODO: describe this in more detail.
+See `doc/README.dbsnp.md` for details about dbSnP creation
 
 dbSnP-COSMIC VCF needs to have chromosome names which match the reference, otherwise it will
 silently not match anything.  Note that dbSnP-COSMIC.GRCh38.d1.vd1.20190416.vcf.gz has chrom names like `chr1`
