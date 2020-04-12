@@ -14,7 +14,7 @@ CWL="$TD_ROOT/cwl/workflows/tindaisy.cwl"
 
 YAML="$TD_ROOT/demo/MutectDemo/project_config.MutectDemo.yaml"
 
-CROMWELL="/opt/cromwell.jar"
+CROMWELL="/usr/local/cromwell/cromwell-47.jar"
 
 # from https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell#Cromwell-ConnectingtotheDatabase
 # Connecting to the database section
