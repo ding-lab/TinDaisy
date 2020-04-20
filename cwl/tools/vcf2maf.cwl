@@ -27,7 +27,7 @@ inputs:
       prefix: '--input-vcf'
 outputs:
   - id: output
-    type: File?
+    type: File
     outputBinding:
       glob: result.maf
 label: vcf2maf
@@ -42,7 +42,8 @@ arguments:
     prefix: '--normal-id'
     valueFrom: NORMAL
   - position: 0
-    prefix: '--inhibit-vep'
+    prefix: ''
+    valueFrom: '--inhibit-vep'
 requirements:
   - class: DockerRequirement
     dockerPull: 'mwyczalkowski/tindaisy-vcf2maf:20200420'
