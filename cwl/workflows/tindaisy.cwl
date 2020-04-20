@@ -2,156 +2,84 @@ class: Workflow
 cwlVersion: v1.0
 id: tindaisy
 label: TinDaisy
-$namespaces:
-  sbg: 'https://www.sevenbridges.com/'
 inputs:
   - id: no_delete_temp
     type: boolean?
-    'sbg:x': 0
-    'sbg:y': 1391
   - id: tumor_bam
     type: File
-    'sbg:x': 0
-    'sbg:y': 428
   - id: normal_bam
     type: File
-    'sbg:x': 0
-    'sbg:y': 1284
   - id: reference_fasta
     type: File
-    'sbg:x': 0
-    'sbg:y': 749
   - id: pindel_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 963
   - id: varscan_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 321
   - id: bypass_cvs
     type: boolean?
-    'sbg:x': 247.28125
-    'sbg:y': 1489
   - id: bypass_homopolymer
     type: boolean?
-    'sbg:x': 247.28125
-    'sbg:y': 1275
   - id: debug
     type: boolean?
-    'sbg:x': 247.28125
-    'sbg:y': 954
   - id: bypass_vaf
     type: boolean?
-    'sbg:x': 247.28125
-    'sbg:y': 1061
   - id: bypass_length
     type: boolean?
-    'sbg:x': 247.28125
-    'sbg:y': 1168
   - id: bypass_depth
     type: boolean?
-    'sbg:x': 247.28125
-    'sbg:y': 1382
   - id: pindel_vcf_filter_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 856
   - id: bypass_merge
     type: boolean?
-    'sbg:x': 1120.54833984375
-    'sbg:y': 1140
   - id: bypass_dbsnp
     type: boolean?
-    'sbg:x': 1991.1295166015625
-    'sbg:y': 1070
   - id: dbsnp_db
     type: File?
-    'sbg:x': 1991.1295166015625
-    'sbg:y': 963
   - id: assembly
     type: string?
-    'sbg:x': 2216.452880859375
-    'sbg:y': 963
   - id: vep_cache_version
     type: string?
-    'sbg:x': 0
-    'sbg:y': 0
   - id: vep_cache_gz
     type: File?
-    'sbg:x': 0
-    'sbg:y': 107
   - id: centromere_bed
     type: File?
-    'sbg:x': 0
-    'sbg:y': 1712
   - id: strelka_vcf_filter_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 535
   - id: varscan_vcf_filter_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 214
   - id: af_filter_config
     type: File
-    'sbg:x': 2626.952880859375
-    'sbg:y': 1123.5
   - id: classification_filter_config
     type: File
-    'sbg:x': 2626.952880859375
-    'sbg:y': 802.5
   - id: bypass_af
     type: boolean?
-    'sbg:x': 2626.952880859375
-    'sbg:y': 1016.5
   - id: bypass_classification
     type: boolean?
-    'sbg:x': 2626.952880859375
-    'sbg:y': 909.5
   - id: mutect_vcf_filter_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 1498
   - id: strelka_config
     type: File
-    'sbg:x': 0
-    'sbg:y': 642
   - id: chrlist
     type: File?
-    'sbg:x': 0
-    'sbg:y': 1605
   - id: call_regions
     type: File?
-    'sbg:x': 0
-    'sbg:y': 1819
   - id: num_parallel_pindel
     type: int?
-    'sbg:x': 0
-    'sbg:y': 1177
   - id: num_parallel_strelka2
     type: int?
-    'sbg:x': 0
-    'sbg:y': 1070
 outputs:
   - id: output_vcf
     outputSource:
-      - vep_filter/output_vcf
+      vep_filter/output_vcf
     type: File
-    'sbg:x': 3446.74609375
-    'sbg:y': 963
   - id: merged_vcf
     outputSource:
-      - merge_vcf/merged_vcf
+      merge_vcf/merged_vcf
     type: File
-    'sbg:x': 1991.1295166015625
-    'sbg:y': 856
   - id: output_maf
     outputSource:
-      - vcf2maf/output
+      vcf2maf/output
     type: File?
-    'sbg:x': 3468.54541015625
-    'sbg:y': 718.3995971679688
 steps:
   - id: run_pindel
     in:
@@ -175,8 +103,6 @@ steps:
       - id: pindel_raw
     run: ../tools/run_pindel.cwl
     label: run_pindel
-    'sbg:x': 247.28125
-    'sbg:y': 663
   - id: run_varscan
     in:
       - id: tumor_bam
@@ -192,8 +118,6 @@ steps:
       - id: varscan_snv_raw
     run: ../tools/run_varscan.cwl
     label: run_varscan
-    'sbg:x': 247.28125
-    'sbg:y': 309
   - id: parse_pindel
     in:
       - id: pindel_raw
@@ -214,8 +138,6 @@ steps:
       - id: pindel_vcf
     run: ../tools/parse_pindel.cwl
     label: parse_pindel
-    'sbg:x': 689.5953979492188
-    'sbg:y': 1091
   - id: parse_varscan_snv
     in:
       - id: varscan_indel_raw
@@ -228,8 +150,6 @@ steps:
       - id: varscan_snv
     run: ../tools/parse_varscan_snv.cwl
     label: parse_varscan_snv
-    'sbg:x': 689.5953979492188
-    'sbg:y': 807
   - id: parse_varscan_indel
     in:
       - id: varscan_indel_raw
@@ -240,8 +160,6 @@ steps:
       - id: varscan_indel
     run: ../tools/parse_varscan_indel.cwl
     label: parse_varscan_indel
-    'sbg:x': 689.5953979492188
-    'sbg:y': 935
   - id: pindel_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -260,8 +178,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: Pindel VAF Length Depth
-    'sbg:x': 1120.54833984375
-    'sbg:y': 998
   - id: strelka_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -280,8 +196,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: Strelka SNV VAF Length Depth
-    'sbg:x': 696.9108276367188
-    'sbg:y': 459.2952880859375
   - id: varscan_snv_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -300,8 +214,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: Varscan SNV VAF Length Depth
-    'sbg:x': 1120.54833984375
-    'sbg:y': 644
   - id: varscan_indel_vaf_length_depth_filters
     in:
       - id: bypass_vaf
@@ -320,8 +232,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: Varscan indel VAF Length Depth
-    'sbg:x': 1120.54833984375
-    'sbg:y': 821
   - id: merge_vcf
     in:
       - id: strelka_snv_vcf
@@ -346,8 +256,6 @@ steps:
       - id: merged_vcf
     run: ../tools/merge_vcf.cwl
     label: merge_vcf
-    'sbg:x': 1543.95458984375
-    'sbg:y': 853.5
   - id: dbsnp_filter
     in:
       - id: input_vcf
@@ -364,8 +272,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/dbsnp_filter.cwl
     label: dbsnp_filter
-    'sbg:x': 2216.452880859375
-    'sbg:y': 828
   - id: vep_annotate
     in:
       - id: input_vcf
@@ -382,8 +288,6 @@ steps:
       - id: output_dat
     run: ../tools/vep_annotate.cwl
     label: vep_annotate
-    'sbg:x': 2626.952880859375
-    'sbg:y': 667.5
   - id: vep_filter
     in:
       - id: input_vcf
@@ -400,8 +304,6 @@ steps:
       - id: output_vcf
     run: ../tools/vep_filter.cwl
     label: vep_filter
-    'sbg:x': 2995.24609375
-    'sbg:y': 828
   - id: mutect
     in:
       - id: normal
@@ -416,8 +318,6 @@ steps:
       - id: mutations
     run: ../mutect-tool/cwl/mutect.cwl
     label: MuTect
-    'sbg:x': 247.28125
-    'sbg:y': 833
   - id: run_strelka2
     in:
       - id: tumor_bam
@@ -437,8 +337,6 @@ steps:
       - id: strelka2_indel_vcf
     run: ../tools/run_strelka2.cwl
     label: run_strelka2
-    'sbg:x': 247.28125
-    'sbg:y': 472
   - id: strelka_indel_vaf_length_depth
     in:
       - id: input_vcf
@@ -449,8 +347,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: Strelka Indel vaf_length_depth
-    'sbg:x': 689.5953979492188
-    'sbg:y': 679
   - id: mutect_vaf_length_depth
     in:
       - id: input_vcf
@@ -461,8 +357,6 @@ steps:
       - id: filtered_vcf
     run: ../tools/vaf_length_depth_filters.cwl
     label: mutect vaf_length_depth
-    'sbg:x': 689.5953979492188
-    'sbg:y': 1247
   - id: mnp_filter
     in:
       - id: input
@@ -473,8 +367,6 @@ steps:
       - id: filtered_VCF
     run: ../mnp_filter/cwl/mnp_filter.cwl
     label: MNP_filter
-    'sbg:x': 1991.1295166015625
-    'sbg:y': 742
   - id: vcf2maf
     in:
       - id: ref-fasta
@@ -487,6 +379,4 @@ steps:
       - id: output
     run: ../tools/vcf2maf.cwl
     label: vcf2maf
-    'sbg:x': 3299.807861328125
-    'sbg:y': 707.0283813476562
 requirements: []
