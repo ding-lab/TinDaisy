@@ -8,9 +8,9 @@ requirements:
   - class: EnvVarRequirement
     envDef:
       - envName: JAVA_OPTS
-        envValue: -Xmx16g
+        envValue: -Xmx24g
   - class: ResourceRequirement
-    ramMin: 24000
+    ramMin: 28000
 inputs:
   tumor:
     type: File
