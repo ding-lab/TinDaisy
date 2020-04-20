@@ -51,6 +51,10 @@ inputs:
     type: File
   - id: pindel_vcf
     type: File
+  - id: varscan_indel_raw
+    type: File
+  - id: varscan_snv_raw
+    type: File
 outputs:
   - id: output_vcf
     outputSource:
@@ -67,6 +71,10 @@ outputs:
 steps:
   - id: parse_varscan_snv
     in:
+      - id: varscan_indel_raw
+        source: varscan_indel_raw
+      - id: varscan_snv_raw
+        source: varscan_snv_raw
       - id: varscan_config
         source: varscan_config
     out:
