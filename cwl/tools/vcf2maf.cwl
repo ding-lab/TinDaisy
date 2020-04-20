@@ -11,7 +11,7 @@ inputs:
     type: File
     inputBinding:
       position: 0
-      prefix: '--reference-fasta'
+      prefix: '--ref-fasta'
     secondaryFiles:
       - .fai
       - ^.dict
@@ -47,3 +47,5 @@ arguments:
 requirements:
   - class: DockerRequirement
     dockerPull: 'mwyczalkowski/tindaisy-vcf2maf:20200420'
+  - class: ResourceRequirement
+    ramMin: 2000
