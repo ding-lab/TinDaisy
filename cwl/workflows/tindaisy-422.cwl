@@ -64,10 +64,6 @@ outputs:
     outputSource:
       vep_filter/output_vcf
     type: File
-  - id: merged_vcf
-    outputSource:
-      merge_vcf/merged_vcf
-    type: File
   - id: output_maf
     outputSource:
       vcf2maf/output
