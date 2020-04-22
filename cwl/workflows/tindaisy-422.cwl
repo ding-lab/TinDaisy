@@ -47,17 +47,17 @@ inputs:
     type: string?
   - id: normal_barcode
     type: string?
-  - id: input_vcf
+  - id: input_vcf_varscan_snv
     type: File
-  - id: input_vcf_1
+  - id: input_vcf_varscan_indel
     type: File
-  - id: input_vcf_2
+  - id: input_vcf_strelka_snp
     type: File
-  - id: input_vcf_3
+  - id: input_vcf_strelka_indel
     type: File
-  - id: input_vcf_4
+  - id: input_vcf_pindel
     type: File
-  - id: input_vcf_5
+  - id: input_vcf_mutect
     type: File
 outputs:
   - id: output_vcf
@@ -82,7 +82,7 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: input_vcf_4
+        source: input_vcf_pindel
       - id: vcf_filter_config
         source: pindel_vcf_filter_config
       - id: bypass_depth
@@ -100,7 +100,7 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: input_vcf_2
+        source: input_vcf_strelka_snp
       - id: vcf_filter_config
         source: strelka_vcf_filter_config
       - id: bypass_depth
@@ -118,7 +118,7 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: input_vcf
+        source: input_vcf_varscan_snv
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
@@ -136,7 +136,7 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: input_vcf_1
+        source: input_vcf_varscan_indel
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
@@ -220,7 +220,7 @@ steps:
   - id: strelka_indel_vaf_length_depth
     in:
       - id: input_vcf
-        source: input_vcf_3
+        source: input_vcf_strelka_indel
       - id: vcf_filter_config
         source: strelka_vcf_filter_config
     out:
@@ -230,7 +230,7 @@ steps:
   - id: mutect_vaf_length_depth
     in:
       - id: input_vcf
-        source: input_vcf_5
+        source: input_vcf_mutect
       - id: vcf_filter_config
         source: mutect_vcf_filter_config
     out:
