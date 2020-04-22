@@ -67,6 +67,10 @@ inputs:
     type: int?
   - id: num_parallel_strelka2
     type: int?
+  - id: tumor_barcode
+    type: string?
+  - id: normal_barcode
+    type: string?
 outputs:
   - id: output_vcf
     outputSource:
@@ -375,6 +379,10 @@ steps:
         source: assembly
       - id: input-vcf
         source: vep_filter/output_vcf
+      - id: tumor_barcode
+        source: tumor_barcode
+      - id: normal_barcode
+        source: normal_barcode
     out:
       - id: output
     run: ../tools/vcf2maf.cwl
