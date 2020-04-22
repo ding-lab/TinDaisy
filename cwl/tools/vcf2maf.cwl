@@ -1,7 +1,5 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com/'
 id: vcf2maf
 baseCommand:
   - /usr/local/bin/perl
@@ -25,6 +23,20 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--input-vcf'
+  - id: tumor_barcode
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--tumor-id'
+    label: MAF tumor barcode
+    doc: Provides value for Tumor_Sample_Barcode in MAF fiile
+  - id: normal_barcode
+    type: string?
+    inputBinding:
+      position: 0
+      prefix: '--normal-id'
+    label: MAF normal barcode
+    doc: Provides value for Matched_Norm_Sample_Barcode in MAF file
 outputs:
   - id: output
     type: File
@@ -36,16 +48,16 @@ arguments:
     prefix: '--output-maf'
     valueFrom: result.maf
   - position: 0
-    prefix: '--tumor-id'
+    prefix: '--vcf-tumor-id'
     valueFrom: TUMOR
   - position: 0
-    prefix: '--normal-id'
+    prefix: '--vcf-normal-id'
     valueFrom: NORMAL
   - position: 0
     prefix: ''
     valueFrom: '--inhibit-vep'
 requirements:
-  - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/tindaisy-vcf2maf:20200420'
   - class: ResourceRequirement
     ramMin: 2000
+  - class: DockerRequirement
+    dockerPull: 'mwyczalkowski/tindaisy-vcf2maf:20200420'
