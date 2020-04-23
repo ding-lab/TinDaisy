@@ -29,8 +29,6 @@ inputs:
     type: boolean?
   - id: bypass_classification
     type: boolean?
-  - id: bypass_vcf2maf
-    type: boolean?
   - id: pindel_vcf
     type: File
   - id: varscan_snv_vcf
@@ -44,10 +42,6 @@ inputs:
   - id: mutect_vcf
     type: File
 outputs:
-  - id: output_maf
-    outputSource:
-      vcf_2_maf/output_maf
-    type: File
   - id: output_vcf
     outputSource:
       vep_filter/output_vcf
@@ -55,6 +49,10 @@ outputs:
   - id: merged_vcf
     outputSource:
       merge_vcf/merged_vcf
+    type: File
+  - id: output
+    outputSource:
+      vcf2maf/output
     type: File
 steps:
   - id: merge_vcf
@@ -129,24 +127,6 @@ steps:
       - id: output_vcf
     run: ../tools/vep_filter.cwl
     label: vep_filter
-  - id: vcf_2_maf
-    in:
-      - id: input_vcf
-        source: vep_filter/output_vcf
-      - id: reference_fasta
-        source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
-      - id: vep_cache_gz
-        source: vep_cache_gz
-      - id: bypass_vcf2maf
-        source: bypass_vcf2maf
-    out:
-      - id: output_maf
-    run: ../tools/vcf_2_maf.cwl
-    label: vcf_2_maf
   - id: mnp_filter
     in:
       - id: input
@@ -173,4 +153,14 @@ steps:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
     label: varscan_vcf_remap
+  - id: vcf2maf
+    in:
+      - id: ref-fasta
+        source: reference_fasta
+      - id: input-vcf
+        source: vep_filter/output_vcf
+    out:
+      - id: output
+    run: ../tools/vcf2maf.cwl
+    label: vcf2maf
 requirements: []
