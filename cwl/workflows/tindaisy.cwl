@@ -205,7 +205,7 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: parse_varscan_snv/varscan_snv
+        source: varscan_vcf_remap_1/remapped_VCF
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
@@ -223,7 +223,7 @@ steps:
       - id: debug
         source: debug
       - id: input_vcf
-        source: parse_varscan_indel/varscan_indel
+        source: varscan_vcf_remap/remapped_VCF
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
       - id: bypass_depth
@@ -383,4 +383,20 @@ steps:
       - id: output
     run: ../tools/vcf2maf.cwl
     label: vcf2maf
+  - id: varscan_vcf_remap
+    in:
+      - id: input
+        source: parse_varscan_indel/varscan_indel
+    out:
+      - id: remapped_VCF
+    run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
+    label: varscan_vcf_remap
+  - id: varscan_vcf_remap_1
+    in:
+      - id: input
+        source: parse_varscan_snv/varscan_snv
+    out:
+      - id: remapped_VCF
+    run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
+    label: varscan_vcf_remap
 requirements: []
