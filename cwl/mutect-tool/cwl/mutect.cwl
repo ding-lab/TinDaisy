@@ -77,12 +77,15 @@ inputs:
       position: 0
       prefix: '--keep_filtered'
     label: Retain REJECT variants
-  artifact_detection_mode:
-    type: boolean?
-    inputBinding:
-      position: 0
-      prefix: '--artifact_detection_mode'
-    label: Enable mutect artifact_detection_mode
+#  artifact_detection_mode:
+#    type: boolean?
+#    inputBinding:
+#      position: 0
+#      prefix: '--artifact_detection_mode'
+#    label: Enable mutect artifact_detection_mode
+arguments:
+  - position: 0
+    valueFrom: '--artifact_detection_mode'
 outputs:
   coverage:
     type: File?
