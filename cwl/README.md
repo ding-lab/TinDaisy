@@ -87,4 +87,10 @@ https://github.com/ding-lab/varscan_vcf_remap
 
 Image generated with docker/1_docker_build.sh
 
+## Hotspot Filter
+
+IMAGE="mwyczalkowski/hotspot_filter:20200428"
+https://github.com/ding-lab/HotspotFilter.git
+Image generated with docker/1_docker_build.sh
+
 
