@@ -1,7 +1,7 @@
 class: Workflow
 cwlVersion: v1.0
 id: tindaisy
-label: TinDaisy
+label: TinDaisy-Hotspot
 inputs:
   - id: no_delete_temp
     type: boolean?
@@ -53,17 +53,13 @@ inputs:
     type: string?
   - id: BED
     type: File
-  - id: vcf_filter_config_A_1
+  - id: mutect_vcf_filter_config_A
     type: File
-  - id: vcf_filter_config_A_2
+  - id: pindel_vcf_filter_config_A
     type: File
-  - id: vcf_filter_config_A_3
+  - id: varscan_vcf_filter_config_A
     type: File
-  - id: vcf_filter_config_A_4
-    type: File
-  - id: vcf_filter_config_A_5
-    type: File
-  - id: vcf_filter_config_A_6
+  - id: strelka_vcf_filter_config_A
     type: File
 outputs:
   - id: output_vcf
@@ -151,19 +147,19 @@ steps:
   - id: merge_vcf
     in:
       - id: strelka_snv_vcf
-        source: hotspot_vld_4/output
+        source: hotspot_vld_strelka_snv/output
       - id: varscan_indel_vcf
-        source: hotspot_vld_3/output
+        source: hotspot_vld_varscan_indel/output
       - id: varscan_snv_vcf
-        source: hotspot_vld_2/output
+        source: hotspot_vld_varscan_snv/output
       - id: pindel_vcf
-        source: hotspot_vld_1/output
+        source: hotspot_vld_pindel/output
       - id: reference_fasta
         source: reference_fasta
       - id: strelka_indel_vcf
-        source: hotspot_vld_5/output
+        source: hotspot_vld_strelka_indel/output
       - id: mutect_vcf
-        source: hotspot_vld/output
+        source: hotspot_vld_mutect/output
     out:
       - id: merged_vcf
     run: ../tools/merge_vcf.cwl
@@ -267,26 +263,26 @@ steps:
       - id: output
     run: ../tools/vcf2maf.cwl
     label: vcf2maf
-  - id: varscan_vcf_remap
+  - id: varscan_indel_vcf_remap
     in:
       - id: input
         source: parse_varscan_indel/varscan_indel
     out:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
-    label: varscan_vcf_remap
-  - id: varscan_vcf_remap_1
+    label: varscan_indel_vcf_remap
+  - id: varscan_snv_vcf_remap
     in:
       - id: input
         source: parse_varscan_snv/varscan_snv
     out:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
-    label: varscan_vcf_remap
-  - id: hotspot_vld
+    label: varscan_snv_vcf_remap
+  - id: hotspot_vld_mutect
     in:
       - id: vcf_filter_config_A
-        source: vcf_filter_config_A_1
+        source: mutect_vcf_filter_config_A
       - id: input_vcf
         source: mutect/mutations
       - id: vcf_filter_config_B
@@ -296,11 +292,11 @@ steps:
     out:
       - id: output
     run: ./hotspot_vld.cwl
-    label: hotspot_vld
-  - id: hotspot_vld_1
+    label: hotspot_vld_mutect
+  - id: hotspot_vld_pindel
     in:
       - id: vcf_filter_config_A
-        source: vcf_filter_config_A_2
+        source: pindel_vcf_filter_config_A
       - id: input_vcf
         source: parse_pindel/pindel_vcf
       - id: vcf_filter_config_B
@@ -310,13 +306,13 @@ steps:
     out:
       - id: output
     run: ./hotspot_vld.cwl
-    label: hotspot_vld
-  - id: hotspot_vld_2
+    label: hotspot_vld_pindel
+  - id: hotspot_vld_varscan_snv
     in:
       - id: vcf_filter_config_A
-        source: vcf_filter_config_A_4
+        source: varscan_vcf_filter_config_A
       - id: input_vcf
-        source: varscan_vcf_remap_1/remapped_VCF
+        source: varscan_snv_vcf_remap/remapped_VCF
       - id: vcf_filter_config_B
         source: varscan_vcf_filter_config
       - id: BED
@@ -324,13 +320,13 @@ steps:
     out:
       - id: output
     run: ./hotspot_vld.cwl
-    label: hotspot_vld
-  - id: hotspot_vld_3
+    label: hotspot_vld_varscan_snv
+  - id: hotspot_vld_varscan_indel
     in:
       - id: vcf_filter_config_A
-        source: vcf_filter_config_A_3
+        source: varscan_vcf_filter_config_A
       - id: input_vcf
-        source: varscan_vcf_remap/remapped_VCF
+        source: varscan_indel_vcf_remap/remapped_VCF
       - id: vcf_filter_config_B
         source: varscan_vcf_filter_config
       - id: BED
@@ -338,11 +334,11 @@ steps:
     out:
       - id: output
     run: ./hotspot_vld.cwl
-    label: hotspot_vld
-  - id: hotspot_vld_4
+    label: hotspot_vld_varscan_indel
+  - id: hotspot_vld_strelka_snv
     in:
       - id: vcf_filter_config_A
-        source: vcf_filter_config_A_6
+        source: strelka_vcf_filter_config_A
       - id: input_vcf
         source: run_strelka2/strelka2_snv_vcf
       - id: vcf_filter_config_B
@@ -352,11 +348,11 @@ steps:
     out:
       - id: output
     run: ./hotspot_vld.cwl
-    label: hotspot_vld
-  - id: hotspot_vld_5
+    label: hotspot_vld_strelka_snv
+  - id: hotspot_vld_strelka_indel
     in:
       - id: vcf_filter_config_A
-        source: vcf_filter_config_A_5
+        source: strelka_vcf_filter_config_A
       - id: input_vcf
         source: run_strelka2/strelka2_indel_vcf
       - id: vcf_filter_config_B
@@ -366,6 +362,6 @@ steps:
     out:
       - id: output
     run: ./hotspot_vld.cwl
-    label: hotspot_vld
+    label: hotspot_vld_strelka_indel
 requirements:
   - class: SubworkflowFeatureRequirement
