@@ -15,24 +15,8 @@ inputs:
     type: File
   - id: varscan_config
     type: File
-  - id: bypass_cvs
-    type: boolean?
-  - id: bypass_homopolymer
-    type: boolean?
-  - id: debug
-    type: boolean?
-  - id: bypass_vaf
-    type: boolean?
-  - id: bypass_length
-    type: boolean?
-  - id: bypass_depth
-    type: boolean?
   - id: pindel_vcf_filter_config
     type: File
-  - id: bypass_merge
-    type: boolean?
-  - id: bypass_dbsnp
-    type: boolean?
   - id: dbsnp_db
     type: File?
   - id: assembly
@@ -51,10 +35,6 @@ inputs:
     type: File
   - id: classification_filter_config
     type: File
-  - id: bypass_af
-    type: boolean?
-  - id: bypass_classification
-    type: boolean?
   - id: mutect_vcf_filter_config
     type: File
   - id: strelka_config
@@ -71,6 +51,20 @@ inputs:
     type: string?
   - id: normal_barcode
     type: string?
+  - id: BED
+    type: File
+  - id: vcf_filter_config_A_1
+    type: File
+  - id: vcf_filter_config_A_2
+    type: File
+  - id: vcf_filter_config_A_3
+    type: File
+  - id: vcf_filter_config_A_4
+    type: File
+  - id: vcf_filter_config_A_5
+    type: File
+  - id: vcf_filter_config_A_6
+    type: File
 outputs:
   - id: output_vcf
     outputSource:
@@ -128,12 +122,6 @@ steps:
         source: pindel_config
       - id: no_delete_temp
         source: no_delete_temp
-      - id: bypass_cvs
-        source: bypass_cvs
-      - id: bypass_homopolymer
-        source: bypass_homopolymer
-      - id: debug
-        source: debug
     out:
       - id: pindel_vcf
     run: ../tools/parse_pindel.cwl
@@ -160,98 +148,22 @@ steps:
       - id: varscan_indel
     run: ../tools/parse_varscan_indel.cwl
     label: parse_varscan_indel
-  - id: pindel_vaf_length_depth_filters
-    in:
-      - id: bypass_vaf
-        source: bypass_vaf
-      - id: bypass_length
-        source: bypass_length
-      - id: debug
-        source: debug
-      - id: input_vcf
-        source: parse_pindel/pindel_vcf
-      - id: vcf_filter_config
-        source: pindel_vcf_filter_config
-      - id: bypass_depth
-        source: bypass_depth
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Pindel VAF Length Depth
-  - id: strelka_vaf_length_depth_filters
-    in:
-      - id: bypass_vaf
-        source: bypass_vaf
-      - id: bypass_length
-        source: bypass_length
-      - id: debug
-        source: debug
-      - id: input_vcf
-        source: run_strelka2/strelka2_snv_vcf
-      - id: vcf_filter_config
-        source: strelka_vcf_filter_config
-      - id: bypass_depth
-        source: bypass_depth
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Strelka SNV VAF Length Depth
-  - id: varscan_snv_vaf_length_depth_filters
-    in:
-      - id: bypass_vaf
-        source: bypass_vaf
-      - id: bypass_length
-        source: bypass_length
-      - id: debug
-        source: debug
-      - id: input_vcf
-        source: varscan_vcf_remap_1/remapped_VCF
-      - id: vcf_filter_config
-        source: varscan_vcf_filter_config
-      - id: bypass_depth
-        source: bypass_depth
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Varscan SNV VAF Length Depth
-  - id: varscan_indel_vaf_length_depth_filters
-    in:
-      - id: bypass_vaf
-        source: bypass_vaf
-      - id: bypass_length
-        source: bypass_length
-      - id: debug
-        source: debug
-      - id: input_vcf
-        source: varscan_vcf_remap/remapped_VCF
-      - id: vcf_filter_config
-        source: varscan_vcf_filter_config
-      - id: bypass_depth
-        source: bypass_depth
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Varscan indel VAF Length Depth
   - id: merge_vcf
     in:
       - id: strelka_snv_vcf
-        source: strelka_vaf_length_depth_filters/filtered_vcf
+        source: hotspot_vld_4/output
       - id: varscan_indel_vcf
-        source: varscan_indel_vaf_length_depth_filters/filtered_vcf
+        source: hotspot_vld_3/output
       - id: varscan_snv_vcf
-        source: varscan_snv_vaf_length_depth_filters/filtered_vcf
+        source: hotspot_vld_2/output
       - id: pindel_vcf
-        source: pindel_vaf_length_depth_filters/filtered_vcf
+        source: hotspot_vld_1/output
       - id: reference_fasta
         source: reference_fasta
-      - id: bypass_merge
-        source: bypass_merge
-      - id: debug
-        source: debug
       - id: strelka_indel_vcf
-        source: strelka_indel_vaf_length_depth/filtered_vcf
+        source: hotspot_vld_5/output
       - id: mutect_vcf
-        source: mutect_vaf_length_depth/filtered_vcf
+        source: hotspot_vld/output
     out:
       - id: merged_vcf
     run: ../tools/merge_vcf.cwl
@@ -262,10 +174,6 @@ steps:
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
-      - id: bypass_dbsnp
-        source: bypass_dbsnp
-      - id: debug
-        source: debug
       - id: dbsnp_db
         source: dbsnp_db
     out:
@@ -296,10 +204,6 @@ steps:
         source: af_filter_config
       - id: classification_filter_config
         source: classification_filter_config
-      - id: bypass_af
-        source: bypass_af
-      - id: bypass_classification
-        source: bypass_classification
     out:
       - id: output_vcf
     run: ../tools/vep_filter.cwl
@@ -337,26 +241,6 @@ steps:
       - id: strelka2_indel_vcf
     run: ../tools/run_strelka2.cwl
     label: run_strelka2
-  - id: strelka_indel_vaf_length_depth
-    in:
-      - id: input_vcf
-        source: run_strelka2/strelka2_indel_vcf
-      - id: vcf_filter_config
-        source: strelka_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Strelka Indel vaf_length_depth
-  - id: mutect_vaf_length_depth
-    in:
-      - id: input_vcf
-        source: mutect/mutations
-      - id: vcf_filter_config
-        source: mutect_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: mutect vaf_length_depth
   - id: mnp_filter
     in:
       - id: input
@@ -399,4 +283,89 @@ steps:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
     label: varscan_vcf_remap
-requirements: []
+  - id: hotspot_vld
+    in:
+      - id: vcf_filter_config_A
+        source: vcf_filter_config_A_1
+      - id: input_vcf
+        source: mutect/mutations
+      - id: vcf_filter_config_B
+        source: mutect_vcf_filter_config
+      - id: BED
+        source: BED
+    out:
+      - id: output
+    run: ./hotspot_vld.cwl
+    label: hotspot_vld
+  - id: hotspot_vld_1
+    in:
+      - id: vcf_filter_config_A
+        source: vcf_filter_config_A_2
+      - id: input_vcf
+        source: parse_pindel/pindel_vcf
+      - id: vcf_filter_config_B
+        source: pindel_vcf_filter_config
+      - id: BED
+        source: BED
+    out:
+      - id: output
+    run: ./hotspot_vld.cwl
+    label: hotspot_vld
+  - id: hotspot_vld_2
+    in:
+      - id: vcf_filter_config_A
+        source: vcf_filter_config_A_4
+      - id: input_vcf
+        source: varscan_vcf_remap_1/remapped_VCF
+      - id: vcf_filter_config_B
+        source: varscan_vcf_filter_config
+      - id: BED
+        source: BED
+    out:
+      - id: output
+    run: ./hotspot_vld.cwl
+    label: hotspot_vld
+  - id: hotspot_vld_3
+    in:
+      - id: vcf_filter_config_A
+        source: vcf_filter_config_A_3
+      - id: input_vcf
+        source: varscan_vcf_remap/remapped_VCF
+      - id: vcf_filter_config_B
+        source: varscan_vcf_filter_config
+      - id: BED
+        source: BED
+    out:
+      - id: output
+    run: ./hotspot_vld.cwl
+    label: hotspot_vld
+  - id: hotspot_vld_4
+    in:
+      - id: vcf_filter_config_A
+        source: vcf_filter_config_A_6
+      - id: input_vcf
+        source: run_strelka2/strelka2_snv_vcf
+      - id: vcf_filter_config_B
+        source: strelka_vcf_filter_config
+      - id: BED
+        source: BED
+    out:
+      - id: output
+    run: ./hotspot_vld.cwl
+    label: hotspot_vld
+  - id: hotspot_vld_5
+    in:
+      - id: vcf_filter_config_A
+        source: vcf_filter_config_A_5
+      - id: input_vcf
+        source: run_strelka2/strelka2_indel_vcf
+      - id: vcf_filter_config_B
+        source: strelka_vcf_filter_config
+      - id: BED
+        source: BED
+    out:
+      - id: output
+    run: ./hotspot_vld.cwl
+    label: hotspot_vld
+requirements:
+  - class: SubworkflowFeatureRequirement
