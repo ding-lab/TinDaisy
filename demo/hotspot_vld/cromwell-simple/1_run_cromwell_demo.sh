@@ -6,7 +6,7 @@ source /opt/lsf9/conf/lsf.conf
 CONFIG="cromwell-config-db.dat"
 
 #CWL="/gscuser/mwyczalk/projects/TinDaisy/TinDaisy/cwl/mutect-tool/cwl/mutect.cwl"
-CWL="../../../cwl/workflows/tindaisy-hotspot.cwl"
+CWL="../../../cwl/workflows/hotspot_vld.cwl"
 YAML="cwl-yaml/hotspot-vld.yaml"
 
 

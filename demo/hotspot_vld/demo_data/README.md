@@ -28,6 +28,14 @@ NOTE, this is based on older v84 version of ensembl, should be updated for produ
 
 File from smg-genes.ens84.norm.bed copied here from above work
 
+## Update
+
+6 column format of smg-genes.ens84.norm.bed leads to errors in hotspot filtering (BEDTOOLS complains).  Instead,
+need to make a 3-column version for use with hotspot filter:
+```
+cut -f 1-3 smg-genes.ens84.norm.bed > smg-genes.ens84.norm.3col.bed
+```
+
 # Parameter files
 
 hotspot_vld filter uses two filter parameters for each input VCF file.  For testing here,
