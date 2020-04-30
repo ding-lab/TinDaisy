@@ -89,7 +89,7 @@ Image generated with docker/1_docker_build.sh
 
 ## Hotspot Filter
 
-IMAGE="mwyczalkowski/hotspot_filter:20200428"
+IMAGE="mwyczalkowski/hotspot_filter:20200429"
 https://github.com/ding-lab/HotspotFilter.git
 Image generated with docker/1_docker_build.sh
 
