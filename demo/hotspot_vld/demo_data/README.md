@@ -12,6 +12,10 @@ This file has 2366 variants
 Output of VLD filtering from above run is copied to ./filtered.baseline.vcf from
 /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/ba435cc8-087e-416f-8e7a-55c00c322c64/analysis/call-varscan_snv_vaf_length_depth_filters/execution/results/vaf_length_depth_filters/filtered.vcf
 
+## Strelka GZ file
+
+/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy.cwl/ba435cc8-087e-416f-8e7a-55c00c322c64/analysis/call-run_strelka2/execution/results/strelka2/strelka_out/results/variants/somatic.snvs.vcf.gz
+
 # BED
 
 BED file corresponding to 299 SMGs from 
@@ -34,7 +38,13 @@ File from smg-genes.ens84.norm.bed copied here from above work
 need to make a 3-column version for use with hotspot filter:
 ```
 cut -f 1-3 smg-genes.ens84.norm.bed > smg-genes.ens84.norm.3col.bed
+cut -f 1-4 smg-genes.ens84.norm.bed > smg-genes.ens84.norm.4col.bed
 ```
+
+smg-genes.ens84.norm.bed is renamed smg-genes.ens84.norm.DONT_USE.bed to emphasize this
+
+Preferred smg-genes file to use: 
+    /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/demo/hotspot_vld/demo_data/smg-genes.ens84.norm.4col.bed
 
 # Parameter files
 
