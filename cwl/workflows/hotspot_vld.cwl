@@ -14,7 +14,7 @@ inputs:
 outputs:
   - id: output
     outputSource:
-      - hotspotfilter/output
+      hotspotfilter/output
     type: File
 steps:
   - id: vaf_length_depth_filters_A
