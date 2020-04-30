@@ -31,7 +31,7 @@ inputs:
     type: string?
   - id: normal_barcode
     type: string?
-  - id: BED
+  - id: Hotspot_BED
     type: File
   - id: mutect_vcf_filter_config_A
     type: File
@@ -158,7 +158,7 @@ steps:
       - id: vcf_filter_config_B
         source: mutect_vcf_filter_config
       - id: BED
-        source: BED
+        source: Hotspot_BED
     out:
       - id: output
     run: ./hotspot_vld.cwl
@@ -172,7 +172,7 @@ steps:
       - id: vcf_filter_config_B
         source: pindel_vcf_filter_config
       - id: BED
-        source: BED
+        source: Hotspot_BED
     out:
       - id: output
     run: ./hotspot_vld.cwl
@@ -186,7 +186,7 @@ steps:
       - id: vcf_filter_config_B
         source: varscan_vcf_filter_config
       - id: BED
-        source: BED
+        source: Hotspot_BED
     out:
       - id: output
     run: ./hotspot_vld.cwl
@@ -200,7 +200,7 @@ steps:
       - id: vcf_filter_config_B
         source: varscan_vcf_filter_config
       - id: BED
-        source: BED
+        source: Hotspot_BED
     out:
       - id: output
     run: ./hotspot_vld.cwl
@@ -214,7 +214,7 @@ steps:
       - id: vcf_filter_config_B
         source: strelka_vcf_filter_config
       - id: BED
-        source: BED
+        source: Hotspot_BED
     out:
       - id: output
     run: ./hotspot_vld.cwl
@@ -228,7 +228,7 @@ steps:
       - id: vcf_filter_config_B
         source: strelka_vcf_filter_config
       - id: BED
-        source: BED
+        source: Hotspot_BED
     out:
       - id: output
     run: ./hotspot_vld.cwl
