@@ -1,0 +1,28 @@
+
+tumor:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/mutect-tool/testing/demo_data/G15512.HCC1954.1.COST16011_region.bam
+reference:  # type "File"
+    class: File
+    path: /gscmnt/gc7210/dinglab/medseq/shared/Users/mwyczalk/ad-hoc/demo-data/Homo_sapiens_assembly19.COST16011_region.fa
+normal:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/mutect-tool/testing/demo_data/HCC1954.NORMAL.30x.compare.COST16011_region.bam
+ncpus: 8  # default value of type "int". (optional)
+keep_filtered: false  # type "boolean" (optional)
+
+vcf: mutect.vcf  # default value of type "string".
+out: mutect_call_stats.txt  # default value of type "string". (optional)
+coverage_file: mutect_coverage.wig.txt  # default value of type "string". (optional)
+
+# tumor_lod: 6.3  # default value of type "float". (optional)
+# initial_tumor_lod: 4.0  # default value of type "float". (optional)
+artifact_detection_mode: true  # type "boolean" (optional)
+
+# NOT doing dbSnP filtering
+#dbsnp:  # type "File" (optional)
+#    class: File
+#    path: /gscmnt/gc7202/dinglab/common/databases/dbSNP_Filter/human_9606_b150_GRCh38p7.All.5col.vcf.gz
+#cosmic:  # type "File" (optional)
+#    class: File
+#    path: /gscmnt/gc7202/dinglab/common/databases/dbSNP_Filter/CosmicCodingMuts.grch38.v82.vcf.gz
