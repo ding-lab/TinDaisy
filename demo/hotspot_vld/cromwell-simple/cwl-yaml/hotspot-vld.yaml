@@ -1,0 +1,14 @@
+# created with /miniconda3/bin/cwltool --make-template hotspot_vld.cwl
+BED:  # type "File"
+    class: File
+    path: ../../demo_data/smg-genes.ens84.norm.bed
+input_vcf:  # type "File"
+    class: File
+    path: ../../demo_data/varscan-snv.vcf
+vcf_filter_config_A:  # type "File"
+    class: File
+    path:  ../../demo_data/hotspot_filter_config/vcf_filter_config-varscan.hotspot.ini
+vcf_filter_config_B:  # type "File"
+    class: File
+    path: ../../../../params/filter_config/vcf_filter_config-varscan.ini
+
