@@ -1,0 +1,9 @@
+Experimenting to see if can speed up startup performance by staging a common copy of large files
+
+Also, adding strelka2 optional parameter --callRegions
+* bgzip-compressed tabix-indexed BED file.
+* https://github.com/Illumina/strelka/blob/v2.9.x/docs/userGuide/README.md#extended-use-cases
+* GRCh38.callRegions.bed.gz and GRCh38.callRegions.bed.gz.tbi
+
+Also, adding canonical chrom filter to retain only canonical chromosomes
+
