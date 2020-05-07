@@ -61,8 +61,6 @@ inputs:
     type: File
   - id: chrlist
     type: File?
-#  - id: call_regions
-#    type: File?
   - id: num_parallel_pindel
     type: int?
   - id: num_parallel_strelka2
@@ -71,15 +69,19 @@ inputs:
     type: string?
   - id: normal_barcode
     type: string?
-outputs:
-  - id: output_vcf
-    outputSource:
-      vep_filter/output_vcf
+  - id: canonical_BED
     type: File
+  - id: call_regions
+    type: File?
+outputs:
   - id: output_maf
     outputSource:
-      vcf2maf/output
+      - vcf2maf/output
     type: File?
+  - id: output
+    outputSource:
+      - canonical_filter/output
+    type: File
 steps:
   - id: run_pindel
     in:
@@ -328,8 +330,8 @@ steps:
         source: reference_fasta
       - id: strelka_config
         source: strelka_config
-#      - id: call_regions
-#        source: call_regions
+      - id: call_regions
+        source: call_regions
       - id: num_parallel_strelka2
         source: num_parallel_strelka2
     out:
@@ -374,7 +376,7 @@ steps:
       - id: assembly
         source: assembly
       - id: input-vcf
-        source: vep_filter/output_vcf
+        source: canonical_filter/output
       - id: tumor_barcode
         source: tumor_barcode
       - id: normal_barcode
@@ -399,4 +401,14 @@ steps:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
     label: varscan_vcf_remap
+  - id: canonical_filter
+    in:
+      - id: VCF_A
+        source: vep_filter/output_vcf
+      - id: BED
+        source: canonical_BED
+    out:
+      - id: output
+    run: ../hotspot_filter/hotspotfilter.cwl
+    label: CanonicalFilter
 requirements: []
