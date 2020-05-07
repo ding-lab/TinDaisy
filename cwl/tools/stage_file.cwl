@@ -4,8 +4,7 @@ $namespaces:
   sbg: 'https://www.sevenbridges.com/'
 id: stagefile
 baseCommand:
-  - ln
-  - '-s'
+  - cp
 inputs:
   - id: staged_file
     type: File
@@ -17,6 +16,10 @@ outputs:
     outputBinding:
       glob: $(inputs.staged_file.basename)
 label: StageFile
+arguments:
+  - position: 98
+    prefix: ''
+    valueFrom: .
 requirements:
   - class: ResourceRequirement
     ramMin: 100
