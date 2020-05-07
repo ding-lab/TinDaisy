@@ -76,11 +76,11 @@ inputs:
 outputs:
   - id: output_maf
     outputSource:
-      - vcf2maf/output
+      vcf2maf/output
     type: File?
   - id: output
     outputSource:
-      - canonical_filter/output
+      canonical_filter/output
     type: File
 steps:
   - id: run_pindel

@@ -8,7 +8,9 @@ To create call_regions file to use with Strelka2,
 2) bgzip -c file.bed > file.bed.gz
 3) tabix -p bed file.bed.gz
 
+GRCh38.callRegions.bed is an uncompressed version of the above.  It used for canonical filter,
+which retains just the calls in the regions listed.
 
-Files below used for pindel and optionally for retaining variants on canonical chroms only
+Files below used for pindel 
     GRCh38.d1.vd1.chrlist.txt
     hs37.chrlist.txt
