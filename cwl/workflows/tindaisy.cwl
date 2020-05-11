@@ -157,7 +157,7 @@ steps:
   - id: varscan_snv_vaf_length_depth_filters
     in:
       - id: input_vcf
-        source: varscan_vcf_remap_1/remapped_VCF
+        source: varscan_snv_vcf_remap/remapped_VCF
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
     out:
@@ -167,7 +167,7 @@ steps:
   - id: varscan_indel_vaf_length_depth_filters
     in:
       - id: input_vcf
-        source: varscan_vcf_remap/remapped_VCF
+        source: varscan_indel_vcf_remap/remapped_VCF
       - id: vcf_filter_config
         source: varscan_vcf_filter_config
     out:
@@ -313,22 +313,22 @@ steps:
       - id: output
     run: ../tools/vcf2maf.cwl
     label: vcf2maf
-  - id: varscan_vcf_remap
+  - id: varscan_indel_vcf_remap
     in:
       - id: input
         source: parse_varscan_indel/varscan_indel
     out:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
-    label: varscan_vcf_remap
-  - id: varscan_vcf_remap_1
+    label: varscan_indel_vcf_remap
+  - id: varscan_snv_vcf_remap
     in:
       - id: input
         source: parse_varscan_snv/varscan_snv
     out:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
-    label: varscan_vcf_remap
+    label: varscan_snv_vcf_remap
   - id: canonical_filter
     in:
       - id: VCF_A

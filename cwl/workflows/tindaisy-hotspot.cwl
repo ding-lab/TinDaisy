@@ -41,8 +41,6 @@ inputs:
     type: File
   - id: chrlist
     type: File?
-#  - id: call_regions
-#    type: File?
   - id: num_parallel_pindel
     type: int?
   - id: num_parallel_strelka2
@@ -53,6 +51,10 @@ inputs:
     type: string?
   - id: Hotspot_BED
     type: File
+  - id: canonical_BED
+    type: File
+  - id: call_regions
+    type: File?
   - id: mutect_vcf_filter_config_A
     type: File
   - id: pindel_vcf_filter_config_A
@@ -62,14 +64,14 @@ inputs:
   - id: strelka_vcf_filter_config_A
     type: File
 outputs:
-  - id: output_vcf
-    outputSource:
-      vep_filter/output_vcf
-    type: File
   - id: output_maf
     outputSource:
       vcf2maf/output
     type: File?
+  - id: output_vcf
+    outputSource:
+      canonical_filter/output
+    type: File
 steps:
   - id: run_pindel
     in:
@@ -116,8 +118,6 @@ steps:
         source: reference_fasta
       - id: pindel_config
         source: pindel_config
-      - id: no_delete_temp
-        source: no_delete_temp
     out:
       - id: pindel_vcf
     run: ../tools/parse_pindel.cwl
@@ -228,8 +228,8 @@ steps:
         source: reference_fasta
       - id: strelka_config
         source: strelka_config
-#      - id: call_regions
-#        source: call_regions
+      - id: call_regions
+        source: call_regions
       - id: num_parallel_strelka2
         source: num_parallel_strelka2
     out:
@@ -254,7 +254,7 @@ steps:
       - id: assembly
         source: assembly
       - id: input-vcf
-        source: vep_filter/output_vcf
+        source: canonical_filter/output
       - id: tumor_barcode
         source: tumor_barcode
       - id: normal_barcode
@@ -279,6 +279,16 @@ steps:
       - id: remapped_VCF
     run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
     label: varscan_snv_vcf_remap
+  - id: canonical_filter
+    in:
+      - id: VCF_A
+        source: vep_filter/output_vcf
+      - id: BED
+        source: canonical_BED
+    out:
+      - id: output
+    run: ../hotspot_filter/hotspotfilter.cwl
+    label: CanonicalFilter
   - id: hotspot_vld_mutect
     in:
       - id: vcf_filter_config_A
