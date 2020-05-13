@@ -93,4 +93,8 @@ IMAGE="mwyczalkowski/hotspot_filter:20200429"
 https://github.com/ding-lab/HotspotFilter.git
 Image generated with docker/1_docker_build.sh
 
+## SnpIndelProximity Filter
+https://github.com/ding-lab/SnpIndelProximityFilter.git
+IMAGE="mwyczalkowski/snp_indel_proximity_filter:20200513"
+Image generated with docker/1_docker_build.sh
 
