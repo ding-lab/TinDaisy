@@ -11,19 +11,22 @@ inputs:
       position: 0
       prefix: '--input'
     label: VCF file
+  - id: output
+    type: string
+    inputBinding:
+      position: 0
+      prefix: '--output'
+    label: output VCF file name
 outputs:
   - id: remapped_VCF
     type: File
     outputBinding:
-      glob: varscan-remapped.vcf
+      glob: $(inputs.output)
 label: varscan_vcf_remap
-arguments:
-  - position: 0
-    prefix: '--output'
-    valueFrom: varscan-remapped.vcf
 requirements:
+  - class: DockerRequirement
+    dockerPull: 'mwyczalkowski/varscan_vcf_remap:20191228'
+  - class: InlineJavascriptRequirement
   - class: ResourceRequirement
     ramMin: 2000
-  - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/varscan_vcf_remap:20191227'
-  - class: InlineJavascriptRequirement
+
