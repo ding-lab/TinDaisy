@@ -3,8 +3,6 @@ cwlVersion: v1.0
 id: tindaisy
 label: TinDaisy
 inputs:
-  - id: no_delete_temp
-    type: boolean?
   - id: tumor_bam
     type: File
   - id: normal_bam
@@ -41,10 +39,6 @@ inputs:
     type: File
   - id: chrlist
     type: File?
-  - id: num_parallel_pindel
-    type: int?
-  - id: num_parallel_strelka2
-    type: int?
   - id: tumor_barcode
     type: string?
   - id: normal_barcode
@@ -73,14 +67,12 @@ steps:
         source: reference_fasta
       - id: centromere_bed
         source: centromere_bed
-      - id: no_delete_temp
-        source: no_delete_temp
       - id: pindel_config
         source: pindel_config
       - id: chrlist
         source: chrlist
       - id: num_parallel_pindel
-        source: num_parallel_pindel
+        default: 5
     out:
       - id: pindel_raw
     run: ../tools/run_pindel.cwl
@@ -261,7 +253,7 @@ steps:
       - id: call_regions
         source: call_regions
       - id: num_parallel_strelka2
-        source: num_parallel_strelka2
+        default: 4
     out:
       - id: strelka2_snv_vcf
       - id: strelka2_indel_vcf
@@ -332,11 +324,21 @@ steps:
   - id: canonical_filter
     in:
       - id: VCF_A
-        source: vep_filter/output_vcf
+        source: snp_indel_proximity_filter/output
       - id: BED
         source: canonical_BED
     out:
       - id: output
     run: ../hotspot_filter/hotspotfilter.cwl
     label: CanonicalFilter
+  - id: snp_indel_proximity_filter
+    in:
+      - id: input
+        source: vep_filter/output_vcf
+      - id: distance
+        default: 5
+    out:
+      - id: output
+    run: ../SnpIndelProximityFilter/snp_indel_proximity_filter.cwl
+    label: snp_indel_proximity_filter
 requirements: []
