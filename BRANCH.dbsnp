@@ -1,0 +1,6 @@
+dbsnp branch is development branch with the following goals
+* incorporate and test VEP-based dbSnP filtering
+* incorporate tools as submodules 
+
+Specific testing / caveats
+* confirm varscan_vcf_remap runs properly on somatic calls

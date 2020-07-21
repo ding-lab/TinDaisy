@@ -1,0 +1,24 @@
+[submodule "submodules/VEP_Filter"]
+	path = submodules/VEP_Filter
+	url = https://github.com/ding-lab/VEP_Filter.git
+[submodule "submodules/VEP_annotate"]
+	path = submodules/VEP_annotate
+	url = https://github.com/ding-lab/VEP_annotate.git
+[submodule "submodules/vcf2maf-CWL"]
+	path = submodules/vcf2maf-CWL
+	url = https://github.com/ding-lab/vcf2maf-CWL.git
+[submodule "submodules/mutect-tool"]
+	path = submodules/mutect-tool
+	url = https://github.com/mwyczalkowski/mutect-tool
+[submodule "submodules/SnpIndelProximityFilter"]
+	path = submodules/SnpIndelProximityFilter
+	url = https://github.com/ding-lab/SnpIndelProximityFilter
+[submodule "submodules/HotspotFilter"]
+	path = submodules/HotspotFilter
+	url = https://github.com/ding-lab/HotspotFilter.git
+[submodule "submodules/mnp_filter"]
+	path = submodules/mnp_filter
+	url = https://github.com/ding-lab/mnp_filter
+[submodule "submodules/varscan_vcf_remap"]
+	path = submodules/varscan_vcf_remap
+	url = https://github.com/ding-lab/varscan_vcf_remap
