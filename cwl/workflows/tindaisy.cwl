@@ -15,23 +15,13 @@ inputs:
     type: File
   - id: pindel_vcf_filter_config
     type: File
-  - id: dbsnp_db
-    type: File?
   - id: assembly
     type: string?
-  - id: vep_cache_version
-    type: string?
-  - id: vep_cache_gz
-    type: File?
   - id: centromere_bed
     type: File?
   - id: strelka_vcf_filter_config
     type: File
   - id: varscan_vcf_filter_config
-    type: File
-  - id: af_filter_config
-    type: File
-  - id: classification_filter_config
     type: File
   - id: mutect_vcf_filter_config
     type: File
@@ -47,14 +37,18 @@ inputs:
     type: File
   - id: call_regions
     type: File?
+  - id: config
+    type: File
+  - id: config_1
+    type: File
 outputs:
   - id: output_maf
     outputSource:
-      vcf2maf/output
+      - vcf2maf/output
     type: File?
   - id: output_vcf
     outputSource:
-      canonical_filter/output
+      - canonical_filter/output
     type: File
 steps:
   - id: run_pindel
@@ -186,46 +180,6 @@ steps:
       - id: merged_vcf
     run: ../tools/merge_vcf.cwl
     label: merge_vcf
-  - id: dbsnp_filter
-    in:
-      - id: input_vcf
-        source: mnp_filter/filtered_VCF
-      - id: reference_fasta
-        source: reference_fasta
-      - id: dbsnp_db
-        source: dbsnp_db
-    out:
-      - id: filtered_vcf
-    run: ../tools/dbsnp_filter.cwl
-    label: dbsnp_filter
-  - id: vep_annotate
-    in:
-      - id: input_vcf
-        source: dbsnp_filter/filtered_vcf
-      - id: reference_fasta
-        source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
-      - id: vep_cache_gz
-        source: vep_cache_gz
-    out:
-      - id: output_dat
-    run: ../tools/vep_annotate.cwl
-    label: vep_annotate
-  - id: vep_filter
-    in:
-      - id: input_vcf
-        source: vep_annotate/output_dat
-      - id: af_filter_config
-        source: af_filter_config
-      - id: classification_filter_config
-        source: classification_filter_config
-    out:
-      - id: output_vcf
-    run: ../tools/vep_filter.cwl
-    label: vep_filter
   - id: mutect
     in:
       - id: normal
@@ -334,11 +288,49 @@ steps:
   - id: snp_indel_proximity_filter
     in:
       - id: input
-        source: vep_filter/output_vcf
+        source: dbsnp_filter/output
       - id: distance
         default: 5
     out:
       - id: output
     run: ../SnpIndelProximityFilter/snp_indel_proximity_filter.cwl
     label: snp_indel_proximity_filter
+  - id: af_filter
+    in:
+      - id: VCF
+        source: vep_annotate/output_dat
+      - id: config
+        source: config
+    out:
+      - id: output
+    run: ../../submodules/VEP_Filter/cwl/af_filter.cwl
+    label: AF_Filter
+  - id: classification_filter
+    in:
+      - id: VCF
+        source: af_filter/output
+      - id: config
+        source: config_1
+    out:
+      - id: output
+    run: ../../submodules/VEP_Filter/cwl/classification_filter.cwl
+    label: Classification_Filter
+  - id: dbsnp_filter
+    in:
+      - id: VCF
+        source: classification_filter/output
+    out:
+      - id: output
+    run: ../../submodules/VEP_Filter/cwl/dbsnp_filter.cwl
+    label: DBSNP_Filter
+  - id: vep_annotate
+    in:
+      - id: input_vcf
+        source: mnp_filter/filtered_VCF
+      - id: reference_fasta
+        source: reference_fasta
+    out:
+      - id: output_dat
+    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
+    label: vep_annotate
 requirements: []
