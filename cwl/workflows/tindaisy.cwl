@@ -120,62 +120,22 @@ steps:
       - id: varscan_indel
     run: ../tools/parse_varscan_indel.cwl
     label: parse_varscan_indel
-  - id: pindel_vaf_length_depth_filters
-    in:
-      - id: input_vcf
-        source: parse_pindel/pindel_vcf
-      - id: vcf_filter_config
-        source: pindel_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Pindel VAF Length Depth
-  - id: strelka_vaf_length_depth_filters
-    in:
-      - id: input_vcf
-        source: run_strelka2/strelka2_snv_vcf
-      - id: vcf_filter_config
-        source: strelka_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Strelka SNV VAF Length Depth
-  - id: varscan_snv_vaf_length_depth_filters
-    in:
-      - id: input_vcf
-        source: varscan_snv_vcf_remap/remapped_VCF
-      - id: vcf_filter_config
-        source: varscan_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Varscan SNV VAF Length Depth
-  - id: varscan_indel_vaf_length_depth_filters
-    in:
-      - id: input_vcf
-        source: varscan_indel_vcf_remap/remapped_VCF
-      - id: vcf_filter_config
-        source: varscan_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Varscan indel VAF Length Depth
   - id: merge_vcf
     in:
       - id: strelka_snv_vcf
-        source: strelka_vaf_length_depth_filters/filtered_vcf
+        source: strelka_snv_vld_filter_vcf/output
       - id: varscan_indel_vcf
-        source: varscan_indel_vaf_length_depth_filters/filtered_vcf
+        source: varscan_indel_vld_filter_vcf/output
       - id: varscan_snv_vcf
-        source: varscan_snv_vaf_length_depth_filters/filtered_vcf
+        source: varscan_snv_vld_filter_vcf/output
       - id: pindel_vcf
-        source: pindel_vaf_length_depth_filters/filtered_vcf
+        source: pindel_vld_filter_vcf/output
       - id: reference_fasta
         source: reference_fasta
       - id: strelka_indel_vcf
-        source: strelka_indel_vaf_length_depth/filtered_vcf
+        source: strelka_indel_vld_filter_vcf/output
       - id: mutect_vcf
-        source: mutect_vaf_length_depth/filtered_vcf
+        source: mutect_vld_filter_vcf/output
     out:
       - id: merged_vcf
     run: ../tools/merge_vcf.cwl
@@ -213,26 +173,6 @@ steps:
       - id: strelka2_indel_vcf
     run: ../tools/run_strelka2.cwl
     label: run_strelka2
-  - id: strelka_indel_vaf_length_depth
-    in:
-      - id: input_vcf
-        source: run_strelka2/strelka2_indel_vcf
-      - id: vcf_filter_config
-        source: strelka_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: Strelka Indel vaf_length_depth
-  - id: mutect_vaf_length_depth
-    in:
-      - id: input_vcf
-        source: mutect/mutations
-      - id: vcf_filter_config
-        source: mutect_vcf_filter_config
-    out:
-      - id: filtered_vcf
-    run: ../tools/vaf_length_depth_filters.cwl
-    label: mutect vaf_length_depth
   - id: mnp_filter
     in:
       - id: input
@@ -336,4 +276,67 @@ steps:
       - id: output_dat
     run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
     label: vep_annotate
-requirements: []
+  - id: mutect_vld_filter_vcf
+    in:
+      - id: VCF
+        source: mutect/mutations
+      - id: config
+        source: mutect_vcf_filter_config
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
+    label: Mutect_VLD_FilterVCF
+  - id: pindel_vld_filter_vcf
+    in:
+      - id: VCF
+        source: parse_pindel/pindel_vcf
+      - id: config
+        source: pindel_vcf_filter_config
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
+    label: Pindel_VLD_FilterVCF
+  - id: varscan_indel_vld_filter_vcf
+    in:
+      - id: VCF
+        source: varscan_indel_vcf_remap/remapped_VCF
+      - id: config
+        source: varscan_vcf_filter_config
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
+    label: Varscan_indel_VLD_FilterVCF
+  - id: varscan_snv_vld_filter_vcf
+    in:
+      - id: VCF
+        source: varscan_snv_vcf_remap/remapped_VCF
+      - id: config
+        source: varscan_vcf_filter_config
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
+    label: Varscan_SNV_VLD_FilterVCF
+    scatter:
+      - no_pipe
+  - id: strelka_indel_vld_filter_vcf
+    in:
+      - id: VCF
+        source: run_strelka2/strelka2_indel_vcf
+      - id: config
+        source: strelka_vcf_filter_config
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
+    label: Strelka_indel_VLD_FilterVCF
+  - id: strelka_snv_vld_filter_vcf
+    in:
+      - id: VCF
+        source: run_strelka2/strelka2_snv_vcf
+      - id: config
+        source: strelka_vcf_filter_config
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
+    label: Strelka_snv_VLD_FilterVCF
+requirements:
+  - class: ScatterFeatureRequirement

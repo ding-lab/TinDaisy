@@ -22,3 +22,6 @@
 [submodule "submodules/varscan_vcf_remap"]
 	path = submodules/varscan_vcf_remap
 	url = https://github.com/ding-lab/varscan_vcf_remap
+[submodule "submodules/VLD_FilterVCF"]
+	path = submodules/VLD_FilterVCF
+	url = https://github.com/ding-lab/VLD_FilterVCF.git
