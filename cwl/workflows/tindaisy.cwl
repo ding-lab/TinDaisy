@@ -120,26 +120,6 @@ steps:
       - id: varscan_indel
     run: ../tools/parse_varscan_indel.cwl
     label: parse_varscan_indel
-  - id: merge_vcf
-    in:
-      - id: strelka_snv_vcf
-        source: strelka_snv_vld_filter_vcf/output
-      - id: varscan_indel_vcf
-        source: varscan_indel_vld_filter_vcf/output
-      - id: varscan_snv_vcf
-        source: varscan_snv_vld_filter_vcf/output
-      - id: pindel_vcf
-        source: pindel_vld_filter_vcf/output
-      - id: reference_fasta
-        source: reference_fasta
-      - id: strelka_indel_vcf
-        source: strelka_indel_vld_filter_vcf/output
-      - id: mutect_vcf
-        source: mutect_vld_filter_vcf/output
-    out:
-      - id: merged_vcf
-    run: ../tools/merge_vcf.cwl
-    label: merge_vcf
   - id: mutect
     in:
       - id: normal
@@ -176,7 +156,7 @@ steps:
   - id: mnp_filter
     in:
       - id: input
-        source: merge_vcf/merged_vcf
+        source: merge_filter_td/merged_vcf
       - id: tumor_bam
         source: tumor_bam
     out:
@@ -223,6 +203,8 @@ steps:
         source: canonical_BED
       - id: keep_only_pass
         default: true
+      - id: filter_name
+        default: canonical
     out:
       - id: output
     run: ../../submodules/HotspotFilter/cwl/hotspotfilter.cwl
@@ -316,8 +298,6 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
     label: Varscan_SNV_VLD_FilterVCF
-    scatter:
-      - no_pipe
   - id: strelka_indel_vld_filter_vcf
     in:
       - id: VCF
@@ -338,5 +318,32 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/VLD_FilterVCF.cwl
     label: Strelka_snv_VLD_FilterVCF
-requirements:
-  - class: ScatterFeatureRequirement
+  - id: merge_vcf_td
+    in:
+      - id: reference
+        source: reference_fasta
+      - id: strelka_snv_vcf
+        source: strelka_snv_vld_filter_vcf/output
+      - id: strelka_indel_vcf
+        source: strelka_indel_vld_filter_vcf/output
+      - id: varscan_snv_vcf
+        source: varscan_snv_vld_filter_vcf/output
+      - id: varscan_indel_vcf
+        source: varscan_indel_vld_filter_vcf/output
+      - id: mutect_vcf
+        source: mutect_vld_filter_vcf/output
+      - id: pindel_vcf
+        source: pindel_vld_filter_vcf/output
+    out:
+      - id: merged_vcf
+    run: ../../submodules/MergeFilterVCF/cwl/MergeVCF_TinDaisy.cwl
+    label: Merge_VCF_TD
+  - id: merge_filter_td
+    in:
+      - id: input_vcf
+        source: merge_vcf_td/merged_vcf
+    out:
+      - id: merged_vcf
+    run: ../../submodules/MergeFilterVCF/cwl/FilterVCF_TinDaisy.cwl
+    label: Merge_Filter_TD
+requirements: []

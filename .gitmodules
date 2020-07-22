@@ -25,3 +25,6 @@
 [submodule "submodules/VLD_FilterVCF"]
 	path = submodules/VLD_FilterVCF
 	url = https://github.com/ding-lab/VLD_FilterVCF.git
+[submodule "MergeFilterVCF"]
+	path = submodules/MergeFilterVCF
+	url = https://github.com/ding-lab/MergeFilterVCF.git
