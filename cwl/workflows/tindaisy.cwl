@@ -37,9 +37,9 @@ inputs:
     type: File
   - id: call_regions
     type: File?
-  - id: config
+  - id: af_config
     type: File
-  - id: config_1
+  - id: classification_config
     type: File
 outputs:
   - id: output_maf
@@ -192,7 +192,7 @@ steps:
       - id: call_stats
       - id: coverage
       - id: mutations
-    run: ../mutect-tool/cwl/mutect.cwl
+    run: ../../submodules/mutect-tool/cwl/mutect.cwl
     label: MuTect
   - id: run_strelka2
     in:
@@ -241,7 +241,7 @@ steps:
         source: tumor_bam
     out:
       - id: filtered_VCF
-    run: ../mnp_filter/cwl/mnp_filter.cwl
+    run: ../../submodules/mnp_filter/cwl/mnp_filter.cwl
     label: MNP_filter
   - id: vcf2maf
     in:
@@ -257,7 +257,7 @@ steps:
         source: normal_barcode
     out:
       - id: output
-    run: ../tools/vcf2maf.cwl
+    run: ../../submodules/vcf2maf-CWL/cwl/vcf2maf.cwl
     label: vcf2maf
   - id: varscan_indel_vcf_remap
     in:
@@ -265,7 +265,7 @@ steps:
         source: parse_varscan_indel/varscan_indel
     out:
       - id: remapped_VCF
-    run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
+    run: ../../submodules/varscan_vcf_remap/cwl/varscan_vcf_remap.cwl
     label: varscan_indel_vcf_remap
   - id: varscan_snv_vcf_remap
     in:
@@ -273,7 +273,7 @@ steps:
         source: parse_varscan_snv/varscan_snv
     out:
       - id: remapped_VCF
-    run: ../varscan_vcf_remap/varscan_vcf_remap.cwl
+    run: ../../submodules/varscan_vcf_remap/cwl/varscan_vcf_remap.cwl
     label: varscan_snv_vcf_remap
   - id: canonical_filter
     in:
@@ -281,9 +281,11 @@ steps:
         source: snp_indel_proximity_filter/output
       - id: BED
         source: canonical_BED
+      - id: keep_only_pass
+        default: true
     out:
       - id: output
-    run: ../hotspot_filter/hotspotfilter.cwl
+    run: ../../submodules/HotspotFilter/cwl/hotspotfilter.cwl
     label: CanonicalFilter
   - id: snp_indel_proximity_filter
     in:
@@ -293,14 +295,15 @@ steps:
         default: 5
     out:
       - id: output
-    run: ../SnpIndelProximityFilter/snp_indel_proximity_filter.cwl
+    run: >-
+      ../../submodules/SnpIndelProximityFilter/cwl/snp_indel_proximity_filter.cwl
     label: snp_indel_proximity_filter
   - id: af_filter
     in:
       - id: VCF
         source: vep_annotate/output_dat
       - id: config
-        source: config
+        source: af_config
     out:
       - id: output
     run: ../../submodules/VEP_Filter/cwl/af_filter.cwl
@@ -310,7 +313,7 @@ steps:
       - id: VCF
         source: af_filter/output
       - id: config
-        source: config_1
+        source: classification_config
     out:
       - id: output
     run: ../../submodules/VEP_Filter/cwl/classification_filter.cwl
