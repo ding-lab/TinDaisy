@@ -41,6 +41,11 @@ inputs:
     type: File
   - id: classification_config
     type: File
+  - id: custom_filename
+    type: File?
+    label: VEP custom annotation filename
+    secondaryFiles:
+      - .tbi
 outputs:
   - id: output_maf
     outputSource:
@@ -254,6 +259,16 @@ steps:
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
+      - id: custom_filename
+        source: custom_filename
+      - id: custom_args
+        default: >-
+          --hgvs --shift_hgvs 1 --no_escape --symbol --numbers --ccds --uniprot
+          --xref_refseq --sift b --tsl --canonical --total_length
+          --allele_number --variant_class --biotype --appris --flag_pick_allele
+          --check_existing --failed 1 --minimal --pick_order
+          biotype,rank,canonical --af --max_af --af_1kg --af_esp --af_gnomad
+          --buffer_size 500  --fork 4
     out:
       - id: output_dat
     run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
