@@ -15,8 +15,8 @@ inputs:
     'sbg:y': 749
   - id: reference_fasta
     type: File
-    'sbg:x': 0
-    'sbg:y': 535
+    'sbg:x': 1912.150634765625
+    'sbg:y': -690.8251342773438
   - id: pindel_config
     type: File
     'sbg:x': 0
@@ -67,11 +67,12 @@ inputs:
     'sbg:y': 474.5
   - id: custom_filename
     type: File?
-    label: VEP custom annotation filename
-    secondaryFiles:
-      - .tbi
-    'sbg:x': 1892.5865478515625
-    'sbg:y': 588.5
+    'sbg:x': 2498.33984375
+    'sbg:y': -239.12892150878906
+  - id: vep_cache_gz
+    type: File?
+    'sbg:x': 2479.4404296875
+    'sbg:y': -415.3128967285156
 outputs:
   - id: output_maf
     outputSource:
@@ -284,7 +285,7 @@ steps:
   - id: af_filter
     in:
       - id: VCF
-        source: vep_annotate/output_dat
+        source: vep_annotate__tin_daisy/output_dat
       - id: config
         source: af_config
     out:
@@ -315,28 +316,6 @@ steps:
     label: DBSNP_Filter
     'sbg:x': 3479.43212890625
     'sbg:y': -19.922035217285156
-  - id: vep_annotate
-    in:
-      - id: input_vcf
-        source: mnp_filter/filtered_VCF
-      - id: reference_fasta
-        source: reference_fasta
-      - id: custom_filename
-        source: custom_filename
-      - id: custom_args
-        default: >-
-          --hgvs --shift_hgvs 1 --no_escape --symbol --numbers --ccds --uniprot
-          --xref_refseq --sift b --tsl --canonical --total_length
-          --allele_number --variant_class --biotype --appris --flag_pick_allele
-          --check_existing --failed 1 --minimal --pick_order
-          biotype,rank,canonical --af --max_af --af_1kg --af_esp --af_gnomad
-          --buffer_size 500  --fork 4
-    out:
-      - id: output_dat
-    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
-    label: vep_annotate
-    'sbg:x': 2935.647705078125
-    'sbg:y': -37.96120834350586
   - id: merge_vcf_td
     in:
       - id: reference
@@ -645,4 +624,20 @@ steps:
     label: Depth Mutect
     'sbg:x': 1762.932373046875
     'sbg:y': 755.5713500976562
+  - id: vep_annotate__tin_daisy
+    in:
+      - id: input_vcf
+        source: mnp_filter/filtered_VCF
+      - id: reference_fasta
+        source: reference_fasta
+      - id: vep_cache_gz
+        source: vep_cache_gz
+      - id: custom_filename
+        source: custom_filename
+    out:
+      - id: output_dat
+    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
+    label: vep_annotate TinDaisy
+    'sbg:x': 2926.228271484375
+    'sbg:y': -266.1289367675781
 requirements: []
