@@ -37,14 +37,16 @@ inputs:
     type: File?
   - id: vep_cache_gz
     type: File?
+  - id: vep_cache_version
+    type: string?
 outputs:
   - id: output_maf
     outputSource:
-      vcf2maf/output
+      - vcf2maf/output
     type: File?
   - id: output_vcf
     outputSource:
-      canonical_filter/output
+      - canonical_filter/output
     type: File
 steps:
   - id: run_pindel
@@ -219,7 +221,7 @@ steps:
   - id: af_filter
     in:
       - id: VCF
-        source: vep_annotate__tin_daisy/output_dat
+        source: vep_annotate_tin_daisy/output_dat
       - id: config
         source: af_config
     out:
@@ -512,12 +514,16 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/somatic_depth_filter.cwl
     label: Depth Mutect
-  - id: vep_annotate__tin_daisy
+  - id: vep_annotate_tin_daisy
     in:
       - id: input_vcf
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
+      - id: assembly
+        source: assembly
+      - id: vep_cache_version
+        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
       - id: custom_filename

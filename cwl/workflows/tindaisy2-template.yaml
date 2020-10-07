@@ -1,3 +1,4 @@
+vep_cache_version: a_string  # type "string" (optional)
 vep_cache_gz:  # type "File" (optional)
     class: File
     path: a/file/path
