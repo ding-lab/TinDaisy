@@ -23,6 +23,8 @@ Current projects:
 * tindaisy-postcall/MGI - development and testing of tindaisy-postcall.cwl on Cromwell on MGI
     * Test input dataset of filtered VCFs from callers, from CPTAC3 C3L-01000 LSCC case
 * hotspot/MGI - development and testing of hotspot_vld sub-workflow
+* TinDaisy2/C3L-00908
+    * testing of TinDaisy2 against past project
 
 Archived projects:
 * StrelkaDemo - test run of complete workflow with small test dataset (StrelkaDemo)

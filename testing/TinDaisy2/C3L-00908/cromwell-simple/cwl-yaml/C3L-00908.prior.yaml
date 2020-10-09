@@ -1,0 +1,120 @@
+# TinDaisy template
+# * complete workflow tindaisy.cwl 
+# * production optimizations
+
+# No reference- or collection-specific (e.g. CPTAC3) definitons
+
+# Template for TinDaisy YAML input file
+# The following arguments must be substituted:
+# * NORMAL_BAM
+# * TUMOR_BAM
+# * REF_PATH
+# * PARAM_ROOT -> value is /params
+# * DBSNP_DB
+# * VEP_CACHE_GZ
+# * VEP_CACHE_VERSION
+# * ASSEMBLY
+# * CHRLIST
+# * NORMAL_BARCODE
+# * TUMOR_BARCODE
+
+normal_bam:
+  class: File
+  path: /gscmnt/gc2619/dinglab_cptac3/GDC_import/data/9cf12b3e-3b97-4c25-ad51-d1eb46e5680d/c0292a50-51ae-4818-ba05-3d2a9534cf2b_gdc_realn.bam
+tumor_bam:
+  class: File
+  path: /gscmnt/gc2619/dinglab_cptac3/GDC_import/data/c10f8658-5a5b-4417-b979-4612c5a593a9/bbc3e5fa-d872-4922-912a-bfc9acdb58bb_wxs_gdc_realn.bam
+reference_fasta:
+  class: File
+  path: /gscmnt/gc7202/dinglab/common/Reference/A_Reference/GRCh38.d1.vd1/GRCh38.d1.vd1.fa
+
+# barcodes replace "TUMOR" and "NORMAL" as sample names in output MAF 
+normal_barcode: CPT0087380001
+tumor_barcode: CPT0086350006
+
+call_regions:  # must be a .gz file with tabix index available
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/chrlist/GRCh38.callRegions.bed.gz
+canonical_BED:  # uncompressed version of the above.  Used to retain only canonical chromosomes
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/chrlist/GRCh38.callRegions.bed
+
+# vcf (vaf length depth) filter config
+pindel_vcf_filter_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/filter_config/vcf_filter_config-pindel.ini
+strelka_vcf_filter_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/filter_config/vcf_filter_config-strelka.ini
+varscan_vcf_filter_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/filter_config/vcf_filter_config-varscan.ini
+mutect_vcf_filter_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/filter_config/vcf_filter_config-mutect.ini
+
+# Hotspot parameters.  _A files are hotspot
+strelka_vcf_filter_config_A:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/demo/hotspot_vld/demo_data/hotspot_filter_config/vcf_filter_config-strelka.hotspot.ini
+varscan_vcf_filter_config_A:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/demo/hotspot_vld/demo_data/hotspot_filter_config/vcf_filter_config-varscan.hotspot.ini
+pindel_vcf_filter_config_A:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/demo/hotspot_vld/demo_data/hotspot_filter_config/vcf_filter_config-pindel.hotspot.ini
+mutect_vcf_filter_config_A:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/demo/hotspot_vld/demo_data/hotspot_filter_config/vcf_filter_config-mutect.hotspot.ini
+Hotspot_BED:  # type "File"
+    class: File
+    path: /gscuser/mwyczalk/projects/TinDaisy/SMG_BED/CCRCC_SMG/dat/CCRCC_SMG.ens84.norm.bed
+
+
+# Caller config.  Note mutect does not have a caller config file
+pindel_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/caller_config/pindel.WES.ini
+strelka_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/caller_config/strelka.WES.ini
+varscan_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/caller_config/varscan.WES.ini
+
+# Other filter config
+classification_filter_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/filter_config/classification_filter_config.ini
+af_filter_config:
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/filter_config/af_filter_config.ini
+
+# Data files
+centromere_bed: 
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/centromere/ucsc-centromere.GRCh38.bed
+
+# See README.md for discussion of dbSnP references
+dbsnp_db:
+  class: File
+  path: /gscmnt/gc7202/dinglab/common/databases/dbSNP_Filter/dbSnP-COSMIC.GRCh38.d1.vd1.20190416.vcf.gz
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+vep_cache_gz:
+  class: File
+  path: /gscmnt/gc7202/dinglab/common/databases/VEP/v99/vep-cache.99_GRCh38.tar.gz
+
+vep_cache_version: 99
+assembly: GRCh38
+
+# Number of parallel jobs to run.  Goal is to balance run times to have a uniform CPU load
+num_parallel_strelka2: 4
+num_parallel_pindel: 5
+
+chrlist: # Defining this turns on pindel parallel
+  class: File
+  path: /gscuser/mwyczalk/projects/TinDaisy/TinDaisy/params/chrlist/GRCh38.d1.vd1.chrlist.txt

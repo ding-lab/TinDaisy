@@ -28,3 +28,6 @@
 [submodule "MergeFilterVCF"]
 	path = submodules/MergeFilterVCF
 	url = https://github.com/ding-lab/MergeFilterVCF.git
+[submodule "testing/WUDocker"]
+	path = testing/WUDocker
+	url = https://github.com/ding-lab/WUDocker.git
