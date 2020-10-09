@@ -1,0 +1,51 @@
+varscan_snv_raw:  # type "File"
+    class: File
+    path: a/file/path
+strelka_snv_raw:  # type "File"
+    class: File
+    path: a/file/path
+strelka_indel_raw:  # type "File"
+    class: File
+    path: a/file/path
+mutect_raw:  # type "File"
+    class: File
+    path: a/file/path
+varscan_indel_raw:  # type "File"
+    class: File
+    path: a/file/path
+pindel_raw:  # type "File"
+    class: File
+    path: a/file/path
+rescue_clinvar: false  # type "boolean" (optional)
+rescue_cosmic: false  # type "boolean" (optional)
+vep_cache_version: a_string  # type "string" (optional)
+vep_cache_gz:  # type "File" (optional)
+    class: File
+    path: a/file/path
+custom_filename:  # type "File" (optional)
+    class: File
+    path: a/file/path
+classification_config:  # type "File"
+    class: File
+    path: a/file/path
+af_config:  # type "File"
+    class: File
+    path: a/file/path
+canonical_BED:  # type "File"
+    class: File
+    path: a/file/path
+normal_barcode: a_string  # type "string" (optional)
+tumor_barcode: a_string  # type "string" (optional)
+assembly: a_string  # type "string" (optional)
+varscan_config:  # type "File"
+    class: File
+    path: a/file/path
+pindel_config:  # type "File"
+    class: File
+    path: a/file/path
+reference_fasta:  # type "File"
+    class: File
+    path: a/file/path
+tumor_bam:  # type "File"
+    class: File
+    path: a/file/path
