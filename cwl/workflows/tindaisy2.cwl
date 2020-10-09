@@ -37,6 +37,12 @@ inputs:
     type: File?
   - id: vep_cache_gz
     type: File?
+  - id: vep_cache_version
+    type: string?
+  - id: rescue_cosmic
+    type: boolean?
+  - id: rescue_clinvar
+    type: boolean?
 outputs:
   - id: output_maf
     outputSource:
@@ -240,6 +246,12 @@ steps:
     in:
       - id: VCF
         source: classification_filter/output
+      - id: rescue_cosmic
+        default: true
+        source: rescue_cosmic
+      - id: rescue_clinvar
+        default: false
+        source: rescue_clinvar
     out:
       - id: output
     run: ../../submodules/VEP_Filter/cwl/dbsnp_filter.cwl
@@ -518,6 +530,10 @@ steps:
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
+      - id: assembly
+        source: assembly
+      - id: vep_cache_version
+        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
       - id: custom_filename
