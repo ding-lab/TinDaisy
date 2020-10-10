@@ -46,13 +46,17 @@ inputs:
   - id: varscan_snv_raw
     type: File
 outputs:
-  - id: output_maf
+  - id: output_maf_clean
     outputSource:
       vcf2maf/output
     type: File?
-  - id: output_vcf
+  - id: output_vcf_clean
     outputSource:
       canonical_filter/output
+    type: File
+  - id: output_vcf_all
+    outputSource:
+      snp_indel_proximity_filter/output
     type: File
 steps:
   - id: parse_pindel
