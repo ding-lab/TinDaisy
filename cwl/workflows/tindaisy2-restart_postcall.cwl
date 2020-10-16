@@ -269,7 +269,7 @@ steps:
       - id: min_vaf_tumor
         default: 0.05
       - id: max_vaf_normal
-        default: -20
+        default: 0.02
       - id: caller
         default: varscan
     out:
