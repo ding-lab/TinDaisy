@@ -95,3 +95,91 @@ xecution/output/HotspotFiltered.vcf",
   },
   "id": "eb17b2bb-206c-409b-8660-3b0c8cae1160"
 }
+
+# Run 4 
+
+Repeat of Run 3, but with updated CWL which outputs VCF with all calls
+
+{
+  "outputs": {
+    "tindaisy2-restart_postcall.cwl.output_maf_clean": {
+      "format": null,
+      "location": "/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/c1501766-fad5-41dd-a03b-5a952c49d219/call-vcf2maf/execution/
+result.maf",
+      "size": 70177,
+      "secondaryFiles": [],
+      "contents": null,
+      "checksum": null,
+      "class": "File"
+    },
+    "tindaisy2-restart_postcall.cwl.output_vcf_clean": {
+      "format": null,
+      "location": "/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/c1501766-fad5-41dd-a03b-5a952c49d219/call-canonical_filter/e
+xecution/output/HotspotFiltered.vcf",
+      "size": 361010,
+      "secondaryFiles": [],
+      "contents": null,
+      "checksum": null,
+      "class": "File"
+    },
+    "tindaisy2-restart_postcall.cwl.output_vcf_all": {
+      "format": null,
+      "location": "/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/c1501766-fad5-41dd-a03b-5a952c49d219/call-snp_indel_proximit
+y_filter/execution/output/ProximityFiltered.vcf",
+      "size": 3950964,
+      "secondaryFiles": [],
+      "contents": null,
+      "checksum": null,
+      "class": "File"
+    }
+  },
+  "id": "c1501766-fad5-41dd-a03b-5a952c49d219"
+}
+
+# Run 5
+
+Run with corrected CWL varscan indel max normal vaf parameters
+
+{
+  "outputs": {
+    "tindaisy2-restart_postcall.cwl.output_vcf_all": {
+      "format": null,
+      "location": "/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/5281f45b-ae70-473b-abc6-64d445ccfe11/call-snp_indel_proximit
+y_filter/execution/output/ProximityFiltered.vcf",
+      "size": 4328954,
+      "secondaryFiles": [],
+      "contents": null,
+      "checksum": null,
+      "class": "File"
+    },
+    "tindaisy2-restart_postcall.cwl.output_maf_clean": {
+      "format": null,
+      "location": "/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/5281f45b-ae70-473b-abc6-64d445ccfe11/call-vcf2maf/execution/
+result.maf",
+      "size": 76030,
+      "secondaryFiles": [],
+      "contents": null,
+      "checksum": null,
+      "class": "File"
+    },
+    "tindaisy2-restart_postcall.cwl.output_vcf_clean": {
+      "format": null,
+      "location": "/gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/5281f45b-ae70-473b-abc6-64d445ccfe11/call-canonical_filter/e
+xecution/output/HotspotFiltered.vcf",
+      "size": 378315,
+      "secondaryFiles": [],
+      "contents": null,
+      "checksum": null,
+      "class": "File"
+    }
+  },
+  "id": "5281f45b-ae70-473b-abc6-64d445ccfe11"
+}
+
+See /gscuser/mwyczalk/projects/TinDaisy/testing/TinDaisy2/C3L-00908/README.md for discussion
+
+# Run 6
+
+Restart after correcting for dbsnp filter error
+
+Appears to live here: /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy2-restart_postcall.cwl/6ec3d2b9-5543-47b5-9e1f-0f7ca564880e
