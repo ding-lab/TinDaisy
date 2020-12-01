@@ -9,6 +9,11 @@ TinDaisy-Core are also integrated into the TinDaisy pipeline.
 See [CromwellRunner](https://github.com/ding-lab/CromwellRunner.git) for a simple workflow manager to allow for command-line driven management
 of jobs in a Cromwell workflow engine environment.
 
+TinDaisy2 (v2.5)
+* incorporates VEP-based dbSnP filtering
+* incorporates tools as submodules 
+* TODO: add documentation
+
 # Overview
 
 Callers used:

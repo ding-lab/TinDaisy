@@ -25,14 +25,15 @@ Filters applied (details in VCF output)
 
 ## Versions
 
+* v2.5
+  * 3 types of output: raw VCF, clean VCF (which has only varianta which passed) and MAF
+  * All tools are modular and separate submodules
+
 * v2.1
   * Fixes AD FORMAT issue for Varscan, so that AD has both alternate and reference allele depth
   * Fixes DNP issue, with FORMAT, TUMOR, and NORMAL fields given by first call
     * Uses [MNP_Filter](https://github.com/ding-lab/mnp_filter)
   * Varscan calls are prioritized during merge, and strelka2 calls are least significant
-
-
-Details can be found [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core)
 
 TinDaisy and TinDaisy-Core were developed from [SomaticWrapper](https://github.com/ding-lab/somaticwrapper) and [GenomeVIP](https://genomevip.readthedocs.io/).  
 
