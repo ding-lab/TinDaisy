@@ -22,9 +22,11 @@ Current projects:
     * Based on commit 18d786bb5 of https://github.com/ding-lab/CromwellRunner
 * tindaisy-postcall/MGI - development and testing of tindaisy-postcall.cwl on Cromwell on MGI
     * Test input dataset of filtered VCFs from callers, from CPTAC3 C3L-01000 LSCC case
-* hotspot/MGI - development and testing of hotspot_vld sub-workflow
+* hotspot_vld - development and testing of hotspot_vld sub-workflow. Largely superceded by rescue VAF filter below
 * TinDaisy2/C3L-00908
     * testing of TinDaisy2 against past project
+* TinDaisy2/RescueVAF
+    * testing of rescue VAF filter on C3L-00908 dataset
 
 Archived projects:
 * StrelkaDemo - test run of complete workflow with small test dataset (StrelkaDemo)
