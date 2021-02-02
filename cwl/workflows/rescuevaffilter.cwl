@@ -12,7 +12,7 @@ inputs:
 outputs:
   - id: output
     outputSource:
-      - hotspotfilter/output
+      hotspotfilter/output
     type: File
 steps:
   - id: somatic_vaf_filter_B
@@ -51,6 +51,8 @@ steps:
         source: somatic_vaf_filter_B/output
       - id: BED
         source: BED
+      - id: filter_name
+        default: VAF_rescue
     out:
       - id: output
     run: ../../submodules/HotspotFilter/cwl/hotspotfilter.cwl
