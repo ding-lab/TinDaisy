@@ -150,3 +150,16 @@ Strelka](https://github.com/Illumina/strelka/tree/master/src/demo/data) (hence t
 in the `./StrelkaDemo.dat` directory.  These are used for quickly testing workflow steps, and are described
 in more detail in [docs/README.strelka_demo.md](docs/README.strelka_demo.md)
 
+## VAF Rescue
+
+VAF Rescue runs Somatic VAF Filter on an input VCF file twice and 
+generates two VCF files which differ in the input parameters:
+* `VCF_A` - `min_vaf_normal` = 0.0  
+* `VCF_B` - `min_vaf_normal` = 0.05 
+In all cases, `max_vaf_normal` = 0.02
+
+The next step, HotspotFilter, takes as input `VCF_A` and `VCF_B`, as well as a BED file defining regions where
+rescue will occur. It outputs a VCF file which consists of:
+* All regions of `VCF_A` which lie within regions defined by BED file
+* All regions of `VCF_B` which lie outside regions defined by BED file
+

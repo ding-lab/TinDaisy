@@ -36,7 +36,7 @@ steps:
       - id: min_vaf_tumor
         default: 0
       - id: max_vaf_normal
-        default: 0.05
+        default: 0.02
       - id: caller
         source: caller
     out:
