@@ -33,7 +33,7 @@ inputs:
     type: boolean?
   - id: rescue_clinvar
     type: boolean?
-  - id: RescueBED
+  - id: VAFRescueBED
     type: File
   - id: Strelka_SNV_VCF
     type: File
@@ -353,7 +353,7 @@ steps:
       - id: VCF
         source: Strelka_SNV_VCF
       - id: BED
-        source: RescueBED
+        source: VAFRescueBED
       - id: caller
         default: strelka
     out:
@@ -365,7 +365,7 @@ steps:
       - id: VCF
         source: Strelka_Indel_VCF
       - id: BED
-        source: RescueBED
+        source: VAFRescueBED
       - id: caller
         default: strelka
     out:
@@ -377,7 +377,7 @@ steps:
       - id: VCF
         source: Mutect_VCF
       - id: BED
-        source: RescueBED
+        source: VAFRescueBED
       - id: caller
         default: mutect
     out:
@@ -389,7 +389,7 @@ steps:
       - id: VCF
         source: Varscan_SNV_VCF
       - id: BED
-        source: RescueBED
+        source: VAFRescueBED
       - id: caller
         default: varscan
     out:
@@ -401,7 +401,7 @@ steps:
       - id: VCF
         source: VARSCAN_indel_VCF
       - id: BED
-        source: RescueBED
+        source: VAFRescueBED
       - id: caller
         default: varscan
     out:
@@ -413,7 +413,7 @@ steps:
       - id: VCF
         source: Pindel_VCF
       - id: BED
-        source: RescueBED
+        source: VAFRescueBED
       - id: caller
         default: pindel
     out:
