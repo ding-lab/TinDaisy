@@ -33,7 +33,7 @@ inputs:
     type: File
   - id: classification_config
     type: File
-  - id: custom_filename
+  - id: clinvar_annotation
     type: File?
   - id: vep_cache_gz
     type: File?
@@ -541,7 +541,7 @@ steps:
       - id: vep_cache_gz
         source: vep_cache_gz
       - id: custom_filename
-        source: custom_filename
+        source: clinvar_annotation
     out:
       - id: output_dat
     run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
