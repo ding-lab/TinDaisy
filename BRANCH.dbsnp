@@ -1,6 +1,0 @@
-dbsnp branch is development branch with the following goals
-* incorporate and test VEP-based dbSnP filtering
-* incorporate tools as submodules 
-
-This has become a production branch and is referred to as TinDaisy2
-TODO: Merge into master

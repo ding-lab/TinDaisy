@@ -10,9 +10,10 @@ See [CromwellRunner](https://github.com/ding-lab/CromwellRunner.git) for a simpl
 of jobs in a Cromwell workflow engine environment.
 
 TinDaisy2 (v2.5)
-* incorporates VEP-based dbSnP filtering
+* incorporates VEP-based dbSnP with filtering optional ClinVar rescue 
 * incorporates tools as submodules 
-* TODO: add documentation
+* Optionally performs VCF-rescue in regions of interest, where `min_vaf_tumor=0`
+
 
 # Overview
 
