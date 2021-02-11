@@ -3,41 +3,28 @@ cwlVersion: v1.0
 id: tindaisy2
 doc: >-
   TinDaisy2 workflow with VAF Rescue, where min_vaf_tumor=0 in a region defined
-  by a rescue BED file
-label: TinDaisy2
+  by a rescue BED file. Restart at VAF Filter step
+label: TinDaisy2 VAF Rescue Restart
 inputs:
   - id: tumor_bam
     type: File
-  - id: normal_bam
-    type: File
   - id: reference_fasta
-    type: File
-  - id: pindel_config
-    type: File
-  - id: varscan_config
     type: File
   - id: assembly
     type: string?
-  - id: centromere_bed
-    type: File?
-  - id: strelka_config
-    type: File
-  - id: chrlist
-    type: File?
   - id: tumor_barcode
     type: string?
   - id: normal_barcode
     type: string?
   - id: canonical_BED
     type: File
-  - id: call_regions
-    type: File?
   - id: af_config
     type: File
   - id: classification_config
     type: File
   - id: clinvar_annotation
     type: File?
+    doc: ClinVar VEP custom annotation file
   - id: vep_cache_gz
     type: File?
   - id: vep_cache_version
@@ -46,7 +33,19 @@ inputs:
     type: boolean?
   - id: rescue_clinvar
     type: boolean?
-  - id: VAFRescueBED
+  - id: RescueBED
+    type: File
+  - id: Strelka_SNV_VCF
+    type: File
+  - id: Strelka_Indel_VCF
+    type: File
+  - id: Mutect_VCF
+    type: File
+  - id: Varscan_SNV_VCF
+    type: File
+  - id: VARSCAN_indel_VCF
+    type: File
+  - id: Pindel_VCF
     type: File
 outputs:
   - id: output_maf_clean
@@ -62,108 +61,6 @@ outputs:
       snp_indel_proximity_filter/output
     type: File
 steps:
-  - id: run_pindel
-    in:
-      - id: tumor_bam
-        source: tumor_bam
-      - id: normal_bam
-        source: normal_bam
-      - id: reference_fasta
-        source: reference_fasta
-      - id: centromere_bed
-        source: centromere_bed
-      - id: pindel_config
-        source: pindel_config
-      - id: chrlist
-        source: chrlist
-      - id: num_parallel_pindel
-        default: 5
-    out:
-      - id: pindel_raw
-    run: ../tools/run_pindel.cwl
-    label: run_pindel
-  - id: run_varscan
-    in:
-      - id: tumor_bam
-        source: tumor_bam
-      - id: normal_bam
-        source: normal_bam
-      - id: reference_fasta
-        source: reference_fasta
-      - id: varscan_config
-        source: varscan_config
-    out:
-      - id: varscan_indel_raw
-      - id: varscan_snv_raw
-    run: ../tools/run_varscan.cwl
-    label: run_varscan
-  - id: parse_pindel
-    in:
-      - id: pindel_raw
-        source: run_pindel/pindel_raw
-      - id: reference_fasta
-        source: reference_fasta
-      - id: pindel_config
-        source: pindel_config
-    out:
-      - id: pindel_vcf
-    run: ../tools/parse_pindel.cwl
-    label: parse_pindel
-  - id: parse_varscan_snv
-    in:
-      - id: varscan_indel_raw
-        source: run_varscan/varscan_indel_raw
-      - id: varscan_snv_raw
-        source: run_varscan/varscan_snv_raw
-      - id: varscan_config
-        source: varscan_config
-    out:
-      - id: varscan_snv
-    run: ../tools/parse_varscan_snv.cwl
-    label: parse_varscan_snv
-  - id: parse_varscan_indel
-    in:
-      - id: varscan_indel_raw
-        source: run_varscan/varscan_indel_raw
-      - id: varscan_config
-        source: varscan_config
-    out:
-      - id: varscan_indel
-    run: ../tools/parse_varscan_indel.cwl
-    label: parse_varscan_indel
-  - id: mutect
-    in:
-      - id: normal
-        source: normal_bam
-      - id: reference
-        source: reference_fasta
-      - id: tumor
-        source: tumor_bam
-    out:
-      - id: call_stats
-      - id: coverage
-      - id: mutations
-    run: ../../submodules/mutect-tool/cwl/mutect.cwl
-    label: MuTect
-  - id: run_strelka2
-    in:
-      - id: tumor_bam
-        source: tumor_bam
-      - id: normal_bam
-        source: normal_bam
-      - id: reference_fasta
-        source: reference_fasta
-      - id: strelka_config
-        source: strelka_config
-      - id: call_regions
-        source: call_regions
-      - id: num_parallel_strelka2
-        default: 4
-    out:
-      - id: strelka2_snv_vcf
-      - id: strelka2_indel_vcf
-    run: ../tools/run_strelka2.cwl
-    label: run_strelka2
   - id: mnp_filter
     in:
       - id: input
@@ -190,22 +87,6 @@ steps:
       - id: output
     run: ../../submodules/vcf2maf-CWL/cwl/vcf2maf.cwl
     label: vcf2maf
-  - id: varscan_indel_vcf_remap
-    in:
-      - id: input
-        source: parse_varscan_indel/varscan_indel
-    out:
-      - id: remapped_VCF
-    run: ../../submodules/varscan_vcf_remap/cwl/varscan_vcf_remap.cwl
-    label: varscan_indel_vcf_remap
-  - id: varscan_snv_vcf_remap
-    in:
-      - id: input
-        source: parse_varscan_snv/varscan_snv
-    out:
-      - id: remapped_VCF
-    run: ../../submodules/varscan_vcf_remap/cwl/varscan_vcf_remap.cwl
-    label: varscan_snv_vcf_remap
   - id: canonical_filter
     in:
       - id: VCF_A
@@ -470,9 +351,9 @@ steps:
   - id: rescuevaffilter_strelka_snv
     in:
       - id: VCF
-        source: run_strelka2/strelka2_snv_vcf
+        source: Strelka_SNV_VCF
       - id: BED
-        source: VAFRescueBED
+        source: RescueBED
       - id: caller
         default: strelka
     out:
@@ -482,9 +363,9 @@ steps:
   - id: rescuevaffilter_strelka_indel
     in:
       - id: VCF
-        source: run_strelka2/strelka2_indel_vcf
+        source: Strelka_Indel_VCF
       - id: BED
-        source: VAFRescueBED
+        source: RescueBED
       - id: caller
         default: strelka
     out:
@@ -494,9 +375,9 @@ steps:
   - id: rescuevaffilter_mutect
     in:
       - id: VCF
-        source: mutect/mutations
+        source: Mutect_VCF
       - id: BED
-        source: VAFRescueBED
+        source: RescueBED
       - id: caller
         default: mutect
     out:
@@ -506,9 +387,9 @@ steps:
   - id: rescuevaffilter_varscan_snv
     in:
       - id: VCF
-        source: varscan_snv_vcf_remap/remapped_VCF
+        source: Varscan_SNV_VCF
       - id: BED
-        source: VAFRescueBED
+        source: RescueBED
       - id: caller
         default: varscan
     out:
@@ -518,9 +399,9 @@ steps:
   - id: rescuevaffilter_varscan_indel
     in:
       - id: VCF
-        source: varscan_indel_vcf_remap/remapped_VCF
+        source: VARSCAN_indel_VCF
       - id: BED
-        source: VAFRescueBED
+        source: RescueBED
       - id: caller
         default: varscan
     out:
@@ -530,9 +411,9 @@ steps:
   - id: rescuevaffilter_pindel
     in:
       - id: VCF
-        source: parse_pindel/pindel_vcf
+        source: Pindel_VCF
       - id: BED
-        source: VAFRescueBED
+        source: RescueBED
       - id: caller
         default: pindel
     out:
