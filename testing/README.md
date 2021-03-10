@@ -1,4 +1,4 @@
-# `demo` directory
+# `testing` directory
 
 This directory contains projects which were used for testing and development and/or can
 be used as templates for future runs.
@@ -7,6 +7,14 @@ Some past development concerned a simple workflow manager, out of which grew the
 [CromwellRunner project]().  Some of these are removed from current repository; some
 are described below and can be found in past git commits or on
 MGI:/gscuser/mwyczalk/projects/TinDaisy/attic
+
+## Future work
+
+Work here should be cleaned up to retain only a few relevent testing scripts,
+* MutectDemo for testing callers on a small datasete
+* VCF files from a real CPTAC3 dataset for testing filtering and merging
+
+# Current work
 
 Current projects:
 
