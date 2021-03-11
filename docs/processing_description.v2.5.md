@@ -1,44 +1,34 @@
-# TinDaisy
+# TinDaisy2 workflow v2.5
 
-Detection of somatic variants from tumor and normal exome data.  TinDaisy
-obtains variant calls from four callers, merges them, and applies various filters.
+Description of parameters in TinDaisy2 v2.5 pipeline.  [See here for more 
+general information about TinDaisy2.](https://github.com/ding-lab/TinDaisy)
 
-Callers used:
+v2.5 pipeline uses `cwl/workflows/tindaisy2.cwl` workflow
 
-* [Strelka2](https://github.com/Illumina/strelka.git)
-* [VarScan.v2.3.8](http://varscan.sourceforge.net/)
-* [Pindel](https://github.com/ding-lab/pindel.git)
-* [mutect-1.1.7](https://github.com/broadinstitute/mutect)
+## General filter parameters
 
-SNV calls from Strelka2, Varscan, Mutect. Indel calls from Stralka2, Varscan, and Pindel.
-[CWL Mutect Tool](https://github.com/mwyczalkowski/mutect-tool) is used for CWL Mutect calls
-
-Filters applied (details in VCF output)
 * For indels, require length < 100
-* Require normal VAF <= 0.020000, tumor VAF >= 0.050000 for all variants
+* Require normal VAF <= 0.02, tumor VAF >= 0.05 for all variants
 * Require read depth in tumor > 14 and normal > 8 for all variants
 * All variants must be called by 2 or more callers
-* Require Allele Frequency < 0.005000 (as determined by vep) 
+* Require Allele Frequency < 0.005 (as determined by vep) 
 * Retain exonic calls
-* Exclude calls which are in dbSnP but not in COSMIC
+* Exclude calls which are in dbSnP but not in COSMIC or ClinVar
 * Adjacent variants merged into DNP, TNP, and QNP 
 
-## Versions
+VEP Rescue is not used
 
-* v2.5
-  * 3 types of output: raw VCF, clean VCF (which has only varianta which passed) and MAF
-  * All tools are modular and separate submodules
+## Specific databases used
 
-* v2.1
-  * Fixes AD FORMAT issue for Varscan, so that AD has both alternate and reference allele depth
-  * Fixes DNP issue, with FORMAT, TUMOR, and NORMAL fields given by first call
-    * Uses [MNP_Filter](https://github.com/ding-lab/mnp_filter)
-  * Varscan calls are prioritized during merge, and strelka2 calls are least significant
+* ClinVar annotation: [`clinvar_20200706`](https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2020/clinvar_20200706.vcf.gz)
+* Reference: [GRCh38.d1.vd1.fa](https://gdc.cancer.gov/about-data/gdc-data-processing/gdc-reference-files)
+* VEP version 99
 
-TinDaisy and TinDaisy-Core were developed from [SomaticWrapper](https://github.com/ding-lab/somaticwrapper) and [GenomeVIP](https://genomevip.readthedocs.io/).  
+## Output
 
-## Authors
+Three files are output:
+* `ProximityFiltered.vcf` = Output VCF - contains all variants which were called by 2 or 3 callers.
+* `result.maf` = Clean VCF - contains only variants which passed all filters
+* `HotspotFiltered.vcf` = Clean MAF - MAF file corresponding to Clean VCF
 
-* Matthew Wyczalkowski <m.wyczalkowski@wustl.edu>
-* Song Cao <scao@wustl.edu>
-* Jay Mashl <rmashl@wustl.edu>
+

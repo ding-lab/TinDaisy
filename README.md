@@ -1,166 +1,86 @@
-# <img src="docs/TinDaisy.v1.2.png" width="64"/> TinDaisy
+# <img src="docs/TinDaisy.v1.2.png" width="64"/> TinDaisy2
 
-[TinDaisy](https://github.com/ding-lab/tin-daisy) is a CWL pipeline for calling
-somatic variants fronm tumor and normal exome data.  TinDaisy implements
-functionality from [TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core)
-to obtain variant calls, merge and filter them; other CWL tools outside of
-TinDaisy-Core are also integrated into the TinDaisy pipeline.  
+[TinDaisy2](https://github.com/ding-lab/tin-daisy) is a CWL pipeline for calling
+somatic variants fronm tumor and normal exome data.  It is illustrated below
 
-See [CromwellRunner](https://github.com/ding-lab/CromwellRunner.git) for a simple workflow manager to allow for command-line driven management
-of jobs in a Cromwell workflow engine environment.
+![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.3.png)
 
-TinDaisy2 (v2.5)
-* incorporates VEP-based dbSnP with filtering optional ClinVar rescue 
-* incorporates tools as submodules 
-* Optionally performs VCF-rescue in regions of interest, where `min_vaf_tumor=0`
+## Overview
 
+The following variant callers are the basis of TinDaisy2 variant calls:
+* [VarScan.v2.3.8](http://varscan.sourceforge.net/): SNP and indel calls
+* [Strelka2](https://github.com/Illumina/strelka.git): SNP and indel calls
+* [Pindel](https://github.com/ding-lab/pindel.git): indel calls only
+* [mutect-1.1.7](https://github.com/broadinstitute/mutect): SNP calls only
 
-# Overview
+The following filters are then applied:
+* Normal and tumor VAF
+* Indel length
+* Normal and tumor read depth
 
-Callers used:
+Variant calls from all callers are then merged into one VCF file.  Variants called by
+two or more callers are retained.  Following merging, the following processing steps
+are applied
+* Sequential SNPs on same haplotype merged into DNP, TNP, and QNP 
+* Annotation with VEP.  Based on annotation, the following filters are applied
+    * Population allele frequency 
+    * Variant classification (e.g., retain exon only)
+    * Presence in dbSnP database of common variants. Those in COSMIC and ClinVar
+      databases optionally retained
+* SNP variants in proximity to indels are excluded
 
-* [Strelka2](https://github.com/Illumina/strelka.git)
-* [VarScan.v2.3.8](http://varscan.sourceforge.net/)
-* [Pindel](https://github.com/ding-lab/pindel.git)
-* [mutect-1.1.7](https://github.com/broadinstitute/mutect)
+Variants which fail a filter are retained in the VCF file but are flagged as having
+failed that filter.
 
-SNV calls from Strelka2, Varscan, Mutect. Indel calls from Stralka2, Varscan, and Pindel.
-[CWL Mutect Tool](https://github.com/mwyczalkowski/mutect-tool) is used for CWL Mutect calls
+Three output files are generated:
+* Output VCF - contains all variants which were called by 2 or 3 callers.
+* Clean VCF - contains only variants which passed all filters
+* Clean MAF - MAF file corresponding to Clean VCF
 
-Filters applied (details in VCF output)
-* For indels, require length < 100
-* Require normal VAF <= 0.020000, tumor VAF >= 0.050000 for all variants
-* Require read depth in tumor > 14 and normal > 8 for all variants 
-* All variants must be called by 2 or more callers
-* Require Allele Frequency < 0.005000 (as determined by vep)
-* Retain exonic calls
-* Exclude calls which are in dbSnP but not in COSMIC
-* Two or more sequential SNPs on same haplotype merged into MNPs using [DNP_Filter](https://github.com/ding-lab/dnp_filter)
+## Workflow versions
 
-Majority of above processing is implemented in
-[TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core), which was developed
-from [SomaticWrapper](https://github.com/ding-lab/somaticwrapper) and
-[GenomeVIP](https://genomevip.readthedocs.io/) projects.  [DNP_Filter](https://github.com/ding-lab/dnp_filter) is
-implemented as a separate project and CWL tool.
-
-![TinDaisy CWL implementation](docs/tindaisy.cwl.20191116.png)
-
-overview of TinDaisy CWL as visualized with [Rabix Composer](http://docs.rabix.io/rabix-composer-home)
-
-# TODO
-
-* Separate out CromwellRunner discussion below to CromwellRunner
-* Describe Demo direcotry structure and use
-
-
-## Changelog
-
-*TODO* complete this
-
-Note there are two readers of Changelog: users and scientists.  For the latter be clear about
-algorithms used and any changes to data formats or results.  Former will be interested
-in workflow management
-
-* List TinDaisy commits or tags which are associated with a data release
-    *  Indicate any differences which may result in changes to processed data
-
-* 
-
-
-# Getting Started
-
-## Simple example
-
-TODO: show example of running cromwell directly
-
-
-# Installation
-TinDaisy can be obtained from GitHub with,
-```
-git clone https://github.com/ding-lab/tin-daisy
-```
-
-## Unnecessary
-[TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core) code, which performs
-the bulk of processing, can be obtained for inspection with,
-``` 
-git clone https://github.com/ding-lab/TinDaisy-Core
-```
-and (DNP_Filter)[https://github.com/ding-lab/dnp_filter] can be obtained similarly.  Note that for CWL runs the
-TinDaisy-Core code is distributed in a docker image such as `mwyczalkowski/tindaisy-core:20191108`.
-See development notes below for details about modifying such code.
-
-[Cromwell]() server needs to be available.  Currently, this has been developed exclusively on MGI
-Cromwell implementation.
-
-
-
-# Data prep
-
-## Index BAMs
-BAM files and reference need to be indexed.  This is frequently done prior to analysis
-```
-samtools index BAM
-java -jar picard.jar CreateSequenceDictionary R=REF.fa O=REF.dict
-```
-where for instance `REF="all_sequences"`
-
-## dbSnP-COSMIC
-See `doc/README.dbsnp.md` for details about dbSnP creation
-
-dbSnP-COSMIC VCF needs to have chromosome names which match the reference, otherwise it will
-silently not match anything.  Note that dbSnP-COSMIC.GRCh38.d1.vd1.20190416.vcf.gz has chrom names like `chr1`
-
-## chrlist
-
-This is a list of all chromosomes of interest, used for pindel.  Can be created from the reference's .fai file, retaining
-only the names of the chromosomes of interest (typically 1-Y)
-
-## Confirm YAML file
-
-It might be good to quickly check the existence of all files in YAML file with the following,
-```
-grep path $YAML | cut -f 2 -d : | xargs ls -l
-```
-
-
-# Development notes
-
-This needs to be updated.  Demo directory layout and logic are based on [SomaticSV](https://github.com/mwyczalkowski/somatic_sv_workflow)
-and [BICSEQ2](https://github.com/mwyczalkowski/BICSEQ2)
-
-TinDaisy has been tested with `cwltool`, `rabix composer`, and `cromwell` CWL engines.
-
-Explain how to incorporate code into TinDaisy-Core, as well as TinDaisy
-
-# Development details
-
-## Configuration files
-
-YAML files supercede `project_config.sh` files to define variables for runs, since YAML can be used for both
-Cromwell and Rabix executions.
-
-Currently, `--vep_cache_dir` is not supported as a way to share VEP cache with `vep_annotation` and `vcf_2_maf` steps
-because Rabix does not stage directories.  VEP cache must be passed as a `.tar.gz` file and defined with `vep_cache_gz`
-
-
-## StrelkaDemo details
-
-`StrelkaDemo` data consists of two small (50Kb) tumor and normal BAM files.  These are [distributed with
-Strelka](https://github.com/Illumina/strelka/tree/master/src/demo/data) (hence the name), as well as
-in the `./StrelkaDemo.dat` directory.  These are used for quickly testing workflow steps, and are described
-in more detail in [docs/README.strelka_demo.md](docs/README.strelka_demo.md)
+The specific paramater values and database versions used are defined in processing
+description files with a specific pipeline version.
+* [Processing description v2.5](docs/processing_description.v2.5.md)
 
 ## VAF Rescue
 
-VAF Rescue runs Somatic VAF Filter on an input VCF file twice and 
-generates two VCF files which differ in the input parameters:
-* `VCF_A` - `min_vaf_normal` = 0.0  
-* `VCF_B` - `min_vaf_normal` = 0.05 
-In all cases, `max_vaf_normal` = 0.02
+VAF Rescue implements a position-aware VAF filter which applies different
+parameters (`min_vaf_tumor=0`) based on location as defined in a
+BED file.  Variants with tumor VAF > 0 are retained in regions
+given by a Rescue BED file.  This file may be specific to cancer types.
 
-The next step, HotspotFilter, takes as input `VCF_A` and `VCF_B`, as well as a BED file defining regions where
-rescue will occur. It outputs a VCF file which consists of:
-* All regions of `VCF_A` which lie within regions defined by BED file
-* All regions of `VCF_B` which lie outside regions defined by BED file
+![TinDaisy VAF Rescue schematic](docs/TinDaisy2.VAFRescue.v1.3.png)
+
+## Running TinDaisy
+
+TinDaisy defines a CWL workflow and algorithms associated with it.  Running it
+requires a CWL workflow engine such as cwltool, rabix executor, or Cromwell.
+
+Examples of how to run workflows using Rabix and Cromwell are provided in the
+`./testing` diretory.  Production runs are performed using 
+[CromwellRunner](https://github.com/ding-lab/CromwellRunner.git),
+a simple workflow manager which allows for command-line driven management of jobs in
+a Cromwell workflow engine environment, developed primarily for the Wash U RIS and MGI systems.
+
+## Implementation
+
+TinDaisy relies on a number of modules to implement the various filtering and
+processing steps.  In most cases, each module provides the underlying
+algorithms, tools to generate the docker image, and CWL definitions needed to
+implement it.  The [TinDaisy](/Users/mwyczalk/Projects/TinDaisy/TinDaisy)
+module also defines CWL tools whose algorithms are implemented in the
+[TinDaisy-Core](https://github.com/ding-lab/TinDaisy-Core) project.
+
+Modules used by TinDaisy2 are,
+* [HotspotFilter](https://github.com/ding-lab/HotspotFilter.git)
+* [MergeFilterVCF](https://github.com/ding-lab/MergeFilterVCF.git)
+* [mnp_filter](https://github.com/ding-lab/mnp_filter)
+* [mutect-tool](https://github.com/mwyczalkowski/mutect-tool)
+* [SnpIndelProximityFilter](https://github.com/ding-lab/SnpIndelProximityFilter)
+* [varscan_vcf_remap](https://github.com/ding-lab/varscan_vcf_remap)
+* [vcf2maf-CWL](https://github.com/ding-lab/vcf2maf-CWL.git)
+* [VEP_annotate](https://github.com/ding-lab/VEP_annotate.git)
+* [VEP_Filter](https://github.com/ding-lab/VEP_Filter.git)
+* [VLD_FilterVCF](https://github.com/ding-lab/VLD_FilterVCF.git)
 
