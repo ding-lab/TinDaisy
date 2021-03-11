@@ -43,7 +43,7 @@ inputs:
     type: File
   - id: Varscan_SNV_VCF
     type: File
-  - id: Varscan_indel_VCF
+  - id: Varscan_Indel_VCF
     type: File
   - id: Pindel_VCF
     type: File
@@ -399,7 +399,7 @@ steps:
   - id: rescuevaffilter_varscan_indel
     in:
       - id: VCF
-        source: Varscan_indel_VCF
+        source: Varscan_Indel_VCF
       - id: BED
         source: VAFRescueBED
       - id: caller
