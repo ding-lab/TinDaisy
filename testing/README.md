@@ -35,20 +35,3 @@ Current projects:
     * testing of TinDaisy2 against past project
 * TinDaisy2/RescueVAF
     * testing of rescue VAF filter on C3L-00908 dataset
-
-Archived projects:
-* StrelkaDemo - test run of complete workflow with small test dataset (StrelkaDemo)
-    * this will not run with Mutect, so is here for historical reasons 
-    * Archived on MGI:/gscuser/mwyczalk/projects/TinDaisy/attic/StrelkaDemo
-* test.cwltool - Using cwltool to test validity of CWL code before using on Cromwell
-    * Trivial wrapper around "cwltool --validate $CWL"
-    * Archived on MGI:/gscuser/mwyczalk/projects/TinDaisy/attic/test.cwltool
-* katmai.C3L - development and examples of CPTAC3 real data pipelines. Called individually using Rabix
-    * Archived on MGI:/gscuser/mwyczalk/projects/TinDaisy/attic/katmai.C3L.tar.gz
-* task_call - running multiple samples at once with Rabix and Cromwell
-    * Old development of run manager, currently deleted
-        * Archived datasets on MGI:/gscuser/mwyczalk/projects/TinDaisy/attic/old.task_call.dev.tar.gz
-    * This formed the basis of utilities including cq, runtidy, datatidy, rungo, runplan
-        * Driver scripts are specific to Cromwell on MGI, though could be extended to Rabix
-    * [CromwellRunner](https://github.com/ding-lab/CromwellRunner) has detailed documenation about running TinDaisy
-      using cq and related utilities

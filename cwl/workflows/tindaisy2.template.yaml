@@ -1,0 +1,48 @@
+rescue_clinvar: false  
+rescue_cosmic: false  
+vep_cache_version: a_string  
+vep_cache_gz:  
+    class: File
+    path: a/file/path
+clinvar_annotation:  
+    class: File
+    path: a/file/path
+classification_config:  
+    class: File
+    path: a/file/path
+af_config:  
+    class: File
+    path: a/file/path
+call_regions:  
+    class: File
+    path: a/file/path
+canonical_BED:  
+    class: File
+    path: a/file/path
+normal_barcode: a_string  
+tumor_barcode: a_string  
+chrlist:  
+    class: File
+    path: a/file/path
+strelka_config:  
+    class: File
+    path: a/file/path
+centromere_bed:  
+    class: File
+    path: a/file/path
+assembly: a_string  
+varscan_config:  
+    class: File
+    path: a/file/path
+pindel_config:  
+    class: File
+    path: a/file/path
+reference_fasta:  
+    class: File
+    path: a/file/path
+normal_bam:  
+    class: File
+    path: a/file/path
+tumor_bam:  
+    class: File
+    path: a/file/path

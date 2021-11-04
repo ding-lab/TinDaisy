@@ -1,7 +1,7 @@
 # <img src="docs/TinDaisy.v1.2.png" width="64"/> TinDaisy2
 
-[TinDaisy2](https://github.com/ding-lab/tin-daisy) is a CWL pipeline for calling
-somatic variants fronm tumor and normal exome data.  It is illustrated below
+[TinDaisy2](https://github.com/ding-lab/TinDaisy) is a CWL pipeline for calling
+somatic variants from tumor and normal exome data.  It is illustrated below
 
 ![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.3.png)
 
@@ -45,23 +45,45 @@ description files with a specific pipeline version.
 
 ## VAF Rescue
 
-VAF Rescue implements a position-aware VAF filter which applies different
+VAF Rescue is an optional variant of the TinDaisy2 workflow which implements a position-aware VAF filter which applies different
 parameters (`min_vaf_tumor=0`) based on location as defined in a
 BED file.  Variants with tumor VAF > 0 are retained in regions
 given by a Rescue BED file.  This file may be specific to cancer types.
 
 ![TinDaisy VAF Rescue schematic](docs/TinDaisy2.VAFRescue.v1.3.png)
 
-## Running TinDaisy
+# Running TinDaisy
 
 TinDaisy defines a CWL workflow and algorithms associated with it.  Running it
-requires a CWL workflow engine such as cwltool, rabix executor, or Cromwell.
+requires a CWL workflow engine such as [`cwltool`](https://github.com/common-workflow-language/cwltool), 
+[`Rabix Executor`](http://docs.rabix.io/rabix-executor-home), or [`Cromwell`](https://cromwell.readthedocs.io/en/stable/).
 
-Examples of how to run workflows using Rabix and Cromwell are provided in the
+## Installation
+
+Install TinDaisy with,
+```
+git clone --recurse-submodules https://github.com/ding-lab/TinDaisy.git
+```
+
+Examples of how to run workflows using Cromwell are provided in the
 `./testing` diretory.  Production runs are performed using 
 [CromwellRunner](https://github.com/ding-lab/CromwellRunner.git),
 a simple workflow manager which allows for command-line driven management of jobs in
 a Cromwell workflow engine environment, developed primarily for the Wash U RIS and MGI systems.
+
+## Configuration
+
+Configuration of TinDaisy2 is through a YAML configuration file.  A template of such
+a file is in `cwl/workflows/tindaisy2.template.yaml`, and example configuration
+files for the MGI and compute1 systems can be found in `testing/cromwell-simple/yaml`.
+
+**TODO** provide additional details about all configuration parameters.  These can also be obtained
+from the submodules described below.
+
+## Example workflows
+
+Examples for running TinDaisy2 in the Wash U MGI and compute1 environments can be found in
+the `testing/cromwell-simple` directory.
 
 ## Implementation
 
