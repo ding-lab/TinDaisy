@@ -7,6 +7,5 @@ Homo_sapiens_assembly19.COST16011_region.fa
 tmp
 logs
 logs.*
-dat
 test.cromwell-old
 cromwell-executions

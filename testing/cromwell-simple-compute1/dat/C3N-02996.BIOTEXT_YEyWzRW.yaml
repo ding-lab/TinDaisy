@@ -1,0 +1,71 @@
+# TinDaisy2 template
+# * complete workflow tindaisy2.cwl
+# * production optimizations
+
+# YAML template as generated with cwltool --make-template
+
+clinvar_annotation:  # type "File" (optional)
+    class: File
+    path: /storage1/fs1/m.wyczalkowski/Active/Primary/Resources/Databases/ClinVar/GRCh38/20200706/clinvar_20200706.vcf.gz
+rescue_clinvar: true
+rescue_cosmic: true
+call_regions:  # type "File" (optional)
+    class: File
+    path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/chrlist/GRCh38.callRegions.bed.gz
+canonical_BED:  # type "File"
+    class: File
+    path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/chrlist/GRCh38.callRegions.bed
+
+normal_bam:
+  class: File
+  path: /storage1/fs1/m.wyczalkowski/Active/Primary/CPTAC3.share/CPTAC3-GDC/GDC_import/data/8c1b0bfa-edfc-4d5f-a009-42e5c796dd3f/73505858-157d-4d4f-8e84-359a6344de48_wxs_gdc_realn.bam
+tumor_bam:
+  class: File
+  path: /storage1/fs1/m.wyczalkowski/Active/Primary/CPTAC3.share/CPTAC3-GDC/GDC_import/data/9f1fd6bd-a647-4e66-ab63-5a393e98cd67/b4ece7ff-2798-4fcd-a761-dd7baa91955e_wxs_gdc_realn.bam
+reference_fasta:
+  class: File
+  path: /storage1/fs1/dinglab/Active/Resources/References/GRCh38.d1.vd1/GRCh38.d1.vd1.fa
+
+# barcodes replace "TUMOR" and "NORMAL" as sample names in output MAF
+normal_barcode: CPT0187870002
+tumor_barcode: CPT0187820032
+
+# Caller config.  Note mutect does not have a caller config file
+pindel_config:
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/caller_config/pindel.WES.ini
+strelka_config:
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/caller_config/strelka.WES.ini
+varscan_config:
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/caller_config/varscan.WES.ini
+
+# Other filter config
+classification_config:
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/filter_config/classification_filter_config.ini
+af_config:
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/filter_config/af_filter_config.ini
+
+# Data files
+centromere_bed:
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/centromere/ucsc-centromere.GRCh38.bed
+
+# VEP Cache is used for VEP annotation and vcf_2_maf.
+# If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
+# For performance reasons, defining vep_cache_gz is suggested for production systems
+
+vep_cache_gz:
+  class: File
+  path: /storage1/fs1/m.wyczalkowski/Active/Primary/Resources/Databases/VEP/v99/vep-cache.99_GRCh38.tar.gz
+
+vep_cache_version: 99
+assembly: GRCh38
+
+chrlist: # Defining this turns on pindel parallel
+  class: File
+  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/chrlist/GRCh38.d1.vd1.chrlist.txt
+
