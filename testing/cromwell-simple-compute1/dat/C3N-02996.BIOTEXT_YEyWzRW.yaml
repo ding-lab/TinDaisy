@@ -11,10 +11,10 @@ rescue_clinvar: true
 rescue_cosmic: true
 call_regions:  # type "File" (optional)
     class: File
-    path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/chrlist/GRCh38.callRegions.bed.gz
+    path: ../../../params/chrlist/GRCh38.callRegions.bed.gz
 canonical_BED:  # type "File"
     class: File
-    path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/chrlist/GRCh38.callRegions.bed
+    path: ../../../params/chrlist/GRCh38.callRegions.bed
 
 normal_bam:
   class: File
@@ -33,26 +33,26 @@ tumor_barcode: CPT0187820032
 # Caller config.  Note mutect does not have a caller config file
 pindel_config:
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/caller_config/pindel.WES.ini
+  path: ../../../params/caller_config/pindel.WES.ini
 strelka_config:
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/caller_config/strelka.WES.ini
+  path: ../../../params/caller_config/strelka.WES.ini
 varscan_config:
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/caller_config/varscan.WES.ini
+  path: ../../../params/caller_config/varscan.WES.ini
 
 # Other filter config
 classification_config:
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/filter_config/classification_filter_config.ini
+  path: ../../../params/filter_config/classification_filter_config.ini
 af_config:
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/filter_config/af_filter_config.ini
+  path: ../../../params/filter_config/af_filter_config.ini
 
 # Data files
 centromere_bed:
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/centromere/ucsc-centromere.GRCh38.bed
+  path: ../../../params/centromere/ucsc-centromere.GRCh38.bed
 
 # VEP Cache is used for VEP annotation and vcf_2_maf.
 # If not defined, online lookups will be used by VEP annotation. These are slower and do not include allele frequency info (MAX_AF) needed by AF filter.
@@ -67,5 +67,5 @@ assembly: GRCh38
 
 chrlist: # Defining this turns on pindel parallel
   class: File
-  path: /home/m.wyczalkowski/Projects/CromwellRunner/TinDaisy/22.PDA_BIOTEXT/Workflow/TinDaisy/params/chrlist/GRCh38.d1.vd1.chrlist.txt
+  path: ../../../params/chrlist/GRCh38.d1.vd1.chrlist.txt
 
