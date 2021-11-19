@@ -60,11 +60,11 @@ steps:
   - id: run_pindel
     in:
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
       - id: normal_bam
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference_fasta
-        source: reference_fasta
+        source: stage_reference/output
       - id: centromere_bed
         source: centromere_bed
       - id: pindel_config
@@ -80,11 +80,11 @@ steps:
   - id: run_varscan
     in:
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
       - id: normal_bam
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference_fasta
-        source: reference_fasta
+        source: stage_reference/output
       - id: varscan_config
         source: varscan_config
     out:
@@ -97,7 +97,7 @@ steps:
       - id: pindel_raw
         source: run_pindel/pindel_raw
       - id: reference_fasta
-        source: reference_fasta
+        source: stage_reference/output
       - id: pindel_config
         source: pindel_config
     out:
@@ -129,11 +129,11 @@ steps:
   - id: mutect
     in:
       - id: normal
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference
-        source: reference_fasta
+        source: stage_reference/output
       - id: tumor
-        source: tumor_bam
+        source: stage_tumor_bam/output
     out:
       - id: call_stats
       - id: coverage
@@ -143,11 +143,11 @@ steps:
   - id: run_strelka2
     in:
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
       - id: normal_bam
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference_fasta
-        source: reference_fasta
+        source: stage_reference/output
       - id: strelka_config
         source: strelka_config
       - id: call_regions
@@ -164,7 +164,7 @@ steps:
       - id: input
         source: merge_filter_td/merged_vcf
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
     out:
       - id: filtered_VCF
     run: ../../submodules/mnp_filter/cwl/mnp_filter.cwl
@@ -172,7 +172,7 @@ steps:
   - id: vcf2maf
     in:
       - id: ref-fasta
-        source: reference_fasta
+        source: stage_reference/output
       - id: assembly
         source: assembly
       - id: input-vcf
@@ -263,7 +263,7 @@ steps:
   - id: merge_vcf_td
     in:
       - id: reference
-        source: reference_fasta
+        source: stage_reference/output
       - id: strelka_snv_vcf
         source: depth_filter_strelka_snv/output
       - id: strelka_indel_vcf
@@ -533,7 +533,7 @@ steps:
       - id: input_vcf
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
-        source: reference_fasta
+        source: stage_reference/output
       - id: assembly
         source: assembly
       - id: vep_cache_version
@@ -546,4 +546,28 @@ steps:
       - id: output_dat
     run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
     label: vep_annotate TinDaisy
+  - id: stage_normal_bam
+    in:
+      - id: BAM
+        source: normal_bam
+    out:
+      - id: output
+    run: ../tools/stage_bam.cwl
+    label: stage_normal_bam
+  - id: stage_tumor_bam
+    in:
+      - id: BAM
+        source: tumor_bam
+    out:
+      - id: output
+    run: ../tools/stage_bam.cwl
+    label: stage_tumor_bam
+  - id: stage_reference
+    in:
+      - id: FA
+        source: reference_fasta
+    out:
+      - id: output
+    run: ../tools/stage_reference.cwl
+    label: stage_reference
 requirements: []
