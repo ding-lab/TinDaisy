@@ -20,6 +20,9 @@ outputs:
       glob: staged_reference.fa
     secondaryFiles:
       - .fai
+doc: >-
+  Not working.  Also need to stage .dict secondary files, which isn't
+  implemented here
 label: stage_reference
 arguments:
   - position: 0
@@ -32,7 +35,7 @@ arguments:
     prefix: '-o'
     valueFrom: staged_reference.fa
 requirements:
-  - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/bicseq2:20210625'
   - class: ResourceRequirement
     ramMin: 8000
+  - class: DockerRequirement
+    dockerPull: 'mwyczalkowski/bicseq2:20210625'

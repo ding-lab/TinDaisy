@@ -64,7 +64,7 @@ steps:
       - id: normal_bam
         source: stage_normal_bam/output
       - id: reference_fasta
-        source: stage_reference/output
+        source: reference_fasta
       - id: centromere_bed
         source: centromere_bed
       - id: pindel_config
@@ -84,7 +84,7 @@ steps:
       - id: normal_bam
         source: stage_normal_bam/output
       - id: reference_fasta
-        source: stage_reference/output
+        source: reference_fasta
       - id: varscan_config
         source: varscan_config
     out:
@@ -97,7 +97,7 @@ steps:
       - id: pindel_raw
         source: run_pindel/pindel_raw
       - id: reference_fasta
-        source: stage_reference/output
+        source: reference_fasta
       - id: pindel_config
         source: pindel_config
     out:
@@ -131,7 +131,7 @@ steps:
       - id: normal
         source: stage_normal_bam/output
       - id: reference
-        source: stage_reference/output
+        source: reference_fasta
       - id: tumor
         source: stage_tumor_bam/output
     out:
@@ -147,7 +147,7 @@ steps:
       - id: normal_bam
         source: stage_normal_bam/output
       - id: reference_fasta
-        source: stage_reference/output
+        source: reference_fasta
       - id: strelka_config
         source: strelka_config
       - id: call_regions
@@ -172,7 +172,7 @@ steps:
   - id: vcf2maf
     in:
       - id: ref-fasta
-        source: stage_reference/output
+        source: reference_fasta
       - id: assembly
         source: assembly
       - id: input-vcf
@@ -263,7 +263,7 @@ steps:
   - id: merge_vcf_td
     in:
       - id: reference
-        source: stage_reference/output
+        source: reference_fasta
       - id: strelka_snv_vcf
         source: depth_filter_strelka_snv/output
       - id: strelka_indel_vcf
@@ -533,7 +533,7 @@ steps:
       - id: input_vcf
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
-        source: stage_reference/output
+        source: reference_fasta
       - id: assembly
         source: assembly
       - id: vep_cache_version
@@ -562,12 +562,4 @@ steps:
       - id: output
     run: ../tools/stage_bam.cwl
     label: stage_tumor_bam
-  - id: stage_reference
-    in:
-      - id: FA
-        source: reference_fasta
-    out:
-      - id: output
-    run: ../tools/stage_reference.cwl
-    label: stage_reference
 requirements: []
