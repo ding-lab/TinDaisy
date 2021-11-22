@@ -10,6 +10,8 @@ $CWL_ROOT_H \
 /scratch1/fs1/dinglab
 "
 
-CMD="bash ../../submodules/WUDocker/start_docker.sh -A -I $IMAGE -M compute1 $VOLUME_MAPPING"
+ARG="-q dinglab-interactive"
+
+CMD="bash ../../submodules/WUDocker/start_docker.sh $ARG -A -I $IMAGE -M compute1 $VOLUME_MAPPING"
 echo Running: $CMD
 eval $CMD
