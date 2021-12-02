@@ -12,6 +12,7 @@ typically be different for each user.  As an example, for user `m.wyczalkowski`,
 
 Specifically,
 * Create `$WORKFLOW_ROOT` if it does not exist
+    * Also create `$WORKFLOW_ROOT/logs`
 * `cp dat/cromwell-config-db.compute1.template.dat dat/cromwell-config-db.compute1.dat`
 * Edit `dat/cromwell-config-db.compute1.dat` to replace all instances of the string WORKFLOW_ROOT with the 
   appropriate value
@@ -20,7 +21,6 @@ Specifically,
 
 TinDaisy run on WXS data typically takes several hours.  Because of this, recommend to run it within a tmux session,
 but this is not necessary for initial testing (just making sure it runs)
-
 
 * `tmux new -s TinDaisy`
 * `bash 0_start_docker-compute1_cromwell.sh`
