@@ -1,8 +1,0 @@
-stage branch adds steps:
-* stage_tumor_bam
-* stage_normal_bam
-* stage_reference
-
-These make single copies of these large input files and serve downstream steps;
-as such, only one rather than multiple copies of these files are created by Cromwell.
-This step is designed to reduce disk space used
