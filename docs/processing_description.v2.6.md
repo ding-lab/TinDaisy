@@ -1,9 +1,11 @@
-# TinDaisy2 workflow v2.5
+# TinDaisy2 workflow v2.6
 
-Description of parameters in TinDaisy2 v2.5 pipeline.  [See here for more 
+Description of parameters in TinDaisy2 v2.6 pipeline.  [See here for more 
 general information about TinDaisy2.](https://github.com/ding-lab/TinDaisy)
 
-v2.5 pipeline uses `cwl/workflows/tindaisy2.cwl` workflow
+## Versions
+* v2.6 Adding staging of BAMs.  Does not affect results
+* v2.5 pipeline uses `cwl/workflows/tindaisy2.cwl` workflow
 
 ## General filter parameters
 

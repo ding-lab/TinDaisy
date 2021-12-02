@@ -3,7 +3,7 @@
 [TinDaisy2](https://github.com/ding-lab/TinDaisy) is a CWL pipeline for calling
 somatic variants from tumor and normal exome data.  It is illustrated below
 
-![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.3.png)
+![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.4.png)
 
 ## Overview
 
@@ -41,7 +41,7 @@ Three output files are generated:
 
 The specific paramater values and database versions used are defined in processing
 description files with a specific pipeline version.
-* [Processing description v2.5](docs/processing_description.v2.5.md)
+* [Processing description v2.6](docs/processing_description.v2.6.md)
 
 ## VAF Rescue
 
