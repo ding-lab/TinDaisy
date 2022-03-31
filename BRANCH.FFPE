@@ -1,0 +1,4 @@
+FFPE branch introduces FFPE filter functionality from https://github.com/mwyczalkowski/FFPE_Filter.git
+Also, trial testing for WGS filtering
+* confirm consequence filter bypass
+* confirm ffpe filter bypass

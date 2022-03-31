@@ -31,3 +31,6 @@
 [submodule "submodules/WUDocker"]
 	path = submodules/WUDocker
 	url = https://github.com/ding-lab/WUDocker
+[submodule "submodules/FFPE_Filter"]
+	path = submodules/FFPE_Filter
+	url = https://github.com/mwyczalkowski/FFPE_Filter.git
