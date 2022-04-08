@@ -4,6 +4,7 @@
 somatic variants from tumor and normal exome data.  It is illustrated below
 
 ![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.4.png)
+TODO: Update with FFPE filter, illustrate staging of tumor and normal BAMs
 
 ## Overview
 
