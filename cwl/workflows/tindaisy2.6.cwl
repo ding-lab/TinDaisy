@@ -1,7 +1,7 @@
 class: Workflow
 cwlVersion: v1.0
-id: tindaisy2
-label: TinDaisy2
+id: tindaisy2.6_ffpe
+label: TinDaisy2.6
 inputs:
   - id: tumor_bam
     type: File
@@ -43,6 +43,9 @@ inputs:
     type: boolean?
   - id: rescue_clinvar
     type: boolean?
+  - id: bypass_classification
+    type: boolean?
+    doc: Bypass classification filter
 outputs:
   - id: output_maf_clean
     outputSource:
@@ -242,6 +245,9 @@ steps:
         source: af_filter/output
       - id: config
         source: classification_config
+      - id: bypass
+        default: false
+        source: bypass_classification
     out:
       - id: output
     run: ../../submodules/VEP_Filter/cwl/classification_filter.cwl

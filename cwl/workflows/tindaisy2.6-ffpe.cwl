@@ -1,30 +1,40 @@
 class: Workflow
 cwlVersion: v1.0
-id: tindaisy2
-doc: >-
-  TinDaisy2 workflow with VAF Rescue, where min_vaf_tumor=0 in a region defined
-  by a rescue BED file. Restart at VAF Filter step
-label: TinDaisy2 VAF Rescue Restart
+id: tindaisy2.6_ffpe
+label: TinDaisy2.6-FFPE
 inputs:
   - id: tumor_bam
     type: File
+  - id: normal_bam
+    type: File
   - id: reference_fasta
+    type: File
+  - id: pindel_config
+    type: File
+  - id: varscan_config
     type: File
   - id: assembly
     type: string?
+  - id: centromere_bed
+    type: File?
+  - id: strelka_config
+    type: File
+  - id: chrlist
+    type: File?
   - id: tumor_barcode
     type: string?
   - id: normal_barcode
     type: string?
   - id: canonical_BED
     type: File
+  - id: call_regions
+    type: File?
   - id: af_config
     type: File
   - id: classification_config
     type: File
   - id: clinvar_annotation
     type: File?
-    doc: ClinVar VEP custom annotation file
   - id: vep_cache_gz
     type: File?
   - id: vep_cache_version
@@ -33,20 +43,12 @@ inputs:
     type: boolean?
   - id: rescue_clinvar
     type: boolean?
-  - id: VAFRescueBED
-    type: File
-  - id: Strelka_SNV_VCF
-    type: File
-  - id: Strelka_Indel_VCF
-    type: File
-  - id: Mutect_VCF
-    type: File
-  - id: Varscan_SNV_VCF
-    type: File
-  - id: Varscan_Indel_VCF
-    type: File
-  - id: Pindel_VCF
-    type: File
+  - id: bypass_classification
+    type: boolean?
+    doc: Bypass classification filter
+  - id: bypass_ffpe
+    type: boolean?
+    doc: Pass VCF through FFPE filter but do not exclude any calls
 outputs:
   - id: output_maf_clean
     outputSource:
@@ -61,12 +63,114 @@ outputs:
       snp_indel_proximity_filter/output
     type: File
 steps:
+  - id: run_pindel
+    in:
+      - id: tumor_bam
+        source: stage_tumor_bam/output
+      - id: normal_bam
+        source: stage_normal_bam/output
+      - id: reference_fasta
+        source: reference_fasta
+      - id: centromere_bed
+        source: centromere_bed
+      - id: pindel_config
+        source: pindel_config
+      - id: chrlist
+        source: chrlist
+      - id: num_parallel_pindel
+        default: 5
+    out:
+      - id: pindel_raw
+    run: ../tools/run_pindel.cwl
+    label: run_pindel
+  - id: run_varscan
+    in:
+      - id: tumor_bam
+        source: stage_tumor_bam/output
+      - id: normal_bam
+        source: stage_normal_bam/output
+      - id: reference_fasta
+        source: reference_fasta
+      - id: varscan_config
+        source: varscan_config
+    out:
+      - id: varscan_indel_raw
+      - id: varscan_snv_raw
+    run: ../tools/run_varscan.cwl
+    label: run_varscan
+  - id: parse_pindel
+    in:
+      - id: pindel_raw
+        source: run_pindel/pindel_raw
+      - id: reference_fasta
+        source: reference_fasta
+      - id: pindel_config
+        source: pindel_config
+    out:
+      - id: pindel_vcf
+    run: ../tools/parse_pindel.cwl
+    label: parse_pindel
+  - id: parse_varscan_snv
+    in:
+      - id: varscan_indel_raw
+        source: run_varscan/varscan_indel_raw
+      - id: varscan_snv_raw
+        source: run_varscan/varscan_snv_raw
+      - id: varscan_config
+        source: varscan_config
+    out:
+      - id: varscan_snv
+    run: ../tools/parse_varscan_snv.cwl
+    label: parse_varscan_snv
+  - id: parse_varscan_indel
+    in:
+      - id: varscan_indel_raw
+        source: run_varscan/varscan_indel_raw
+      - id: varscan_config
+        source: varscan_config
+    out:
+      - id: varscan_indel
+    run: ../tools/parse_varscan_indel.cwl
+    label: parse_varscan_indel
+  - id: mutect
+    in:
+      - id: normal
+        source: stage_normal_bam/output
+      - id: reference
+        source: reference_fasta
+      - id: tumor
+        source: stage_tumor_bam/output
+    out:
+      - id: call_stats
+      - id: coverage
+      - id: mutations
+    run: ../../submodules/mutect-tool/cwl/mutect.cwl
+    label: MuTect
+  - id: run_strelka2
+    in:
+      - id: tumor_bam
+        source: stage_tumor_bam/output
+      - id: normal_bam
+        source: stage_normal_bam/output
+      - id: reference_fasta
+        source: reference_fasta
+      - id: strelka_config
+        source: strelka_config
+      - id: call_regions
+        source: call_regions
+      - id: num_parallel_strelka2
+        default: 4
+    out:
+      - id: strelka2_snv_vcf
+      - id: strelka2_indel_vcf
+    run: ../tools/run_strelka2.cwl
+    label: run_strelka2
   - id: mnp_filter
     in:
       - id: input
         source: merge_filter_td/merged_vcf
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
     out:
       - id: filtered_VCF
     run: ../../submodules/mnp_filter/cwl/mnp_filter.cwl
@@ -87,6 +191,22 @@ steps:
       - id: output
     run: ../../submodules/vcf2maf-CWL/cwl/vcf2maf.cwl
     label: vcf2maf
+  - id: varscan_indel_vcf_remap
+    in:
+      - id: input
+        source: parse_varscan_indel/varscan_indel
+    out:
+      - id: remapped_VCF
+    run: ../../submodules/varscan_vcf_remap/cwl/varscan_vcf_remap.cwl
+    label: varscan_indel_vcf_remap
+  - id: varscan_snv_vcf_remap
+    in:
+      - id: input
+        source: parse_varscan_snv/varscan_snv
+    out:
+      - id: remapped_VCF
+    run: ../../submodules/varscan_vcf_remap/cwl/varscan_vcf_remap.cwl
+    label: varscan_snv_vcf_remap
   - id: canonical_filter
     in:
       - id: VCF_A
@@ -104,7 +224,7 @@ steps:
   - id: snp_indel_proximity_filter
     in:
       - id: input
-        source: dbsnp_filter/output
+        source: ffpe_filter/output
       - id: distance
         default: 5
     out:
@@ -128,6 +248,9 @@ steps:
         source: af_filter/output
       - id: config
         source: classification_config
+      - id: bypass
+        default: false
+        source: bypass_classification
     out:
       - id: output
     run: ../../submodules/VEP_Filter/cwl/classification_filter.cwl
@@ -174,10 +297,24 @@ steps:
       - id: merged_vcf
     run: ../../submodules/MergeFilterVCF/cwl/FilterVCF_TinDaisy.cwl
     label: Merge_Filter_TD
+  - id: somatic_vaf_filter_varscan_snv
+    in:
+      - id: VCF
+        source: varscan_snv_vcf_remap/remapped_VCF
+      - id: min_vaf_tumor
+        default: 0.05
+      - id: max_vaf_normal
+        default: 0.02
+      - id: caller
+        default: varscan
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/somatic_vaf_filter.cwl
+    label: Somatic VAF varscan snv
   - id: length_filter_varscan_snv
     in:
       - id: VCF
-        source: rescuevaffilter_varscan_snv/output
+        source: somatic_vaf_filter_varscan_snv/output
       - id: min_length
         default: 0
       - id: max_length
@@ -200,10 +337,24 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/somatic_depth_filter.cwl
     label: Depth Filter varscan snv
+  - id: somatic_vaf_filter_varscan_indel
+    in:
+      - id: VCF
+        source: varscan_indel_vcf_remap/remapped_VCF
+      - id: min_vaf_tumor
+        default: 0.05
+      - id: max_vaf_normal
+        default: 0.02
+      - id: caller
+        default: varscan
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/somatic_vaf_filter.cwl
+    label: Somatic VAF varscan indel
   - id: length_filter_varscan_indel
     in:
       - id: VCF
-        source: rescuevaffilter_varscan_indel/output
+        source: somatic_vaf_filter_varscan_indel/output
       - id: min_length
         default: 0
       - id: max_length
@@ -226,10 +377,24 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/somatic_depth_filter.cwl
     label: Depth Filter varscan indel
+  - id: somatic_vaf_filter_strelka_snv
+    in:
+      - id: VCF
+        source: run_strelka2/strelka2_snv_vcf
+      - id: min_vaf_tumor
+        default: 0.05
+      - id: max_vaf_normal
+        default: 0.02
+      - id: caller
+        default: strelka
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/somatic_vaf_filter.cwl
+    label: Somatic VAF strelka snv
   - id: length_filter_strelka_snv
     in:
       - id: VCF
-        source: rescuevaffilter_strelka_snv/output
+        source: somatic_vaf_filter_strelka_snv/output
       - id: min_length
         default: 0
       - id: max_length
@@ -252,10 +417,24 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/somatic_depth_filter.cwl
     label: Depth Filter strelka snv
+  - id: somatic_vaf_filter_strelka_indel
+    in:
+      - id: VCF
+        source: run_strelka2/strelka2_indel_vcf
+      - id: min_vaf_tumor
+        default: 0.05
+      - id: max_vaf_normal
+        default: 0.02
+      - id: caller
+        default: strelka
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/somatic_vaf_filter.cwl
+    label: Somatic VAF strelka indel
   - id: length_filter_strelka_indel
     in:
       - id: VCF
-        source: rescuevaffilter_strelka_indel/output
+        source: somatic_vaf_filter_strelka_indel/output
       - id: min_length
         default: 0
       - id: max_length
@@ -278,10 +457,24 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/somatic_depth_filter.cwl
     label: Depth strelka indel
+  - id: somatic_vaf_filter_pindel
+    in:
+      - id: VCF
+        source: parse_pindel/pindel_vcf
+      - id: min_vaf_tumor
+        default: 0.05
+      - id: max_vaf_normal
+        default: 0.02
+      - id: caller
+        default: pindel
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/somatic_vaf_filter.cwl
+    label: Somatic VAF pindel
   - id: length_filter_pindel
     in:
       - id: VCF
-        source: rescuevaffilter_pindel/output
+        source: somatic_vaf_filter_pindel/output
       - id: min_length
         default: 0
       - id: max_length
@@ -304,10 +497,24 @@ steps:
       - id: output
     run: ../../submodules/VLD_FilterVCF/cwl/somatic_depth_filter.cwl
     label: Depth Pindel
+  - id: somatic_vaf_filter_mutect
+    in:
+      - id: VCF
+        source: mutect/mutations
+      - id: min_vaf_tumor
+        default: 0.05
+      - id: max_vaf_normal
+        default: 0.02
+      - id: caller
+        default: mutect
+    out:
+      - id: output
+    run: ../../submodules/VLD_FilterVCF/cwl/somatic_vaf_filter.cwl
+    label: Somatic VAF Mutect
   - id: length_filter_mutect
     in:
       - id: VCF
-        source: rescuevaffilter_mutect/output
+        source: somatic_vaf_filter_mutect/output
       - id: min_length
         default: 0
       - id: max_length
@@ -348,77 +555,34 @@ steps:
       - id: output_dat
     run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
     label: vep_annotate TinDaisy
-  - id: rescuevaffilter_strelka_snv
+  - id: stage_normal_bam
     in:
-      - id: VCF
-        source: Strelka_SNV_VCF
-      - id: BED
-        source: VAFRescueBED
-      - id: caller
-        default: strelka
+      - id: BAM
+        source: normal_bam
     out:
       - id: output
-    run: ./rescuevaffilter.cwl
-    label: Rescue VAF Filter - Strelka SNV
-  - id: rescuevaffilter_strelka_indel
+    run: ../tools/stage_bam.cwl
+    label: stage_normal_bam
+  - id: stage_tumor_bam
     in:
-      - id: VCF
-        source: Strelka_Indel_VCF
-      - id: BED
-        source: VAFRescueBED
-      - id: caller
-        default: strelka
+      - id: BAM
+        source: tumor_bam
     out:
       - id: output
-    run: ./rescuevaffilter.cwl
-    label: Rescue VAF Filter - Strelka Indel
-  - id: rescuevaffilter_mutect
+    run: ../tools/stage_bam.cwl
+    label: stage_tumor_bam
+  - id: ffpe_filter
     in:
       - id: VCF
-        source: Mutect_VCF
-      - id: BED
-        source: VAFRescueBED
-      - id: caller
-        default: mutect
+        source: dbsnp_filter/output
+      - id: tumor_BAM
+        source: stage_tumor_bam/output
+      - id: bypass
+        default: false
+        source: bypass_ffpe
     out:
       - id: output
-    run: ./rescuevaffilter.cwl
-    label: Rescue VAF Filter - Mutect
-  - id: rescuevaffilter_varscan_snv
-    in:
-      - id: VCF
-        source: Varscan_SNV_VCF
-      - id: BED
-        source: VAFRescueBED
-      - id: caller
-        default: varscan
-    out:
-      - id: output
-    run: ./rescuevaffilter.cwl
-    label: Rescue VAF Filter - Varscan SNV
-  - id: rescuevaffilter_varscan_indel
-    in:
-      - id: VCF
-        source: Varscan_Indel_VCF
-      - id: BED
-        source: VAFRescueBED
-      - id: caller
-        default: varscan
-    out:
-      - id: output
-    run: ./rescuevaffilter.cwl
-    label: Rescue VAF Filter - Varscan Indel
-  - id: rescuevaffilter_pindel
-    in:
-      - id: VCF
-        source: Pindel_VCF
-      - id: BED
-        source: VAFRescueBED
-      - id: caller
-        default: pindel
-    out:
-      - id: output
-    run: ./rescuevaffilter.cwl
-    label: Rescue VAF Filter - Pindel
+    run: ../../submodules/FFPE_Filter/cwl/ffpe_filter.cwl
+    label: FFPE_Filter
 requirements:
   - class: SubworkflowFeatureRequirement
