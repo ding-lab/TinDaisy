@@ -2,3 +2,5 @@ FFPE branch introduces FFPE filter functionality from https://github.com/mwyczal
 Also, trial testing for WGS filtering
 * confirm consequence filter bypass
 * confirm ffpe filter bypass
+* Generating TinDaisy2.6 CWL from TinDaisy2.6-FFPE CWL to maintain consistency
+
