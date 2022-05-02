@@ -1,0 +1,91 @@
+# From https://confluence.ris.wustl.edu/pages/viewpage.action?spaceKey=CI&title=Cromwell
+#
+# Important : Prior to running, be sure to create a WORKFLOW_ROOT directory and replace all instances
+# of the string WORKFLOW_ROOT below with the appropriate value.  For instance,
+#   WORKFLOW_ROOT="/scratch1/fs1/dinglab/m.wyczalkowski/cromwell-data"
+# Rename the resulting file to cromwell-config-db.compute1.dat
+
+# location to write error output logs from individual tools:
+#   WORKFLOW_ROOT/logs/cromwell-%J.err
+#   -> important, this directory needs to be created
+# location for Cromwell's main working directory (temp, intermediate, and final files will all be stored here)
+#   WORKFLOW_ROOT/cromwell-executions
+# location to write Cromwell's workflow logs
+#   WORKFLOW_ROOT/cromwell-workflow-logs
+
+
+
+# Selecting same filesystem as where BAMs are stored allows for hard links and is much faster.  
+
+include required(classpath("application"))
+backend {
+  default = "LSF"
+  providers {
+    LSF {
+      actor-factory = "cromwell.backend.impl.sfs.config.ConfigBackendLifecycleActorFactory"
+      config {
+        runtime-attributes = """
+        Int cpu = 1
+        Int? memory_kb
+        Int? memory_mb
+        String? docker
+        """
+        submit = """
+        bsub \
+        -J ${job_name} \
+        -cwd ${cwd} \
+        -o /dev/null \
+        -e WORKFLOW_ROOT/cromwell-workdir/logs/cromwell-%J.err \
+        -M ${memory_mb} \
+        -n ${cpu} \
+        -R "select[mem>${memory_mb}] rusage[mem=${memory_mb}]" \
+        -G compute-dinglab \
+        /bin/bash ${script}
+        """
+        submit-docker = """
+        LSF_DOCKER_VOLUMES=${cwd}:${docker_cwd} \
+        bsub \
+        -J ${job_name} \
+        -cwd ${cwd} \
+        -o /dev/null \
+        -e WORKFLOW_ROOT/cromwell-workdir/logs/cromwell-%J.err \
+        -a "docker(${docker})" \
+        -q general \
+        -M ${memory_mb} \
+        -n ${cpu} \
+        -R "select[mem>${memory_mb}] rusage[mem=${memory_mb}]" \
+        -G compute-dinglab \
+        /bin/bash ${script}
+        """
+        kill = "bkill ${job_id}"
+        docker-kill = "bkill ${job_id}"
+        check-alive = "bjobs -noheader -o stat ${job_id} | /bin/grep 'PEND\\|RUN'"
+        job-id-regex = "Job <(\\d+)>.*"
+        root = "WORKFLOW_ROOT/cromwell-workdir/cromwell-executions"
+        exit-code-timeout-seconds = 300  # Prevent running zombies? https://cromwell.readthedocs.io/en/stable/backends/HPC/#exit-code-timeout
+      }
+    }
+  }
+}
+workflow-options {
+  workflow-log-dir = "WORKFLOW_ROOT/cromwell-workdir/cromwell-workflow-logs"
+}
+database {
+  profile = "slick.jdbc.HsqldbProfile$"
+  db {
+    driver = "org.hsqldb.jdbcDriver"
+# the last argument of file is base of filename, could be per-run
+    url = """
+    jdbc:hsqldb:file:WORKFLOW_ROOT/cromwell-workdir/cromwell-db/cromwell-simple-db;
+    shutdown=false;
+    hsqldb.default_table_type=cached;hsqldb.tx=mvcc;
+    hsqldb.result_max_memory_rows=10000;
+    hsqldb.large_data=true;
+    hsqldb.applog=1;
+    hsqldb.lob_compressed=true;
+    hsqldb.script_format=3
+    """
+    connectionTimeout = 120000
+    numThreads = 1
+   }
+}
