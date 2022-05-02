@@ -44,6 +44,9 @@ The specific paramater values and database versions used are defined in processi
 description files with a specific pipeline version.
 * [Processing description v2.6](docs/processing_description.v2.6.md)
 
+* Version 2.6.1 - Adds `bypass_classification` parameter.  Also introducing `-ffpe` variant
+
+
 ## VAF Rescue
 
 VAF Rescue is an optional variant of the TinDaisy2 workflow which implements a position-aware VAF filter which applies different
