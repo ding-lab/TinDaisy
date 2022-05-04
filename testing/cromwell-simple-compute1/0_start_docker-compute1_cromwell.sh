@@ -1,7 +1,8 @@
-IMAGE="mwyczalkowski/cromwell-runner"
+IMAGE="mwyczalkowski/cromwell-runner:v78"
 
 PWD=$(pwd)
 CWL_ROOT_H=$PWD/../..
+#CWL_ROOT_H=$PWD/TinDaisy
 
 VOLUME_MAPPING=" \
 $CWL_ROOT_H \
@@ -12,6 +13,6 @@ $CWL_ROOT_H \
 
 ARG="-q dinglab-interactive"
 
-CMD="bash ../../submodules/WUDocker/start_docker.sh $ARG -A -I $IMAGE -M compute1 $VOLUME_MAPPING"
+CMD="bash $CWL_ROOT_H/submodules/WUDocker/start_docker.sh $ARG -A -I $IMAGE -M compute1 $VOLUME_MAPPING"
 echo Running: $CMD
 eval $CMD

@@ -14,18 +14,41 @@ Specifically,
 * Create `$WORKFLOW_ROOT` if it does not exist
     * Also create `$WORKFLOW_ROOT/logs`
 * `cp dat/cromwell-config-db.compute1-filedb.template.dat dat/cromwell-config-db.compute1-filedb.dat`
-* Edit `dat/cromwell-config-db.compute1.dat` to replace all instances of the string WORKFLOW_ROOT with the 
+* Edit `dat/cromwell-config-db.compute1-filedb.dat` to replace all instances of the string WORKFLOW_ROOT with the 
   appropriate value
 
 # Starting
 
-TinDaisy run on WXS data typically takes several hours.  Because of this, recommend to run it within a tmux session,
-but this is not necessary for initial testing (just making sure it runs)
+TinDaisy run on WXS data typically takes several hours, and run will generally die if console
+disconnects.  Several ways
 
-* `tmux new -s TinDaisy`
-* `bash 0_start_docker-compute1_cromwell.sh`
-* `cd testing/cromwell-simple-compute1`
-* `bash 1_run_cromwell_demo.sh`
+## Run directly
+Run directly from command line and make sure terminal stays open.  This is the easiest and good for initial
+testing
+```
+bash 0_start_docker-compute1_cromwell.sh
+bash 1_run_cromwell_demo.sh
+```
+
+## tmux
+Run in tmux session.  This will run for up to 24 hours
+```
+tmux new -s TinDaisy
+bash 0_start_docker-compute1_cromwell.sh
+cd testing/cromwell-simple-compute1
+bash 1_run_cromwell_demo.sh
+```
 
 This should start Cromwell and run the TinDaisy2 workflow on a single case.  Such a run will typically take
 several hours.  
+
+## bsub
+To allow for jobs which run longer than 24 hours, need to submit job to bsub directly.  This is preferred for advanceed testing
+and simple "production" runs.  
+```
+2_launch_demo_bsub.sh
+```
+This calls `1_run_cromwell_demo.sh` and writes output to ./logs
+
+For larger batches of runs, suggest using CromwellRunner rather than multiple bsub submissions
+
