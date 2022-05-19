@@ -32,6 +32,8 @@ inputs:
     doc: Bypass classification filter
   - id: input_vcf
     type: File
+  - id: tumor_bam
+    type: File
 outputs:
   - id: output_maf_clean
     outputSource:
@@ -50,6 +52,8 @@ steps:
     in:
       - id: input
         source: merge_filter_td/merged_vcf
+      - id: tumor_bam
+        source: tumor_bam
     out:
       - id: filtered_VCF
     run: ../../submodules/mnp_filter/cwl/mnp_filter.cwl
