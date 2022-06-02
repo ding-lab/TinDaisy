@@ -3,15 +3,15 @@
 [TinDaisy2](https://github.com/ding-lab/TinDaisy) is a CWL pipeline for calling
 somatic variants from tumor and normal exome data.  It is illustrated below
 
-![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.6.png)
+![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.7.png)
 TODO: Update with FFPE filter, illustrate staging of tumor and normal BAMs
 
 ## Overview
 
 The following variant callers are the basis of TinDaisy2 variant calls:
 * [VarScan.v2.3.8](http://varscan.sourceforge.net/): SNP and indel calls
-* [Strelka2](https://github.com/Illumina/strelka.git): SNP and indel calls
-* [Pindel](https://github.com/ding-lab/pindel.git): indel calls only
+* [Strelka2 v2.9.10](https://github.com/Illumina/strelka.git): SNP and indel calls
+* [Pindel](https://github.com/ding-lab/pindel.git): indel calls only (Sept 2018 version)
 * [mutect-1.1.7](https://github.com/broadinstitute/mutect): SNP calls only
 
 The following filters are then applied:
