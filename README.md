@@ -44,6 +44,7 @@ The specific paramater values and database versions used are defined in processi
 description files with a specific pipeline version.
 * [Processing description v2.6](docs/processing_description.v2.6.md)
 
+* Version 2.6.2 - Bugfix to VCF headers.  Using updated VEP v99.
 * Version 2.6.1 - Adds `bypass_classification` parameter.  Also introducing `-ffpe` variant
 
 
