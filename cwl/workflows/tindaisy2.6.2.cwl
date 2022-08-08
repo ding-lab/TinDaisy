@@ -1,7 +1,7 @@
 class: Workflow
 cwlVersion: v1.0
-id: tindaisy2.6_ffpe
-label: TinDaisy2.6
+id: tindaisy2_6_2
+label: TinDaisy2.6.2
 inputs:
   - id: tumor_bam
     type: File
@@ -13,8 +13,6 @@ inputs:
     type: File
   - id: varscan_config
     type: File
-  - id: assembly
-    type: string?
   - id: centromere_bed
     type: File?
   - id: strelka_config
@@ -37,8 +35,6 @@ inputs:
     type: File?
   - id: vep_cache_gz
     type: File?
-  - id: vep_cache_version
-    type: string?
   - id: rescue_cosmic
     type: boolean?
   - id: rescue_clinvar
@@ -177,7 +173,7 @@ steps:
       - id: ref-fasta
         source: reference_fasta
       - id: assembly
-        source: assembly
+        default: GRCh38
       - id: input-vcf
         source: canonical_filter/output
       - id: tumor_barcode
@@ -187,7 +183,7 @@ steps:
     out:
       - id: output
     run: ../../submodules/vcf2maf-CWL/cwl/vcf2maf.cwl
-    label: vcf2maf
+    label: vcf2maf-GRCh38
   - id: varscan_indel_vcf_remap
     in:
       - id: input
@@ -540,10 +536,6 @@ steps:
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
       - id: custom_filename
