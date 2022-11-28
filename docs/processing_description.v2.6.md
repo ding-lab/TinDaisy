@@ -4,6 +4,8 @@ Description of parameters in TinDaisy2 v2.6 pipeline.  [See here for more
 general information about TinDaisy2.](https://github.com/ding-lab/TinDaisy)
 
 ## Versions
+* v2.6.2 - Bugfix to VCF headers.  Using updated VEP v99.
+* v2.6.1 - Adds `bypass_classification` parameter.  Also introducing `-ffpe` variant
 * v2.6 Adding staging of BAMs.  Does not affect results
 * v2.5 pipeline uses `cwl/workflows/tindaisy2.cwl` workflow
 
