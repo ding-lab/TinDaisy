@@ -1,10 +1,10 @@
 class: Workflow
 cwlVersion: v1.0
-id: tindaisy2
+id: tindaisy2_6_2_vr
+label: TinDaisy2.6.2-VR
 doc: >-
-  TinDaisy2 workflow with VAF Rescue, where min_vaf_tumor=0 in a region defined
-  by a rescue BED file
-label: TinDaisy2
+  TinDaisy 2.6.2 workflow with VAF Rescue, where min_vaf_tumor=0 in a region defined
+  by a rescue BED file. VEP v99
 inputs:
   - id: tumor_bam
     type: File
@@ -16,8 +16,6 @@ inputs:
     type: File
   - id: varscan_config
     type: File
-  - id: assembly
-    type: string?
   - id: centromere_bed
     type: File?
   - id: strelka_config
@@ -40,12 +38,13 @@ inputs:
     type: File?
   - id: vep_cache_gz
     type: File?
-  - id: vep_cache_version
-    type: string?
   - id: rescue_cosmic
     type: boolean?
   - id: rescue_clinvar
     type: boolean?
+  - id: bypass_classification
+    type: boolean?
+    doc: Bypass classification filter
   - id: VAFRescueBED
     type: File
 outputs:
@@ -65,9 +64,9 @@ steps:
   - id: run_pindel
     in:
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
       - id: normal_bam
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference_fasta
         source: reference_fasta
       - id: centromere_bed
@@ -85,9 +84,9 @@ steps:
   - id: run_varscan
     in:
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
       - id: normal_bam
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference_fasta
         source: reference_fasta
       - id: varscan_config
@@ -134,11 +133,11 @@ steps:
   - id: mutect
     in:
       - id: normal
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference
         source: reference_fasta
       - id: tumor
-        source: tumor_bam
+        source: stage_tumor_bam/output
     out:
       - id: call_stats
       - id: coverage
@@ -148,9 +147,9 @@ steps:
   - id: run_strelka2
     in:
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
       - id: normal_bam
-        source: normal_bam
+        source: stage_normal_bam/output
       - id: reference_fasta
         source: reference_fasta
       - id: strelka_config
@@ -169,7 +168,7 @@ steps:
       - id: input
         source: merge_filter_td/merged_vcf
       - id: tumor_bam
-        source: tumor_bam
+        source: stage_tumor_bam/output
     out:
       - id: filtered_VCF
     run: ../../submodules/mnp_filter/cwl/mnp_filter.cwl
@@ -179,7 +178,7 @@ steps:
       - id: ref-fasta
         source: reference_fasta
       - id: assembly
-        source: assembly
+        default: GRCh38
       - id: input-vcf
         source: canonical_filter/output
       - id: tumor_barcode
@@ -189,7 +188,7 @@ steps:
     out:
       - id: output
     run: ../../submodules/vcf2maf-CWL/cwl/vcf2maf.cwl
-    label: vcf2maf
+    label: vcf2maf-GRCh38
   - id: varscan_indel_vcf_remap
     in:
       - id: input
@@ -247,6 +246,9 @@ steps:
         source: af_filter/output
       - id: config
         source: classification_config
+      - id: bypass
+        default: false
+        source: bypass_classification
     out:
       - id: output
     run: ../../submodules/VEP_Filter/cwl/classification_filter.cwl
@@ -455,18 +457,33 @@ steps:
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
       - id: custom_filename
         source: clinvar_annotation
     out:
       - id: output_dat
-    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
-    label: vep_annotate TinDaisy
+    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.v99.cwl
+    label: vep_annotate v99 TinDaisy
+  - id: stage_normal_bam
+    in:
+      - id: BAM
+        source: normal_bam
+    out:
+      - id: output
+    run: ../tools/stage_bam.cwl
+    label: stage_normal_bam
+  - id: stage_tumor_bam
+    in:
+      - id: BAM
+        source: tumor_bam
+    out:
+      - id: output
+    run: ../tools/stage_bam.cwl
+    label: stage_tumor_bam
+
+
+
   - id: rescuevaffilter_strelka_snv
     in:
       - id: VCF

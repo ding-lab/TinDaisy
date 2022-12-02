@@ -2,6 +2,8 @@ class: Workflow
 cwlVersion: v1.0
 id: tindaisy2_6_2
 label: TinDaisy2.6.2
+doc: >-
+  TinDaisy 2.6.2 workflow with VEP v99 annotation
 inputs:
   - id: tumor_bam
     type: File
