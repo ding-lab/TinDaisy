@@ -1,7 +1,7 @@
 # <img src="docs/TinDaisy.v1.2.png" width="64"/> TinDaisy2
 
 [TinDaisy2](https://github.com/ding-lab/TinDaisy) is a CWL pipeline for calling
-somatic variants from tumor and normal exome data.  It is illustrated below
+somatic variants from tumor and normal whole genome and exome data.  It is illustrated below
 
 ![TinDaisy Workflow illustration](docs/TinDaisy2.workflow.v1.7.png)
 

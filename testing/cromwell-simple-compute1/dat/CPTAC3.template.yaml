@@ -18,17 +18,17 @@ canonical_BED:  # type "File"
 
 normal_bam:
   class: File
-  path: /storage1/fs1/m.wyczalkowski/Active/Primary/CPTAC3.share/CPTAC3-GDC/GDC_import/data/8c1b0bfa-edfc-4d5f-a009-42e5c796dd3f/73505858-157d-4d4f-8e84-359a6344de48_wxs_gdc_realn.bam
+  path: NORMAL_BAM
 tumor_bam:
   class: File
-  path: /storage1/fs1/m.wyczalkowski/Active/Primary/CPTAC3.share/CPTAC3-GDC/GDC_import/data/9f1fd6bd-a647-4e66-ab63-5a393e98cd67/b4ece7ff-2798-4fcd-a761-dd7baa91955e_wxs_gdc_realn.bam
+  path: TUMOR_BAM
 reference_fasta:
   class: File
   path: /storage1/fs1/dinglab/Active/Resources/References/GRCh38.d1.vd1/GRCh38.d1.vd1.fa
 
 # barcodes replace "TUMOR" and "NORMAL" as sample names in output MAF
-normal_barcode: CPT0187870002
-tumor_barcode: CPT0187820032
+normal_barcode: NORMAL
+tumor_barcode: TUMOR
 
 # Caller config.  Note mutect does not have a caller config file
 pindel_config:
@@ -42,6 +42,7 @@ varscan_config:
   path: ../../../params/caller_config/varscan.WES.ini
 
 # Other filter config
+bypass_classification: False  # if false, exclude non-protein-coding variants.  recommend true for WGS, false for WXS
 classification_config:
   class: File
   path: ../../../params/filter_config/classification_filter_config.ini
@@ -61,9 +62,6 @@ centromere_bed:
 vep_cache_gz:
   class: File
   path: /storage1/fs1/m.wyczalkowski/Active/Primary/Resources/Databases/VEP/v99/vep-cache.99_GRCh38.tar.gz
-
-vep_cache_version: 99
-assembly: GRCh38
 
 chrlist: # Defining this turns on pindel parallel
   class: File
