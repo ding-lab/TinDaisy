@@ -1,7 +1,8 @@
 class: Workflow
 cwlVersion: v1.0
-id: tindaisy2.6_ffpe
-label: TinDaisy2.6
+id: tindaisy2_7_0
+doc: TinDaisy 2.7.0 workflow with VEP v99 annotation
+label: TinDaisy2.7.0
 inputs:
   - id: tumor_bam
     type: File
@@ -13,8 +14,6 @@ inputs:
     type: File
   - id: varscan_config
     type: File
-  - id: assembly
-    type: string?
   - id: centromere_bed
     type: File?
   - id: strelka_config
@@ -37,8 +36,6 @@ inputs:
     type: File?
   - id: vep_cache_gz
     type: File?
-  - id: vep_cache_version
-    type: string?
   - id: rescue_cosmic
     type: boolean?
   - id: rescue_clinvar
@@ -59,6 +56,10 @@ outputs:
     outputSource:
       snp_indel_proximity_filter/output
     type: File
+  - id: warning_flag
+    outputSource:
+      vep_qc/warning_flag
+    type: File?
 steps:
   - id: run_pindel
     in:
@@ -177,7 +178,7 @@ steps:
       - id: ref-fasta
         source: reference_fasta
       - id: assembly
-        source: assembly
+        default: GRCh38
       - id: input-vcf
         source: canonical_filter/output
       - id: tumor_barcode
@@ -187,7 +188,7 @@ steps:
     out:
       - id: output
     run: ../../submodules/vcf2maf-CWL/cwl/vcf2maf.cwl
-    label: vcf2maf
+    label: vcf2maf-GRCh38
   - id: varscan_indel_vcf_remap
     in:
       - id: input
@@ -540,18 +541,14 @@ steps:
         source: mnp_filter/filtered_VCF
       - id: reference_fasta
         source: reference_fasta
-      - id: assembly
-        source: assembly
-      - id: vep_cache_version
-        source: vep_cache_version
       - id: vep_cache_gz
         source: vep_cache_gz
       - id: custom_filename
         source: clinvar_annotation
     out:
       - id: output_dat
-    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.cwl
-    label: vep_annotate TinDaisy
+    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.v99.cwl
+    label: vep_annotate v99 TinDaisy
   - id: stage_normal_bam
     in:
       - id: BAM
@@ -568,4 +565,14 @@ steps:
       - id: output
     run: ../tools/stage_bam.cwl
     label: stage_tumor_bam
+  - id: vep_qc
+    in:
+      - id: num_expected
+        default: 23
+      - id: VCF
+        source: vep_annotate__tin_daisy/output_dat
+    out:
+      - id: warning_flag
+    run: ../../submodules/VEP_QC/cwl/vep_qc.cwl
+    label: VEP_QC
 requirements: []

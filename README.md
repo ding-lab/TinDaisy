@@ -43,6 +43,7 @@ The specific paramater values and database versions used are defined in processi
 description files with a specific pipeline version.
 * [Processing description v2.6](docs/processing_description.v2.6.md)
 
+* Version 2.7.0 - Adding QC of VEP output
 * Version 2.6.2 - Bugfix to VCF headers.  Using updated VEP v99.
 * Version 2.6.1 - Adds `bypass_classification` parameter.  Also introducing `-ffpe` variant
 
@@ -81,9 +82,6 @@ Configuration of TinDaisy2 is through a YAML configuration file.  A template of 
 a file is in `cwl/workflows/tindaisy2.template.yaml`, and example configuration
 files for the MGI and compute1 systems can be found in `testing/cromwell-simple/yaml`.
 
-**TODO** provide additional details about all configuration parameters.  These can also be obtained
-from the submodules described below.
-
 ## Example workflows
 
 Examples for running TinDaisy2 in the Wash U MGI and compute1 environments can be found in
@@ -109,4 +107,5 @@ Modules used by TinDaisy2 are,
 * [VEP_annotate](https://github.com/ding-lab/VEP_annotate.git)
 * [VEP_Filter](https://github.com/ding-lab/VEP_Filter.git)
 * [VLD_FilterVCF](https://github.com/ding-lab/VLD_FilterVCF.git)
+* [VEP_QC](https://github.com/mwyczalkowski/VEP_QC.git)
 
