@@ -1,8 +1,8 @@
 class: Workflow
 cwlVersion: v1.0
-id: tindaisy2_7_0
-doc: TinDaisy 2.7.0 workflow with VEP v99 annotation
-label: TinDaisy2.7.0
+id: tindaisy2_7_0_vep102
+doc: TinDaisy 2.7.0 workflow with VEP v102 annotation
+label: TinDaisy2.7.0-vep102
 inputs:
   - id: tumor_bam
     type: File
@@ -547,8 +547,8 @@ steps:
         source: clinvar_annotation
     out:
       - id: output_dat
-    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.v99.cwl
-    label: vep_annotate v99 TinDaisy
+    run: ../../submodules/VEP_annotate/cwl/vep_annotate.TinDaisy.v102.cwl
+    label: vep_annotate v102 TinDaisy
   - id: stage_normal_bam
     in:
       - id: BAM
@@ -569,8 +569,12 @@ steps:
     in:
       - id: num_expected
         default: 23
+      - id: exit_on_mismatch
+        default: true
       - id: VCF
         source: vep_annotate__tin_daisy/output_dat
+      - id: workflow_file_dependency
+        source: vcf2maf/output
     out:
       - id: warning_flag
     run: ../../submodules/VEP_QC/cwl/vep_qc.cwl
