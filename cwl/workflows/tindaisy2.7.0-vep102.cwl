@@ -572,7 +572,7 @@ steps:
       - id: exit_on_mismatch
         default: true
       - id: VCF
-        source: vep_annotate__tin_daisy/output_dat
+        source: snp_indel_proximity_filter/output
       - id: workflow_file_dependency
         source: vcf2maf/output
     out:
