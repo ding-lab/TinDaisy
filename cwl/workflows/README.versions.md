@@ -1,6 +1,7 @@
 
 v2.7.0
 * Introduce VEP_QC step to test for silent VEP annotation errors
+* Add VEP version to CWL version name
 * Removing FFPE from workflow
 
 v2.6.2
