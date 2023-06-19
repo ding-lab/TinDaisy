@@ -5,10 +5,10 @@ source /opt/ibm/lsfsuite/lsf/conf/lsf.conf
 
 PWD=$(pwd)
 CWL_ROOT_H=$PWD/../..
-CWL="$CWL_ROOT_H/cwl/workflows/tindaisy2.6.2.cwl"
+CWL="$CWL_ROOT_H/cwl/workflows/tindaisy2.7.0-vep102.cwl"
 
-CONFIG="dat/cromwell-config-db.dat"
-YAML="dat/C3L-03733.yaml"        ### This must be updated
+CONFIG="dat/cromwell-config-db.compute1-filedb.dat"
+YAML="dat/CPT4427DU-S1Y1D1_1.T.yaml"
 
 # Cromwell v78 
 JAVA="/opt/java/openjdk/bin/java"
