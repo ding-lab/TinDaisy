@@ -20,7 +20,7 @@ general information about TinDaisy2.](https://github.com/ding-lab/TinDaisy)
 * Exclude calls which are in dbSnP but not in COSMIC or ClinVar
 * Adjacent variants merged into DNP, TNP, and QNP 
 
-VEP Rescue is not used
+VAF Rescue is not used
 
 ## Specific databases used
 
@@ -32,6 +32,7 @@ VEP Rescue is not used
 
 Three files are output:
 * `ProximityFiltered.vcf` = Output VCF - contains all variants which were called by 2 or 3 callers.
+  * The FILTER field of this VCF indicates which filters a variant failed, or PASS if passed all filters
 * `result.maf` = Clean VCF - contains only variants which passed all filters
 * `HotspotFiltered.vcf` = Clean MAF - MAF file corresponding to Clean VCF
 
